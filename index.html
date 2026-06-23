@@ -1,1143 +1,1208 @@
 <!DOCTYPE html>
-
 <html lang="es">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Smart Gatekeeper</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Boutique Micro-CRM | Panel de Control Soberano</title>
+    <style>
+        /* UI Architecture & Advanced Accessibility Variables */
+        :root {
+            --bg-oled: #000000;
+            --card-bg: #09090b;
+            --border-subtle: #27272a; 
+            --text-pure: #ffffff;
+            --text-muted: #a1a1aa; 
+            
+            /* Immutable Monochromatic Theme Palette Architecture */
+            --accent-color: #ffffff; 
+            --accent-contrast: #000000;
+            
+            /* Standardized Reconfigured KPI Color Scales (Low to High Quality) */
+            --scale-c:  #C73A4A; /* Sangre (Fricción Alta / Descalificado) */
+            --scale-b2: #B78627; /* Mostaza (Fricción Baja) */
+            --scale-b1: #6D7C50; /* Tierra (En Proceso / Evaluación) */
+            --scale-a2: #248692; /* Cobre (Calificado / Listo) */
+            --scale-a1: #7D5AA1; /* Amatista (Alto Valor / Premium) */
+            
+            --touch-target-min: 48px;
+        }
 
-<style>
-:root{
-  --bg:#f5f7fb;
-  --card:#ffffff;
-  --text:#111;
-  --muted:#666;
-  --border:#e5e7eb;
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-  --high:#dc2626;
-  --medium:#f97316;
-  --low:#2563eb;
+        body {
+            background-color: var(--bg-oled);
+            color: var(--text-pure);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 16px 8px 95px 8px; /* Safe padding for bottom thumb bar interaction */
+        }
 
-  --radius:16px;
-  --accent: #111111;
-}
+        .crm-viewport {
+            width: 100%;
+            max-width: 440px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
 
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-}
+        header {
+            border-bottom: 1px solid var(--border-subtle);
+            padding-bottom: 14px;
+            text-align: center;
+            margin-top: 8px;
+        }
 
-body{
-  font-family:system-ui,-apple-system,BlinkMacSystemFont,sans-serif;
-  background:var(--bg);
-  color:var(--text);
-}
+        header h1 {
+            font-size: 17px;
+            font-weight: 400;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: var(--text-pure);
+        }
 
-.container{
-  max-width:1100px;
-  margin:0 auto;
-  padding:16px;
-}
+        header p {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-top: 4px;
+        }
 
-header{
-  background:#111;
-  color:white;
-  padding:20px;
-  margin-bottom:20px;
-}
+        /* Fixed Thumb-Optimized Bottom Tab Bar Component */
+        .nav-tabs {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 440px;
+            background-color: rgba(0, 0, 0, 0.96);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-top: 1px solid var(--border-subtle);
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 6px calc(12px + env(safe-area-inset-bottom, 0px)) 6px;
+            z-index: 900;
+        }
 
-header h1{
-  font-size:1.5rem;
-}
+        .tab-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            cursor: pointer;
+            padding: 10px 14px;
+            font-weight: 500;
+            min-height: var(--touch-target-min);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.2s cubic-bezier(0.4, 0, 0.2, 1), transform 0.1s ease;
+        }
 
-.header-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 12px;
-}
+        .tab-btn:active {
+            transform: scale(0.95);
+        }
 
-.header-right {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 0.95rem;
-}
+        .tab-btn.active {
+            color: var(--text-pure);
+            font-weight: 700;
+            position: relative;
+        }
 
-.foco-badge {
-  background: rgba(var(--accent-rgb, 17, 17, 17), 0.12);
-  color: var(--accent);
-  border-radius: 999px;
-  padding: 4px 10px;
-  font-size: 12px;
-  font-weight: 600;
-}
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            width: 20px;
+            height: 2px;
+            background-color: var(--accent-color);
+            border-radius: 2px;
+        }
 
-.profile-link {
-  color: #aaa;
-  font-size: 12px;
-  text-decoration: none;
-  cursor: pointer;
-}
+        .crm-view {
+            display: none;
+            flex-direction: column;
+            gap: 20px;
+            animation: viewFadeIn 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
 
-.profile-link:hover {
-  text-decoration: underline;
-}
+        .crm-view.active {
+            display: flex;
+        }
 
-.card{
-  background:var(--card);
-  border-radius:var(--radius);
-  padding:16px;
-  margin-bottom:16px;
-  border:1px solid var(--border);
-}
+        @keyframes viewFadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-input,
-select{
-  width:100%;
-  padding:14px;
-  border-radius:12px;
-  border:1px solid #d1d5db;
-  margin-top:6px;
-  margin-bottom:14px;
-  font-size:1rem;
-}
+        .panel-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            padding: 22px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
 
-label{
-  font-weight:600;
-  display:block;
-}
+        .panel-title {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border-subtle);
+            padding-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+        }
 
-button{
-  border:none;
-  cursor:pointer;
-  min-height:48px;
-  border-radius:12px;
-  padding:12px 16px;
-  font-size:0.95rem;
-}
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
 
-.btn-primary{
-  background:var(--accent);
-  color:white;
-}
+        label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
 
-.btn-secondary{
-  background:#ececec;
-}
+        input[type="text"], input[type="number"], select {
+            background-color: var(--bg-oled);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-pure);
+            padding: 14px;
+            font-size: 16px; /* Completely prevents iOS zoom triggers */
+            font-family: inherit;
+            outline: none;
+            border-radius: 6px;
+            min-height: var(--touch-target-min);
+            transition: border-color 0.2s ease;
+        }
 
-.btn-danger{
-  background:#dc2626;
-  color:white;
-}
+        input[type="text"]:focus, input[type="number"]:focus, select:focus {
+            border-color: var(--accent-color);
+        }
 
-.btn-whatsapp{
-  background:#25D366;
-  color:white;
-}
+        .immutable-warning {
+            font-size: 11px; 
+            color: var(--scale-b2);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: -2px;
+        }
 
-.grid{
-  display:grid;
-  gap:16px;
-}
+        .filter-stack {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+            scrollbar-width: none;
+        }
+        .filter-stack::-webkit-scrollbar { display: none; }
 
-.property-actions{
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-  margin-top:12px;
-}
+        .filter-chip {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-muted);
+            padding: 10px 16px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-radius: 20px;
+            white-space: nowrap;
+            cursor: pointer;
+            min-height: 38px;
+        }
+        .filter-chip.active {
+            border-color: var(--accent-color);
+            color: var(--text-pure);
+        }
 
-.badge{
-  display:inline-flex;
-  align-items:center;
-  padding:6px 10px;
-  border-radius:999px;
-  color:white;
-  font-size:.85rem;
-  font-weight:700;
-}
+        /* Standardized Premium Action Buttons with Geometric Affordance */
+        .btn-action {
+            background-color: var(--accent-color);
+            color: var(--accent-contrast);
+            border: 1px solid var(--accent-color);
+            padding: 16px;
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border-radius: 6px;
+            cursor: pointer;
+            min-height: var(--touch-target-min);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: opacity 0.2s ease, transform 0.1s ease;
+            text-decoration: none;
+        }
 
-.high{
-  background:var(--high);
-}
+        .btn-action:disabled {
+            background-color: var(--border-subtle);
+            color: var(--text-muted);
+            border-color: var(--border-subtle);
+            cursor: not-allowed;
+            opacity: 0.4;
+        }
 
-.medium{
-  background:var(--medium);
-}
+        .btn-action:active:not(:disabled) {
+            transform: scale(0.98);
+        }
 
-.low{
-  background:var(--low);
-}
+        .btn-secondary {
+            background: none;
+            border: 1px solid var(--border-subtle);
+            color: var(--text-pure);
+        }
 
-.small{
-  color:var(--muted);
-  font-size:.9rem;
-}
+        /* Row Specific Controls with High Affordance Boxes */
+        .btn-row-action {
+            background-color: transparent;
+            border: 1px solid var(--border-subtle);
+            color: var(--text-pure);
+            padding: 6px 10px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-radius: 4px;
+            cursor: pointer;
+            min-height: 36px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            transition: border-color 0.2s ease, background-color 0.2s ease;
+        }
+        .btn-row-action:hover, .btn-row-action:active {
+            border-color: var(--text-pure);
+            background-color: rgba(255, 255, 255, 0.05);
+        }
 
-.section-title{
-  margin-bottom:16px;
-}
+        .empty-canvas {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 42px 20px;
+            text-align: center;
+            border: 2px dashed var(--border-subtle);
+            border-radius: 8px;
+            background-color: var(--card-bg);
+        }
 
-.hidden{
-  display:none;
-}
+        .empty-icon-btn {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-subtle);
+            color: var(--accent-color);
+            font-size: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+            cursor: pointer;
+        }
 
-.question-title{
-  margin-bottom:18px;
-  line-height:1.4;
-}
+        .empty-canvas h3 { font-size: 13px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+        .empty-canvas p { font-size: 12px; color: var(--text-muted); max-width: 250px; line-height: 1.5; }
 
-.option{
-  width:100%;
-  text-align:left;
-  background:white;
-  border:1px solid var(--border);
-  margin-bottom:12px;
-}
+        .data-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
 
-.option.selected{
-  border:2px solid var(--accent);
-}
+        .list-item {
+            border: 1px solid var(--border-subtle);
+            border-radius: 6px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background-color: var(--card-bg);
+        }
 
-.thankyou{
-  text-align:center;
-  padding:32px 16px;
-}
+        .item-main-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            gap: 14px;
+        }
 
-.lead-row{
-  border:1px solid var(--border);
-  border-radius:16px;
-  padding:16px;
-  margin-bottom:12px;
-}
+        /* High-Value Telemetry Block Structure */
+        .item-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            flex: 1;
+            padding-right: 8px;
+        }
 
-.back-btn{
-  margin-bottom:16px;
-}
+        .item-meta h4 {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-pure);
+            word-break: break-all;
+        }
 
-.input-prefix{
-  display:flex;
-  align-items:center;
-  border:1px solid #d1d5db;
-  border-radius:12px;
-  margin-top:6px;
-  margin-bottom:14px;
-  padding:0 14px;
-  background:white;
-}
+        .item-meta p {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
 
-.input-prefix span{
-  white-space:nowrap;
-}
+        .telemetry-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 4px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
 
-.input-prefix input{
-  border:none;
-  margin:0;
-  outline:none;
-}
+        .telemetry-badge {
+            background-color: rgba(255,255,255,0.06);
+            color: var(--text-pure);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
 
-.error-text{
-  color:#dc2626;
-  font-size:.85rem;
-  margin-top:-10px;
-  margin-bottom:10px;
-}
+        /* Structural Dynamic Glyph Container */
+        .glyph-container {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
 
-/* Onboarding Specific Styles */
-.onboarding-screen {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  padding: 16px;
-  background: var(--bg);
-}
+        /* Metadata Expanded View Architecture */
+        .metadata-drawer {
+            display: none;
+            border-top: 1px dashed var(--border-subtle);
+            padding-top: 10px;
+            margin-top: 4px;
+            flex-direction: column;
+            gap: 6px;
+            animation: viewFadeIn 0.15s ease-out;
+        }
+        .metadata-drawer.active {
+            display: flex;
+        }
+        .metadata-line {
+            font-size: 11px;
+            font-family: monospace;
+            color: var(--text-muted);
+            word-break: break-all;
+            display: flex;
+            justify-content: space-between;
+        }
+        .metadata-line strong {
+            color: var(--text-pure);
+        }
 
-.onboarding-header {
-  font-size: 0.85rem;
-  color: var(--muted);
-  margin-bottom: 8px;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
+        .item-actions-wrapper {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+            width: 100%;
+            margin-top: 4px;
+        }
 
-.onboarding-card {
-  width: 100%;
-  max-width: 420px;
-  background: var(--card);
-  border-radius: var(--radius);
-  padding: 24px;
-  border: 1px solid var(--border);
-}
+        .crystallized-section {
+            margin-top: 12px;
+            opacity: 0.55;
+            transition: opacity 0.2s ease;
+        }
+        .crystallized-section:hover { opacity: 0.95; }
+        .crystallized-card {
+            background: repeating-linear-gradient(45deg, #000, #000 4px, #08080a 4px, #08080a 8px);
+            border: 1px dotted #3f3f46;
+        }
 
-.onboarding-title {
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin-bottom: 4px;
-}
+        .score-badge {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            color: #ffffff;
+        }
+        .score-badge.A1 { background-color: var(--scale-a1); }
+        .score-badge.A2 { background-color: var(--scale-a2); }
+        .score-badge.B1 { background-color: var(--scale-b1); }
+        .score-badge.B2 { background-color: var(--scale-b2); }
+        .score-badge.C  { background-color: var(--scale-c); }
 
-.onboarding-subtitle {
-  font-size: 0.9rem;
-  color: var(--muted);
-  margin-bottom: 24px;
-}
+        .legend-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 6px;
+            margin-top: 4px;
+        }
+        .legend-pill {
+            font-size: 9px;
+            padding: 6px 2px;
+            text-align: center;
+            font-family: monospace;
+            font-weight: bold;
+            color: #fff;
+            border-radius: 3px;
+        }
 
-.toggle-pills {
-  display: flex;
-  gap: 8px;
-  margin-top: 6px;
-  margin-bottom: 14px;
-}
+        .wizard-step {
+            display: none;
+            flex-direction: column;
+            gap: 18px;
+        }
+        .wizard-step.active { display: flex; }
 
-.pill-btn {
-  flex: 1;
-  background: #ececec;
-  color: var(--text);
-  border-radius: 12px;
-  text-align: center;
-  font-weight: 500;
-  min-height: 44px;
-  padding: 10px;
-}
+        .options-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
 
-.pill-btn.selected {
-  background: var(--accent);
-  color: white;
-}
+        .option-btn {
+            background-color: var(--bg-oled);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-pure);
+            padding: 16px;
+            text-align: left;
+            font-size: 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            min-height: var(--touch-target-min);
+            transition: border-color 0.2s ease;
+        }
+        .option-btn:active { border-color: var(--accent-color); }
 
-.swatches-row {
-  display: flex;
-  gap: 12px;
-  margin-top: 8px;
-  margin-bottom: 24px;
-  flex-wrap: wrap;
-}
-
-.swatch {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  cursor: pointer;
-  border: 1px solid rgba(0,0,0,0.1);
-  padding: 0;
-  min-height: auto;
-}
-
-.swatch.selected {
-  outline: 2px solid var(--accent);
-  outline-offset: 3px;
-}
-
-.btn-full {
-  width: 100%;
-}
-
-@media (min-width:768px){
-
-  .property-actions{
-    flex-direction:row;
-    flex-wrap:wrap;
-  }
-
-  .grid{
-    grid-template-columns:repeat(2,1fr);
-  }
-
-  .dashboard-layout{
-    display:grid;
-    grid-template-columns:350px 1fr;
-    gap:24px;
-    align-items:start;
-  }
-}
-</style>
-
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: var(--bg-oled);
+            z-index: 2000;
+            display: none;
+            flex-direction: column;
+            padding: 32px 24px;
+            overflow-y: auto;
+        }
+        .modal-overlay.active { display: flex; }
+        
+        .tutorial-content {
+            max-width: 400px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .tutorial-header h2 { font-size: 18px; text-transform: uppercase; letter-spacing: 2px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 12px;}
+        .tutorial-body { font-size: 14px; line-height: 1.5; color: var(--text-muted); display: flex; flex-direction: column; gap: 14px; }
+        .tutorial-body strong { color: var(--text-pure); }
+        
+        .pro-con-box {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-subtle);
+            padding: 14px;
+            border-radius: 6px;
+            font-size: 12px;
+        }
+    </style>
 </head>
 <body>
 
-<div id="app"></div>
+    <div id="tutorial-modal" class="modal-overlay">
+        <div class="tutorial-content">
+            <div class="tutorial-header">
+                <h2>Marcha Blanca MVP</h2>
+                <p style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; margin-top: 4px;">Instrucciones de Sistema</p>
+            </div>
+            <div class="tutorial-body">
+                <p>Bienvenido al entorno de gestión soberana. Este software opera localmente en aislamiento absoluto de alta velocidad.</p>
+                
+                <div class="pro-con-box">
+                    <span style="color:#248692; font-weight:bold;">✓ Ventajas del Piloto:</span>
+                    <p style="margin-top:4px; color: var(--text-pure)">Carga instantánea sin contraseñas ni servidores de terceros. Privacidad garantizada de extremo a extremo.</p>
+                </div>
 
-<datalist id="comunas">
-  <option value="Cerrillos">
-  <option value="Cerro Navia">
-  <option value="Conchalí">
-  <option value="El Bosque">
-  <option value="Estación Central">
-  <option value="Huechuraba">
-  <option value="Independencia">
-  <option value="La Cisterna">
-  <option value="La Florida">
-  <option value="La Granja">
-  <option value="La Pintana">
-  <option value="La Reina">
-  <option value="Las Condes">
-  <option value="Lo Barnechea">
-  <option value="Lo Espejo">
-  <option value="Lo Prado">
-  <option value="Macul">
-  <option value="Maipú">
-  <option value="Ñuñoa">
-  <option value="Padre Hurtado">
-  <option value="Paine">
-  <option value="Pedro Aguirre Cerda">
-  <option value="Peñaflor">
-  <option value="Peñalolén">
-  <option value="Pirque">
-  <option value="Providencia">
-  <option value="Pudahuel">
-  <option value="Puente Alto">
-  <option value="Quilicura">
-  <option value="Quinta Normal">
-  <option value="Recoleta">
-  <option value="Renca">
-  <option value="San Bernardo">
-  <option value="San Joaquín">
-  <option value="San José de Maipo">
-  <option value="San Miguel">
-  <option value="San Ramón">
-  <option value="Santiago">
-  <option value="Talagante">
-  <option value="Vitacura">
-</datalist>
+                <div class="pro-con-box">
+                    <span style="color:#C73A4A; font-weight:bold;">✗ Restricciones de Uso:</span>
+                    <p style="margin-top:4px; color: var(--text-pure)">Los datos residen de forma estricta en el almacenamiento de este navegador. Borrar la caché destruirá permanentemente los registros de telemetría comercial.</p>
+                </div>
 
-<script>
-const STORAGE_PROPERTIES = "sg_properties";
-const STORAGE_LEADS = "sg_leads";
-const STORAGE_PROFILE = "sg_profile";
-
-const PALETTES = [
-  { name: "Carbón", hex: "#111111", rgb: "17, 17, 17" },
-  { name: "Pizarra", hex: "#1e3a5f", rgb: "30, 58, 95" },
-  { name: "Bosque", hex: "#1a4a3a", rgb: "26, 74, 58" },
-  { name: "Terracota", hex: "#8b3a2a", rgb: "139, 58, 42" },
-  { name: "Malva", hex: "#5a3a6b", rgb: "90, 58, 107" },
-  { name: "Cobre", hex: "#7a4a1e", rgb: "122, 74, 30" }
-];
-
-function hexToRgbStr(hex) {
-  const match = PALETTES.find(p => p.hex.toLowerCase() === hex.toLowerCase());
-  if (match) return match.rgb;
-  
-  let c = hex.substring(1);
-  if(c.length === 3) c = c[0]+c[0]+c[1]+c[1]+c[2]+c[2];
-  const num = parseInt(c, 16);
-  return `${(num >> 16) & 255}, ${(num >> 8) & 255}, ${num & 255}`;
-}
-
-function applyPalette(hex) {
-  document.documentElement.style.setProperty('--accent', hex);
-  document.documentElement.style.setProperty('--accent-rgb', hexToRgbStr(hex));
-}
-
-function uid(){
-  return Date.now().toString(36)+Math.random().toString(36).slice(2);
-}
-
-function getProperties(){
-  return JSON.parse(localStorage.getItem(STORAGE_PROPERTIES) || "[]");
-}
-
-function saveProperties(data){
-  localStorage.setItem(STORAGE_PROPERTIES, JSON.stringify(data));
-}
-
-function getLeads(){
-  return JSON.parse(localStorage.getItem(STORAGE_LEADS) || "[]");
-}
-
-function saveLeads(data){
-  localStorage.setItem(STORAGE_LEADS, JSON.stringify(data));
-}
-
-function getProfile(){
-  return JSON.parse(localStorage.getItem(STORAGE_PROFILE) || "null");
-}
-
-function saveProfile(data){
-  localStorage.setItem(STORAGE_PROFILE, JSON.stringify(data));
-}
-
-function getParam(name){
-  return new URLSearchParams(location.search).get(name);
-}
-
-function classify(score){
-  if(score >= 75) return "HIGH";
-  if(score >= 45) return "MEDIO";
-  return "BAJO";
-}
-
-function badgeClass(tier){
-  if(tier === "HIGH") return "high";
-  if(tier === "MEDIO") return "medium";
-  return "low";
-}
-
-const propertyId = getParam("propiedad");
-
-if(propertyId){
-  const profile = getProfile();
-  if(profile && profile.palette) {
-    applyPalette(profile.palette);
-  }
-  renderSurvey(propertyId);
-}else{
-  const profile = getProfile();
-  if(!profile){
-    renderOnboarding();
-  }else{
-    applyPalette(profile.palette);
-    renderDashboard();
-  }
-}
-
-function renderOnboarding(){
-  const app = document.getElementById("app");
-  
-  let selectedFoco = "Ambos";
-  let selectedPalette = PALETTES[0]; // Carbón
-
-  app.innerHTML = `
-    <div class="onboarding-screen">
-      <div class="onboarding-header">Smart Gatekeeper</div>
-      <div class="onboarding-card">
-        <h2 class="onboarding-title">Configura tu perfil</h2>
-        <p class="onboarding-subtitle">Solo necesitamos esto una vez.</p>
-        
-        <label>Nombre completo</label>
-        <input id="onb-nombre" placeholder="Ej: María González">
-        <div id="onb-nombre-error" class="error-text hidden">El nombre completo es requerido</div>
-        
-        <label>Zona principal</label>
-        <input id="onb-zona" list="comunas">
-        <div id="onb-zona-error" class="error-text hidden">La zona principal es requerida</div>
-        
-        <label>Foco de negocio</label>
-        <div class="toggle-pills">
-          <button type="button" class="pill-btn" data-foco="Arriendo">Arriendo</button>
-          <button type="button" class="pill-btn" data-foco="Venta">Venta</button>
-          <button type="button" class="pill-btn selected" data-foco="Ambos">Ambos</button>
-        </div>
-        <div id="onb-foco-error" class="error-text hidden">Debes seleccionar un foco de negocio</div>
-        
-        <label>Elige tu paleta</label>
-        <div class="swatches-row">
-          ${PALETTES.map((p, idx) => `
-            <button type="button" class="swatch ${idx === 0 ? 'selected' : ''}" 
-                    data-hex="${p.hex}" 
-                    data-name="${p.name}" 
-                    style="background: ${p.hex};" 
-                    title="${p.name}">
+                <div class="form-group">
+                    <label>Escala Inmutable de Calificación (Progreso Cromático)</label>
+                    <div class="legend-grid">
+                        <div class="legend-pill" style="background-color:var(--scale-c)">C-Sangre</div>
+                        <div class="legend-pill" style="background-color:var(--scale-b2)">B2-Most</div>
+                        <div class="legend-pill" style="background-color:var(--scale-b1)">B1-Tierr</div>
+                        <div class="legend-pill" style="background-color:var(--scale-a2)">A2-Cobre</div>
+                        <div class="legend-pill" style="background-color:var(--scale-a1)">A1-Amat</div>
+                    </div>
+                </div>
+            </div>
+            <button class="btn-action" style="margin-top: 12px;" onclick="closeTutorialOnboarding()">
+                Entrar al Panel <span>→</span>
             </button>
-          `).join("")}
         </div>
+    </div>
+
+    <div class="crm-viewport">
         
-        <button id="onb-submit" class="btn-primary btn-full">Comenzar</button>
-      </div>
-    </div>
-  `;
-
-  const pills = app.querySelectorAll(".toggle-pills .pill-btn");
-  pills.forEach(p => {
-    p.addEventListener("click", () => {
-      pills.forEach(btn => btn.classList.remove("selected"));
-      p.classList.add("selected");
-      selectedFoco = p.getAttribute("data-foco");
-    });
-  });
-
-  const swatches = app.querySelectorAll(".swatches-row .swatch");
-  swatches.forEach(s => {
-    s.addEventListener("click", () => {
-      swatches.forEach(sw => sw.classList.remove("selected"));
-      s.classList.add("selected");
-      selectedPalette = {
-        name: s.getAttribute("data-name"),
-        hex: s.getAttribute("data-hex")
-      };
-    });
-  });
-
-  document.getElementById("onb-submit").addEventListener("click", () => {
-    const nombre = document.getElementById("onb-nombre").value.trim();
-    const zona = document.getElementById("onb-zona").value.trim();
-    
-    let hasError = false;
-    
-    if(!nombre) {
-      document.getElementById("onb-nombre-error").classList.remove("hidden");
-      hasError = true;
-    } else {
-      document.getElementById("onb-nombre-error").classList.add("hidden");
-    }
-    
-    if(!zona) {
-      document.getElementById("onb-zona-error").classList.remove("hidden");
-      hasError = true;
-    } else {
-      document.getElementById("onb-zona-error").classList.add("hidden");
-    }
-    
-    if(!selectedFoco) {
-      document.getElementById("onb-foco-error").classList.remove("hidden");
-      hasError = true;
-    } else {
-      document.getElementById("onb-foco-error").classList.add("hidden");
-    }
-    
-    if(hasError) return;
-    
-    const profileData = {
-      nombre,
-      zona,
-      foco: selectedFoco,
-      palette: selectedPalette.hex,
-      paletteName: selectedPalette.name,
-      createdAt: new Date().toISOString()
-    };
-    
-    saveProfile(profileData);
-    applyPalette(profileData.palette);
-    renderDashboard();
-  });
-}
-
-function renderDashboard(){
-
-  const app = document.getElementById("app");
-  const profile = getProfile() || { nombre: "", foco: "" };
-
-  app.innerHTML = `
-    <header>
-      <div class="container header-content">
-        <h1>Smart Gatekeeper</h1>
-        <div class="header-right">
-          <span>${profile.nombre}</span>
-          <span class="foco-badge">${profile.foco}</span>
-          <a class="profile-link" id="mi-perfil-toggle">Mi perfil</a>
-        </div>
-      </div>
-    </header>
-
-    <div class="container">
-      <div id="inline-profile-card" class="card hidden" style="margin-bottom: 20px;">
-        <h3>Mi Perfil</h3>
-        <p style="margin: 6px 0;"><strong>Nombre:</strong> ${profile.nombre}</p>
-        <p style="margin: 6px 0;"><strong>Zona principal:</strong> ${profile.zona}</p>
-        <p style="margin: 6px 0;"><strong>Foco de negocio:</strong> ${profile.foco}</p>
-        <p style="margin: 6px 0;"><strong>Paleta:</strong> ${profile.paletteName || ""} (${profile.palette || ""})</p>
-        <button id="editar-perfil-btn" class="btn-secondary" style="margin-top: 12px; min-height: 38px; padding: 6px 12px;">Editar perfil</button>
-      </div>
-    </div>
-
-    <div class="container dashboard-layout">
-
-      <div>
-        <div class="card">
-          <h2 class="section-title">+ Nueva Propiedad</h2>
-
-          <label>Título</label>
-          <input id="titulo">
-
-          <label>Comuna</label>
-          <input id="comuna" list="comunas">
-
-          <label>Precio (UF)</label>
-          <input id="precio" type="number">
-
-          <label>Tipo</label>
-          <select id="tipo">
-            <option>Venta</option>
-            <option>Arriendo</option>
-          </select>
-
-          <button id="crear" class="btn-primary">
-            Guardar Propiedad
-          </button>
-        </div>
-      </div>
-
-      <div>
-        <div id="properties"></div>
-        <div id="leadDetail"></div>
-      </div>
-
-    </div>
-  `;
-
-  document.getElementById("mi-perfil-toggle").addEventListener("click", (e) => {
-    e.preventDefault();
-    const pCard = document.getElementById("inline-profile-card");
-    pCard.classList.toggle("hidden");
-  });
-
-  document.getElementById("editar-perfil-btn").addEventListener("click", () => {
-    localStorage.removeItem(STORAGE_PROFILE);
-    location.reload();
-  });
-
-  document.getElementById("crear").addEventListener("click", () => {
-
-    const titulo = document.getElementById("titulo").value.trim();
-    const comuna = document.getElementById("comuna").value.trim();
-    const precio = document.getElementById("precio").value.trim();
-    const tipo = document.getElementById("tipo").value;
-
-    if(!titulo || !comuna || !precio){
-      alert("Completa todos los campos.");
-      return;
-    }
-
-    const properties = getProperties();
-
-    properties.unshift({
-      id:uid(),
-      titulo,
-      comuna,
-      precio,
-      tipo,
-      archived:false
-    });
-
-    saveProperties(properties);
-
-    renderDashboard();
-  });
-
-  renderPropertyCards();
-}
-
-function renderPropertyCards(){
-
-  const container = document.getElementById("properties");
-  if(!container) return;
-
-  const properties = getProperties().filter(p => !p.archived);
-  const leads = getLeads();
-
-  if(properties.length === 0){
-    container.innerHTML = `
-      <div class="card">
-        Sin propiedades creadas.
-      </div>
-    `;
-    return;
-  }
-
-  container.innerHTML = properties.map(property => {
-
-    const propertyLeads = leads.filter(
-      l => l.propertyId === property.id
-    );
-
-    const highCount = propertyLeads.filter(
-      l => l.tier === "HIGH"
-    ).length;
-
-    return `
-      <div class="card">
-        <h3>${property.titulo}</h3>
-
-        <p class="small">
-          ${property.comuna}
-        </p>
-
-        <p>
-          ${property.precio} UF · ${property.tipo}
-        </p>
-
-        <br>
-
-        <p>
-          Leads: <strong>${propertyLeads.length}</strong>
-        </p>
-
-        <p>
-          HIGH: <strong>${highCount}</strong>
-        </p>
-
-        <div class="property-actions">
-
-          <button
-            class="btn-secondary"
-            onclick="showLeads('${property.id}')">
-            Ver Leads
-          </button>
-
-          <button
-            class="btn-primary"
-            onclick="copyLink('${property.id}')">
-            Copiar Link
-          </button>
-
-          <button
-            class="btn-danger"
-            onclick="archiveProperty('${property.id}')">
-            Archivar
-          </button>
-
-        </div>
-      </div>
-    `;
-  }).join("");
-}
-
-function copyLink(id){
-
-  const url =
-    location.origin +
-    location.pathname +
-    "?propiedad=" +
-    id;
-
-  navigator.clipboard.writeText(url);
-
-  alert("Link copiado.");
-}
-
-function archiveProperty(id){
-
-  const properties = getProperties();
-
-  const updated = properties.map(p => {
-
-    if(p.id === id){
-      p.archived = true;
-    }
-
-    return p;
-  });
-
-  saveProperties(updated);
-
-  renderPropertyCards();
-}
-
-function showLeads(propertyId){
-
-  const detail = document.getElementById("leadDetail");
-
-  const leads = getLeads()
-    .filter(l => l.propertyId === propertyId)
-    .sort((a,b)=>b.score-a.score);
-
-  if(leads.length === 0){
-
-    detail.innerHTML = `
-      <div class="card">
-        No hay leads aún.
-      </div>
-    `;
-
-    return;
-  }
-
-  detail.innerHTML = `
-    <button
-      class="btn-secondary back-btn"
-      onclick="document.getElementById('leadDetail').innerHTML=''">
-      Cerrar
-    </button>
-
-    <div class="card">
-
-      <h2 class="section-title">
-        Leads
-      </h2>
-
-      ${leads.map(lead=>`
-
-        <div class="lead-row">
-
-          <div class="badge ${badgeClass(lead.tier)}">
-            ${lead.tier}
-          </div>
-
-          <br><br>
-
-          <strong>${lead.name}</strong>
-
-          <p>${lead.phone}</p>
-
-          <p>${lead.email || "-"}</p>
-
-          <p>
-            Score: ${Math.round(lead.score)}
-          </p>
-
-          <br>
-
-          <a
-            href="https://wa.me/${lead.phone.replace(/\D/g,'')}"
-            target="_blank">
-
-            <button class="btn-whatsapp">
-              WhatsApp
-            </button>
-
-          </a>
-
-        </div>
-
-      `).join("")}
+        <header>
+            <h1 id="ui-brand-name">Boutique Assets</h1>
+            <p>Control de Calificación Interna</p>
+        </header>
+
+        <main id="view-profile" class="crm-view active">
+            <div class="panel-card">
+                <div class="panel-title">Identidad del Backoffice</div>
+                <div class="form-group">
+                    <label for="input-broker-name">Nombre Comercial de la Oficina</label>
+                    <input type="text" id="input-broker-name" placeholder="Ej: Altura Propiedades">
+                </div>
+                
+                <button class="btn-action" style="margin-top: 6px;" onclick="saveProfileData()">
+                    Actualizar Panel Ejecutivo <span>[✓]</span>
+                </button>
+            </div>
+        </main>
+
+        <main id="view-inventory" class="crm-view">
+            <div class="panel-card" id="inventory-form-card" style="display: none;">
+                <div class="panel-title">
+                    <span>Crear Nuevo Activo Único</span>
+                    <span id="inventory-counter" style="font-family: monospace;">0 / 4</span>
+                </div>
+                <form id="form-property" class="form-group" style="gap:16px;" onsubmit="createNewAsset(event)">
+                    <div class="form-group">
+                        <label for="prop-slug">Prefijo o Alias del Activo (Slug)</label>
+                        <input type="text" id="prop-slug" placeholder="Ej: vitacura205, lo-barnechea-alta" required>
+                        <p class="immutable-warning">* Campo inmutable posterior al alta del sistema.</p>
+                    </div>
+                    <div class="form-group">
+                        <label for="prop-commune">Comuna</label>
+                        <select id="prop-commune" required>
+                            <option value="Vitacura">Vitacura</option>
+                            <option value="Lo Barnechea">Lo Barnechea</option>
+                            <option value="Las Condes">Las Condes</option>
+                            <option value="Otros">Otros</option>
+                        </select>
+                        <p class="immutable-warning">* Campo inmutable posterior al alta del sistema.</p>
+                    </div>
+                    <div class="form-group">
+                        <label for="prop-price">Valor (UF)</label>
+                        <input type="number" id="prop-price" placeholder="Ej: 24000" min="1" required>
+                        <p class="immutable-warning">* Campo inmutable posterior al alta del sistema.</p>
+                    </div>
+                    <div style="display:flex; gap:10px; margin-top:4px;">
+                        <button type="submit" class="btn-action" style="flex:2;">Confirmar Alta <span>[+]</span></button>
+                        <button type="button" class="btn-action btn-secondary" style="flex:1;" onclick="toggleAssetForm(false)">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="panel-card" id="active-assets-card">
+                <div class="panel-title">
+                    <span>Catálogo Activo en Circulación</span>
+                    <button id="btn-trigger-add" class="btn-row-action" onclick="toggleAssetForm(true)">+ Añadir Activo</button>
+                </div>
+                <div id="active-inventory-list" class="data-list"></div>
+            </div>
+
+            <div class="panel-card crystallized-section" id="crystallized-assets-card">
+                <div class="panel-title" style="border-color:#3f3f46;">Estructuras Cristalizadas (Preservación Histórica)</div>
+                <div id="crystallized-inventory-list" class="data-list"></div>
+            </div>
+        </main>
+
+        <main id="view-leads" class="crm-view">
+            <div class="panel-card">
+                <div class="panel-title">Consola de Control de Prospectos</div>
+                
+                <div class="filter-stack">
+                    <button class="filter-chip active" id="filter-all" onclick="setLeadFilter('ALL')">Todos los registros</button>
+                    <button class="filter-chip" id="filter-premium" onclick="setLeadFilter('HIGH')">Rango A1/A2 Premium</button>
+                    <button class="filter-chip" id="filter-rev" onclick="toggleLeadSortOrder()">Invertir Cronología</button>
+                </div>
+
+                <div id="leads-list" class="data-list"></div>
+            </div>
+        </main>
+
+        <main id="view-sandbox" class="crm-view">
+            <div class="panel-card" id="sandbox-setup">
+                <div class="panel-title">Simulador de Espejo de Cuestionarios</div>
+                <p style="font-size:12px; color:var(--text-muted); line-height:1.4;">Inserta prospectos simulados directamente en la aduana de control para verificar las clasificaciones.</p>
+                <div class="form-group" style="margin-top:6px;">
+                    <label for="sandbox-prop-select">Asociar a Propiedad del Inventario</label>
+                    <select id="sandbox-prop-select"></select>
+                </div>
+                <div class="form-group">
+                    <label for="sandbox-lead-name">Nombre del Lead de Prueba</label>
+                    <input type="text" id="sandbox-lead-name" placeholder="Ej: Constanza Riesco">
+                </div>
+                <div class="form-group">
+                    <label for="sandbox-lead-phone">WhatsApp de Destino</label>
+                    <input type="text" id="sandbox-lead-phone" placeholder="Ej: +56912345678">
+                </div>
+                <button class="btn-action" onclick="initiateWizardExecution()">
+                    Ejecutar Protocolo de Testeo <span>[→]</span>
+                </button>
+            </div>
+
+            <div class="panel-card" id="sandbox-wizard" style="display: none;">
+                <div class="panel-title">
+                    <span>Métricas de Calificación en Proceso</span>
+                    <span id="wizard-progress" style="font-family: monospace;">Pregunta 1 de 4</span>
+                </div>
+
+                <div class="wizard-step active" id="step-1">
+                    <label>1. Dimensión Urgencia: ¿Plazo estimado para formalización legal?</label>
+                    <div class="options-stack">
+                        <button class="option-btn" onclick="registerWizardStepScore(1, 3, '&lt; 90 días')">&lt; 90 días (Prioridad Crítica)</button>
+                        <button class="option-btn" onclick="registerWizardStepScore(1, 2, '3-6 meses')">De 3 a 6 meses (Rango Estándar)</button>
+                        <button class="option-btn" onclick="registerWizardStepScore(1, 1, '+6 meses')">Superior a 6 meses (Medio Plazo)</button>
+                    </div>
+                </div>
+
+                <div class="wizard-step" id="step-2">
+                    <label>2. Dimensión Capacidad: ¿Estructura de respaldo patrimonial?</label>
+                    <div class="options-stack">
+                        <button class="option-btn" onclick="registerWizardStepScore(2, 3, 'Fondos propios')">Fondos Propios Consolidados (Cash)</button>
+                        <button class="option-btn" onclick="registerWizardStepScore(2, 2, 'Pre-aprobado')">Línea de Crédito Hipotecario Pre-aprobada</button>
+                        <button class="option-btn" onclick="registerWizardStepScore(2, 1, 'En evaluación')">En Fase de Evaluación Bancaria</button>
+                    </div>
+                </div>
+
+                <div class="wizard-step" id="step-3">
+                    <label>3. Dimensión Exclusividad: ¿Mantiene compromisos de corretaje vigentes?</label>
+                    <div class="options-stack">
+                        <button class="option-btn" onclick="registerWizardStepScore(3, 2, 'No')">No. Requiere consultoría boutique exclusiva</button>
+                        <button class="option-btn" onclick="registerWizardStepScore(3, 1, 'Sí')">Sí. Evalúa múltiples agencias en paralelo</button>
+                    </div>
+                </div>
+
+                <div class="wizard-step" id="step-4">
+                    <label>4. Dimensión Propósito: ¿Asignación de uso prioritario?</label>
+                    <div class="options-stack">
+                        <button class="option-btn" onclick="registerWizardStepScore(4, 2, 'Residencia')">Residencia Exclusiva / Familiar</button>
+                        <button class="option-btn" onclick="registerWizardStepScore(4, 2, 'Inversión')">Inversión Patrimonial / Renta Urbana</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <nav class="nav-tabs">
+            <button class="tab-btn active" onclick="executeViewMutation('profile')">Perfil</button>
+            <button class="tab-btn" onclick="executeViewMutation('inventory')">Inventario</button>
+            <button class="tab-btn" onclick="executeViewMutation('leads')">Leads</button>
+            <button class="tab-btn" onclick="executeViewMutation('sandbox')">Sandbox</button>
+        </nav>
 
     </div>
-  `;
-}
 
-function renderSurvey(propertyId){
+    <script>
+        // Centralized Application Core State
+        let state = {
+            profile: { name: 'Boutique Assets', tutorialSeen: false },
+            properties: [
+                { property_id: 'vitacura_20260410_00108', slug: 'vitacura205', location_commune: 'Vitacura', price_uf: 24500, archived: false, timestamp: '10/04/2026 10:42' },
+                { property_id: 'lobarnechea_20260412_00216', slug: 'lo-barnechea-alta', location_commune: 'Lo Barnechea', price_uf: 31200, archived: false, timestamp: '12/04/2026 15:18' }
+            ],
+            leads: [
+                { property_id: 'vitacura_20260410_00108', name: 'Constanza Riesco', phone: '56912345678', score: 'A1', timestamp: '10:42' }
+            ],
+            sandboxWizard: { currentStep: 1, totalScore: 0, currentLead: {} },
+            runtimeFilters: { leadFilter: 'ALL', reverseLeads: false }
+        };
 
-  const app = document.getElementById("app");
+        const UF_CONVERSION_FACTOR = 38560; // Estimated 2026 baseline for structural complexity scaling
 
-  const answers = {};
-
-  const questions = [
-
-    {
-      key:"financial",
-      title:"Situación financiera",
-      options:[
-        ["Compra al contado",100],
-        ["Crédito hipotecario aprobado",100],
-        ["Crédito en evaluación",50],
-        ["Sin proceso bancario aún",0]
-      ]
-    },
-
-    {
-      key:"timeline",
-      title:"Plazo de decisión",
-      options:[
-        ["Menos de 60 días",100],
-        ["Entre 3 y 6 meses",60],
-        ["Solo explorando",20]
-      ]
-    },
-
-    {
-      key:"role",
-      title:"Rol en la decisión",
-      options:[
-        ["Soy el comprador directo",100],
-        ["Decido junto a otra persona",80],
-        ["Soy corredor externo",40]
-      ]
-    }
-  ];
-
-  let step = 0;
-
-  function renderQuestion(){
-
-    const q = questions[step];
-
-    app.innerHTML = `
-      <header>
-        <div class="container">
-          <h1>Smart Gatekeeper</h1>
-        </div>
-      </header>
-
-      <div class="container">
-
-        <div class="card">
-
-          <h2 class="question-title">
-            ${q.title}
-          </h2>
-
-          ${q.options.map(opt=>`
-            <button
-              class="option"
-              data-value="${opt[1]}">
-              ${opt[0]}
-            </button>
-          `).join("")}
-
-        </div>
-
-      </div>
-    `;
-
-    document
-      .querySelectorAll(".option")
-      .forEach(btn => {
-
-        btn.addEventListener("click", () => {
-
-          answers[q.key] =
-            Number(btn.dataset.value);
-
-          step++;
-
-          if(step < questions.length){
-            renderQuestion();
-          }else{
-            renderContactForm();
-          }
+        document.addEventListener('DOMContentLoaded', () => {
+            loadStateFromStorage();
+            evaluateOnboardingState();
+            syncProfileFormElements();
+            renderIntegratedInventory();
+            renderLeadsConsole();
+            refreshSandboxPropertyAllocation();
         });
 
-      });
-  }
+        function triggerHapticFeedback() {
+            if (navigator.vibrate) {
+                navigator.vibrate(12);
+            }
+        }
 
-  function renderContactForm(){
+        function saveStateToStorage() {
+            localStorage.setItem('sovereign_crm_state_v4', JSON.stringify(state));
+        }
 
-    app.innerHTML = `
-      <header>
-        <div class="container">
-          <h1>Smart Gatekeeper</h1>
-        </div>
-      </header>
+        function loadStateFromStorage() {
+            const stored = localStorage.getItem('sovereign_crm_state_v4');
+            if (stored) {
+                try {
+                    state = JSON.parse(stored);
+                    if (!state.properties) state.properties = [];
+                    if (!state.leads) state.leads = [];
+                    if (!state.profile) state.profile = { name: 'Boutique Assets', tutorialSeen: false };
+                    if (!state.runtimeFilters) state.runtimeFilters = { leadFilter: 'ALL', reverseLeads: false };
+                } catch (e) {
+                    console.error("Memoria local corrupta. Reestableciendo estados por defecto.");
+                }
+            }
+        }
 
-      <div class="container">
+        function evaluateOnboardingState() {
+            if (!state.profile.tutorialSeen) {
+                document.getElementById('tutorial-modal').classList.add('active');
+            }
+        }
 
-        <div class="card">
+        function closeTutorialOnboarding() {
+            triggerHapticFeedback();
+            state.profile.tutorialSeen = true;
+            document.getElementById('tutorial-modal').classList.remove('remove');
+            document.getElementById('tutorial-modal').style.display = 'none';
+            saveStateToStorage();
+        }
 
-          <h2 class="section-title">
-            Tus datos
-          </h2>
+        function syncProfileFormElements() {
+            document.getElementById('input-broker-name').value = state.profile.name;
+            document.getElementById('ui-brand-name').innerText = state.profile.name;
+        }
 
-          <label>Nombre</label>
-          <input id="name">
+        function saveProfileData() {
+            triggerHapticFeedback();
+            const nameValue = document.getElementById('input-broker-name').value.trim();
+            state.profile.name = nameValue || 'Boutique Assets';
+            document.getElementById('ui-brand-name').innerText = state.profile.name;
+            saveStateToStorage();
+            alert("Identidad corporativa actualizada.");
+        }
 
-          <label>WhatsApp</label>
+        function executeViewMutation(viewTargetId) {
+            triggerHapticFeedback();
+            document.querySelectorAll('.crm-view').forEach(view => view.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            
+            document.getElementById(`view-${viewTargetId}`).classList.add('active');
+            event.currentTarget.classList.add('active');
 
-          <div class="input-prefix">
-            <span>+56 9 </span>
-            <input
-              id="phone"
-              inputmode="numeric"
-              maxlength="8">
-          </div>
+            if (viewTargetId === 'sandbox') resetSandboxWizardState();
+            if (viewTargetId === 'inventory') toggleAssetForm(false);
+        }
 
-          <label>Email</label>
-          <input id="email" type="email">
+        function toggleAssetForm(shouldOpen) {
+            triggerHapticFeedback();
+            const formCard = document.getElementById('inventory-form-card');
+            const activeCard = document.getElementById('active-assets-card');
+            
+            if (shouldOpen && state.properties.filter(p => !p.archived).length >= 4) {
+                alert("Límite de curatoría activo (Máximo 4). Archive un inmueble antes de continuar.");
+                return;
+            }
 
-          <div
-            id="emailError"
-            class="error-text hidden">
-            Ingresa un email válido
-          </div>
+            formCard.style.display = shouldOpen ? 'flex' : 'none';
+            activeCard.style.display = shouldOpen ? 'none' : 'flex';
+        }
 
-          <button
-            id="submitLead"
-            class="btn-primary">
-            Enviar
-          </button>
+        /* Pure Dynamic Procedural SVG Vector Generator Engine */
+        function generateSovereignGlyph(propertyId, priceUf) {
+            let seed = 0;
+            for (let i = 0; i < propertyId.length; i++) {
+                seed += propertyId.charCodeAt(i);
+            }
+            // Linear geometric complexity proportional to the asset valuation tier
+            const linesCount = Math.min(14, Math.max(4, Math.floor(priceUf / 4500)));
+            const radius = 14;
+            const center = 18;
+            
+            let svgString = `<svg width="36" height="36" viewBox="0 0 36 36" style="background:#000000; border:1px solid var(--border-subtle); border-radius:4px;">`;
+            svgString += `<circle cx="${center}" cy="${center}" r="${Math.min(16, 4 + linesCount)}" fill="none" stroke="#27272a" stroke-width="0.5"/>`;
+            
+            for (let i = 0; i < linesCount; i++) {
+                const rotationAngle = (i * 2 * Math.PI) / linesCount + (seed % 50) / 50;
+                const forwardAngle = ((i + 2) * 2 * Math.PI) / linesCount + (seed % 50) / 50;
+                
+                const x1 = center + radius * Math.cos(rotationAngle);
+                const y1 = center + radius * Math.sin(rotationAngle);
+                const x2 = center + radius * Math.cos(forwardAngle);
+                const y2 = center + radius * Math.sin(forwardAngle);
+                
+                svgString += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#a1a1aa" stroke-width="0.75" opacity="0.65"/>`;
+            }
 
-        </div>
+            if (priceUf > 28000) { // Complex ornamental architecture layout for Ultra-High-Value tier properties
+                svgString += `<polygon points="13,13 23,13 23,23 13,23" fill="none" stroke="#ffffff" stroke-width="0.5" transform="rotate(${seed % 90} 18 18)" opacity="0.8"/>`;
+            }
+            
+            svgString += `</svg>`;
+            return svgString;
+        }
 
-      </div>
-    `;
+        function toggleMetadataDrawer(propertyId) {
+            triggerHapticFeedback();
+            const drawer = document.getElementById(`drawer-${propertyId}`);
+            if (drawer) {
+                const isCurrentlyActive = drawer.classList.contains('active');
+                drawer.classList.toggle('active', !isCurrentlyActive);
+                document.getElementById(`btn-info-${propertyId}`).innerText = isCurrentlyActive ? '[+ Info]' : '[- Ocultar]';
+            }
+        }
 
-    document
-      .getElementById("submitLead")
-      .addEventListener("click", submitLead);
+        function executeJsonPayloadExtraction(propertyId) {
+            triggerHapticFeedback();
+            const targetedAsset = state.properties.find(p => p.property_id === propertyId);
+            if (!targetedAsset) return;
 
-    document
-      .getElementById("phone")
-      .addEventListener("input",(e)=>{
-        e.target.value =
-          e.target.value
-          .replace(/\D/g,"")
-          .slice(0,8);
-      });
-  }
+            const structuredData = {
+                system_integrity: "SOVEREIGN_CRM_CRYSTAL_RECORD",
+                payload: {
+                    ...targetedAsset,
+                    associated_leads: state.leads.filter(l => l.property_id === propertyId)
+                }
+            };
 
-  function submitLead(){
+            const parsedDataString = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(structuredData, null, 4));
+            const downloadElementAnchor = document.createElement('a');
+            downloadElementAnchor.setAttribute("href", parsedDataString);
+            downloadElementAnchor.setAttribute("download", `asset_telemetry_${targetedAsset.slug}.json`);
+            document.body.appendChild(downloadElementAnchor);
+            downloadElementAnchor.click();
+            downloadElementAnchor.remove();
+        }
 
-    const name =
-      document.getElementById("name").value.trim();
+        /* Inventory Rendering Engine with Real-Time Telemetry & Advanced Structural Changes */
+        function renderIntegratedInventory() {
+            const activeContainer = document.getElementById('active-inventory-list');
+            const crystallizedContainer = document.getElementById('crystallized-inventory-list');
+            const counterLabel = document.getElementById('inventory-counter');
+            const triggerAddButton = document.getElementById('btn-trigger-add');
 
-    const phoneDigits =
-      document.getElementById("phone")
-      .value.replace(/\D/g,"");
+            activeContainer.innerHTML = '';
+            crystallizedContainer.innerHTML = '';
 
-    const email =
-      document.getElementById("email").value.trim();
+            const activeSubset = state.properties.filter(p => !p.archived);
+            const crystallizedSubset = state.properties.filter(p => p.archived);
 
-    const emailError =
-      document.getElementById("emailError");
+            counterLabel.innerText = `${activeSubset.length} / 4 Activos`;
+            triggerAddButton.style.display = activeSubset.length >= 4 ? 'none' : 'inline-block';
 
-    emailError.classList.add("hidden");
+            if (activeSubset.length === 0) {
+                activeContainer.innerHTML = `
+                    <div class="empty-canvas">
+                        <div class="empty-icon-btn" onclick="toggleAssetForm(true)">+</div>
+                        <h3>Sin Activos Disponibles</h3>
+                        <p>No hay propiedades bajo gestión en este ciclo comercial.</p>
+                    </div>
+                `;
+            } else {
+                activeSubset.forEach((prop) => {
+                    const propertyLeads = state.leads.filter(l => l.property_id === prop.property_id);
+                    const leadsCount = propertyLeads.length;
+                    const lastActivityText = leadsCount > 0 ? `Hace: ${propertyLeads[0].timestamp}` : 'Sin Actividad';
+                    const estimatedClpValuation = prop.price_uf * UF_CONVERSION_FACTOR;
 
-    if(!name || phoneDigits.length !== 8){
-      alert("Completa los campos requeridos.");
-      return;
-    }
+                    const el = document.createElement('div');
+                    el.className = 'list-item';
+                    el.innerHTML = `
+                        <div class="item-main-row">
+                            <div class="glyph-container">${generateSovereignGlyph(prop.property_id, prop.price_uf)}</div>
+                            <div class="item-meta">
+                                <h4>${prop.slug}</h4>
+                                <p>${prop.location_commune} • <strong>${Number(prop.price_uf).toLocaleString('es-CL')} UF</strong></p>
+                                <div class="telemetry-row">
+                                    <span>Leads: <strong class="telemetry-badge">${leadsCount}</strong></span>
+                                    <span style="color: ${leadsCount > 0 ? 'var(--scale-a2)' : 'var(--text-muted)'}">${lastActivityText}</span>
+                                </div>
+                            </div>
+                            <div style="display:flex; flex-direction:column; gap:4px;">
+                                <button id="btn-info-${prop.property_id}" class="btn-row-action" onclick="toggleMetadataDrawer('${prop.property_id}')">[+ Info]</button>
+                            </div>
+                        </div>
+                        
+                        <div id="drawer-${prop.property_id}" class="metadata-drawer">
+                            <div class="metadata-line"><span>ID SISTEMA:</span> <strong>${prop.property_id}</strong></div>
+                            <div class="metadata-line"><span>REGISTRO ALTA:</span> <strong>${prop.timestamp || 'Pre-existente'}</strong></div>
+                            <div class="metadata-line"><span>VALOR ESTIMADO CLP:</span> <strong>$${estimatedClpValuation.toLocaleString('es-CL')}</strong></div>
+                        </div>
 
-    const emailRegex =
-      /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                        <div class="item-actions-wrapper">
+                            <button class="btn-row-action" onclick="executeJsonPayloadExtraction('${prop.property_id}')">↓ Exportar JSON</button>
+                            <button class="btn-row-action" style="border-color: var(--scale-c); color: var(--scale-c);" onclick="modifyAssetCrystallization('${prop.property_id}', true)">■ Archivar</button>
+                        </div>
+                    `;
+                    activeContainer.appendChild(el);
+                });
+            }
 
-    if(email && !emailRegex.test(email)){
-      emailError.classList.remove("hidden");
-      return;
-    }
+            if (crystallizedSubset.length === 0) {
+                crystallizedContainer.innerHTML = '<p style="font-size:12px; color:var(--text-muted); padding:4px;">No existen estructuras en estado criogénico/histórico.</p>';
+            } else {
+                crystallizedSubset.forEach((prop) => {
+                    const estimatedClpValuation = prop.price_uf * UF_CONVERSION_FACTOR;
+                    const el = document.createElement('div');
+                    el.className = 'list-item crystallized-card';
+                    el.innerHTML = `
+                        <div class="item-main-row">
+                            <div class="glyph-container">${generateSovereignGlyph(prop.property_id, prop.price_uf)}</div>
+                            <div class="item-meta">
+                                <h4 style="color: var(--text-muted); text-decoration: line-through;">${prop.slug}</h4>
+                                <p style="font-size:11px;">Estructura Cristalizada Preservada Inmutable</p>
+                            </div>
+                            <button id="btn-info-${prop.property_id}" class="btn-row-action" onclick="toggleMetadataDrawer('${prop.property_id}')">[+ Info]</button>
+                        </div>
 
-    const phone = `+56 9 ${phoneDigits}`;
+                        <div id="drawer-${prop.property_id}" class="metadata-drawer">
+                            <div class="metadata-line"><span>ID COMPUESTO:</span> <strong>${prop.property_id}</strong></div>
+                            <div class="metadata-line"><span>CONGELACIÓN:</span> <strong>Inmutable</strong></div>
+                            <div class="metadata-line"><span>VALORACIÓN HISTÓRICA:</span> <strong>${Number(prop.price_uf).toLocaleString('es-CL')} UF (~$${estimatedClpValuation.toLocaleString('es-CL')})</strong></div>
+                        </div>
 
-    const emailScore = email ? 20 : 0;
+                        <div class="item-actions-wrapper">
+                            <button class="btn-action btn-secondary" style="width:100%; min-height:36px; font-size:11px;" onclick="executeJsonPayloadExtraction('${prop.property_id}')">↓ Descargar JSON de Resguardo Histórico</button>
+                        </div>
+                    `;
+                    crystallizedContainer.appendChild(el);
+                });
+            }
 
-    const score =
-      answers.financial * 0.45 +
-      answers.timeline * 0.35 +
-      answers.role * 0.15 +
-      emailScore * 0.05;
+            refreshSandboxPropertyAllocation();
+        }
 
-    const tier = classify(score);
+        /* Pure Deterministic and Alphanumeric ID Creation Engine */
+        function createNewAsset(e) {
+            e.preventDefault();
+            const activeSubset = state.properties.filter(p => !p.archived);
+            if (activeSubset.length >= 4) return;
 
-    const leads = getLeads();
+            const rawSlug = document.getElementById('prop-slug').value.trim().toLowerCase()
+                .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // Clear diacritics
+                .replace(/[^a-z0-9_-]/g, ''); // Clear unsafe characters
+            
+            const communeInput = document.getElementById('prop-commune').value;
+            const priceInput = document.getElementById('prop-price').value;
 
-    leads.push({
-      id:uid(),
-      propertyId,
-      name,
-      phone,
-      email,
-      score,
-      tier,
-      createdAt:new Date().toISOString()
-    });
+            if (!rawSlug) {
+                alert("Identificador o slug inválido.");
+                return;
+            }
 
-    saveLeads(leads);
+            const dateObj = new Date();
+            const yyyymmdd = dateObj.getFullYear().toString() + 
+                             (dateObj.getMonth() + 1).toString().padStart(2, '0') + 
+                             dateObj.getDate().toString().padStart(2, '0');
+            
+            const hoursMinString = dateObj.getHours().toString().padStart(2, '0') + ":" + dateObj.getMinutes().toString().padStart(2, '0');
+            
+            // Replaced Math.random with clean deterministic matrix sequence markers
+            const systemSequenceIndex = (state.properties.length + 1).toString().padStart(3, '0');
+            const uniqueCompositeId = `${rawSlug}_${yyyymmdd}_${systemSequenceIndex}`;
 
-    app.innerHTML = `
-      <header>
-        <div class="container">
-          <h1>Smart Gatekeeper</h1>
-        </div>
-      </header>
+            state.properties.push({
+                property_id: uniqueCompositeId,
+                slug: rawSlug,
+                location_commune: communeInput,
+                price_uf: parseInt(priceInput),
+                archived: false,
+                timestamp: `${dateObj.getDate().toString().padStart(2, '0')}/${(dateObj.getMonth() + 1).toString().padStart(2, '0')}/${dateObj.getFullYear()} ${hoursMinString}`
+            });
 
-      <div class="container">
+            saveStateToStorage();
+            renderIntegratedInventory();
+            document.getElementById('form-property').reset();
+            toggleAssetForm(false);
+        }
 
-        <div class="card thankyou">
+        function modifyAssetCrystallization(propertyId, shouldCrystallize) {
+            triggerHapticFeedback();
+            const item = state.properties.find(p => p.property_id === propertyId && !p.archived);
+            if (item) {
+                item.archived = shouldCrystallize;
+                saveStateToStorage();
+                renderIntegratedInventory();
+            }
+        }
 
-          <h2>
-            ¡Gracias por tu interés!
-          </h2>
+        function setLeadFilter(filterType) {
+            triggerHapticFeedback();
+            state.runtimeFilters.leadFilter = filterType;
+            document.getElementById('filter-all').classList.remove('active');
+            document.getElementById('filter-premium').classList.remove('active');
+            
+            if (filterType === 'ALL') document.getElementById('filter-all').classList.add('active');
+            if (filterType === 'HIGH') document.getElementById('filter-premium').classList.add('active');
+            
+            renderLeadsConsole();
+        }
 
-          <br>
+        function toggleLeadSortOrder() {
+            triggerHapticFeedback();
+            state.runtimeFilters.reverseLeads = !state.runtimeFilters.reverseLeads;
+            document.getElementById('filter-rev').classList.toggle('active', state.runtimeFilters.reverseLeads);
+            renderLeadsConsole();
+        }
 
-          <p>
-            Hemos recibido tu información.
-            Un ejecutivo revisará tus datos
-            y se pondrá en contacto contigo
-            si la propiedad se ajusta a tu búsqueda.
-          </p>
+        function renderLeadsConsole() {
+            const container = document.getElementById('leads-list');
+            container.innerHTML = '';
 
-        </div>
+            let subset = [...state.leads];
 
-      </div>
-    `;
-  }
+            if (state.runtimeFilters.leadFilter === 'HIGH') {
+                subset = subset.filter(l => l.score === 'A1' || l.score === 'A2');
+            }
 
-  renderQuestion();
-}
-</script>
+            if (state.runtimeFilters.reverseLeads) {
+                subset.reverse();
+            }
 
+            if (subset.length === 0) {
+                container.innerHTML = '<p style="font-size:12px; color:var(--text-muted); text-align:center; padding:24px 10px;">Consola vacía bajo este criterio.</p>';
+                return;
+            }
+
+            subset.forEach(lead => {
+                const itemBox = document.createElement('div');
+                itemBox.className = 'list-item';
+                
+                const parentProp = state.properties.find(p => p.property_id === lead.property_id);
+                const displaySlug = parentProp ? parentProp.slug : 'Asignación Remota';
+                const isCrystallized = parentProp ? parentProp.archived : true;
+                const statusLabelString = isCrystallized ? ' [Cerrado/Cristalizado]' : '';
+
+                const whatsappMessage = `Hola ${lead.name}, soy parte del equipo de ${state.profile.name}. He analizado tus requerimientos para el activo de referencia: ${displaySlug}. Conversemos.`;
+                const whatsappUrl = `https://wa.me/${lead.phone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(whatsappMessage)}`;
+
+                itemBox.innerHTML = `
+                    <div class="item-main-row">
+                        <div class="item-meta">
+                            <h4 style="display:flex; align-items:center; gap:10px;">
+                                ${lead.name} <span class="score-badge ${lead.score}">${lead.score}</span>
+                            </h4>
+                            <p>Activo: <strong>${displaySlug}</strong>${statusLabelString}</p>
+                            <p style="font-size:11px; color: var(--text-muted);">Calificado a las: ${lead.timestamp}</p>
+                        </div>
+                        <a href="${whatsappUrl}" target="_blank" class="btn-row-action" style="border-color: var(--accent-color);" onclick="triggerHapticFeedback()">Handoff <span>→</span></a>
+                    </div>
+                `;
+                container.appendChild(itemBox);
+            });
+        }
+
+        function refreshSandboxPropertyAllocation() {
+            const selectEl = document.getElementById('sandbox-prop-select');
+            if (!selectEl) return;
+            selectEl.innerHTML = '';
+            
+            const visibleSubset = state.properties.filter(p => !p.archived);
+            
+            visibleSubset.forEach(p => {
+                const optionItem = document.createElement('option');
+                optionItem.value = p.property_id;
+                optionItem.innerText = `${p.slug.toUpperCase()} (${p.location_commune})`;
+                selectEl.appendChild(optionItem);
+            });
+        }
+
+        function resetSandboxWizardState() {
+            document.getElementById('sandbox-setup').style.display = 'flex';
+            document.getElementById('sandbox-wizard').style.display = 'none';
+            state.sandboxWizard = { currentStep: 1, totalScore: 0, currentLead: {} };
+            
+            document.querySelectorAll('.wizard-step').forEach(stepPane => stepPane.classList.remove('active'));
+            document.getElementById('step-1').classList.add('active');
+            document.getElementById('wizard-progress').innerText = "Pregunta 1 de 4";
+        }
+
+        function initiateWizardExecution() {
+            triggerHapticFeedback();
+            const selectedPropertyId = document.getElementById('sandbox-prop-select').value;
+            const targetLeadName = document.getElementById('sandbox-lead-name').value.trim();
+            const targetLeadPhone = document.getElementById('sandbox-lead-phone').value.trim();
+
+            if (!selectedPropertyId || !targetLeadName || !targetLeadPhone) {
+                alert("Asignación de simulación incompleta o sin activos en circulación.");
+                return;
+            }
+
+            state.sandboxWizard.currentLead = { property_id: selectedPropertyId, name: targetLeadName, phone: targetLeadPhone };
+            document.getElementById('sandbox-setup').style.display = 'none';
+            document.getElementById('sandbox-wizard').style.display = 'flex';
+        }
+
+        function registerWizardStepScore(currentStepIndex, valueGained) {
+            triggerHapticFeedback();
+            state.sandboxWizard.totalScore += valueGained;
+            
+            if (currentStepIndex < 4) {
+                document.getElementById(`step-${currentStepIndex}`).classList.remove('active');
+                const nextStep = currentStepIndex + 1;
+                state.sandboxWizard.currentStep = nextStep;
+                document.getElementById(`step-${nextStep}`).classList.add('active');
+                document.getElementById('wizard-progress').innerText = `Pregunta ${nextStep} de 4`;
+            } else {
+                let totalScoreTier = 'C';
+                const finalAggregatePoints = state.sandboxWizard.totalScore;
+                
+                if (finalAggregatePoints >= 10) totalScoreTier = 'A1';
+                else if (finalAggregatePoints >= 8) totalScoreTier = 'A2';
+                else if (finalAggregatePoints >= 6) totalScoreTier = 'B1';
+                else if (finalAggregatePoints >= 4) totalScoreTier = 'B2';
+
+                const timestampClock = new Date();
+                const displayClockFormatted = `${timestampClock.getHours().toString().padStart(2, '0')}:${timestampClock.getMinutes().toString().padStart(2, '0')}`;
+
+                const constructedLeadObject = {
+                    ...state.sandboxWizard.currentLead,
+                    score: totalScoreTier,
+                    timestamp: displayClockFormatted
+                };
+
+                state.leads.unshift(constructedLeadObject);
+                saveStateToStorage();
+                renderLeadsConsole();
+                renderIntegratedInventory(); // Forces updates to live block views inside inventory
+                
+                alert(`Simulación exitosa. Prospecto calificado en rango [${totalScoreTier}]. Derivando a consola central.`);
+                
+                document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+                const leadsTabItem = Array.from(document.querySelectorAll('.tab-btn')).find(btn => btn.innerText.toLowerCase() === 'leads');
+                if (leadsTabItem) leadsTabItem.classList.add('active');
+                
+                document.getElementById('view-sandbox').classList.remove('active');
+                document.getElementById('view-leads').classList.add('active');
+            }
+        }
+    </script>
 </body>
 </html>
