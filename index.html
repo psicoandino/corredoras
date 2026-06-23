@@ -3,26 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Boutique Micro-CRM | Panel de Control Soberano</title>
+    <title>Boutique Assets | Panel de Control</title>
     <style>
-        /* UI Architecture & Advanced Accessibility Variables */
+        /* Variables de Interfaz y Paleta de Colores OLED */
         :root {
             --bg-oled: #000000;
             --card-bg: #09090b;
             --border-subtle: #27272a; 
-            --text-pure: #ffffff;
-            --text-muted: #a1a1aa; 
             
-            /* Immutable Monochromatic Theme Palette Architecture */
-            --accent-color: #ffffff; 
+            /* Mitigación de Fatiga Ocular: Atenuación del Blanco Puro a Escala Zinc Antirreflejo */
+            --text-pure: #e4e4e7; 
+            --text-muted: #a1a1aa; 
+            --accent-color: #e4e4e7; 
             --accent-contrast: #000000;
             
-            /* Standardized Reconfigured KPI Color Scales (Low to High Quality) */
-            --scale-c:  #C73A4A; /* Sangre (Fricción Alta / Descalificado) */
-            --scale-b2: #B78627; /* Mostaza (Fricción Baja) */
-            --scale-b1: #6D7C50; /* Tierra (En Proceso / Evaluación) */
-            --scale-a2: #248692; /* Cobre (Calificado / Listo) */
-            --scale-a1: #7D5AA1; /* Amatista (Alto Valor / Premium) */
+            /* Escala Comercial Inmobiliaria de Prioridades */
+            --scale-c:  #C73A4A; /* C-Baja Prioridad */
+            --scale-b2: #B78627; /* B2-En Evaluación */
+            --scale-b1: #6D7C50; /* B1-Perfil Avanzado */
+            --scale-a:  #248692; /* A-Cierre Inmediato */
             
             --touch-target-min: 48px;
         }
@@ -43,7 +42,7 @@
             display: flex;
             justify-content: center;
             min-height: 100vh;
-            padding: 16px 8px 95px 8px; /* Safe padding for bottom thumb bar interaction */
+            padding: 0px 8px 95px 8px; /* Espacio de seguridad para barra de navegación */
         }
 
         .crm-viewport {
@@ -51,33 +50,43 @@
             max-width: 440px;
             display: flex;
             flex-direction: column;
-            gap: 24px;
+            gap: 20px;
         }
 
+        /* Encabezado Principal */
         header {
+            position: sticky;
+            top: 0;
+            background-color: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             border-bottom: 1px solid var(--border-subtle);
-            padding-bottom: 14px;
-            text-align: center;
-            margin-top: 8px;
+            padding: 16px 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 800;
+            margin-bottom: 4px;
+            transition: all 0.2s ease;
         }
 
-        header h1 {
-            font-size: 17px;
-            font-weight: 400;
+        .header-meta h1 {
+            font-size: 16px;
+            font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 3px;
+            letter-spacing: 2px;
             color: var(--text-pure);
         }
 
-        header p {
+        .header-meta p {
             font-size: 11px;
             color: var(--text-muted);
             text-transform: uppercase;
-            letter-spacing: 1.5px;
-            margin-top: 4px;
+            letter-spacing: 1px;
+            margin-top: 2px;
         }
 
-        /* Fixed Thumb-Optimized Bottom Tab Bar Component */
+        /* Barra de Pestañas Inferior */
         .nav-tabs {
             position: fixed;
             bottom: 0;
@@ -93,24 +102,26 @@
             justify-content: space-around;
             padding: 12px 6px calc(12px + env(safe-area-inset-bottom, 0px)) 6px;
             z-index: 900;
+            transition: all 0.2s ease;
         }
 
         .tab-btn {
             background: none;
             border: none;
             color: var(--text-muted);
-            font-size: 12px;
+            font-size: 11px;
             text-transform: uppercase;
-            letter-spacing: 1.5px;
+            letter-spacing: 1px;
             cursor: pointer;
-            padding: 10px 14px;
+            padding: 10px 6px;
             font-weight: 500;
             min-height: var(--touch-target-min);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            transition: color 0.2s cubic-bezier(0.4, 0, 0.2, 1), transform 0.1s ease;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            flex: 1;
         }
 
         .tab-btn:active {
@@ -120,6 +131,7 @@
         .tab-btn.active {
             color: var(--text-pure);
             font-weight: 700;
+            letter-spacing: 1.8px;
             position: relative;
         }
 
@@ -127,7 +139,7 @@
             content: '';
             position: absolute;
             bottom: 0;
-            width: 20px;
+            width: 55%;
             height: 2px;
             background-color: var(--accent-color);
             border-radius: 2px;
@@ -145,7 +157,7 @@
         }
 
         @keyframes viewFadeIn {
-            from { opacity: 0; transform: translateY(6px); }
+            from { opacity: 0; transform: translateY(4px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
@@ -153,10 +165,11 @@
             background-color: var(--card-bg);
             border: 1px solid var(--border-subtle);
             border-radius: 8px;
-            padding: 22px;
+            padding: 20px;
             display: flex;
             flex-direction: column;
-            gap: 18px;
+            gap: 16px;
+            transition: all 0.2s ease;
         }
 
         .panel-title {
@@ -179,7 +192,7 @@
         }
 
         label {
-            font-size: 12px;
+            font-size: 11px;
             text-transform: uppercase;
             letter-spacing: 1px;
             color: var(--text-muted);
@@ -191,7 +204,7 @@
             border: 1px solid var(--border-subtle);
             color: var(--text-pure);
             padding: 14px;
-            font-size: 16px; /* Completely prevents iOS zoom triggers */
+            font-size: 16px; /* Evita el zoom automático en navegadores móviles */
             font-family: inherit;
             outline: none;
             border-radius: 6px;
@@ -203,11 +216,9 @@
             border-color: var(--accent-color);
         }
 
-        .immutable-warning {
+        .input-hint {
             font-size: 11px; 
-            color: var(--scale-b2);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            color: var(--text-muted);
             margin-top: -2px;
         }
 
@@ -238,7 +249,6 @@
             color: var(--text-pure);
         }
 
-        /* Standardized Premium Action Buttons with Geometric Affordance */
         .btn-action {
             background-color: var(--accent-color);
             color: var(--accent-contrast);
@@ -277,12 +287,11 @@
             color: var(--text-pure);
         }
 
-        /* Row Specific Controls with High Affordance Boxes */
         .btn-row-action {
             background-color: transparent;
             border: 1px solid var(--border-subtle);
             color: var(--text-pure);
-            padding: 6px 10px;
+            padding: 6px 12px;
             font-size: 11px;
             font-weight: 600;
             text-transform: uppercase;
@@ -295,6 +304,7 @@
             justify-content: center;
             gap: 4px;
             transition: border-color 0.2s ease, background-color 0.2s ease;
+            white-space: nowrap;
         }
         .btn-row-action:hover, .btn-row-action:active {
             border-color: var(--text-pure);
@@ -306,7 +316,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 42px 20px;
+            padding: 36px 20px;
             text-align: center;
             border: 2px dashed var(--border-subtle);
             border-radius: 8px;
@@ -314,22 +324,22 @@
         }
 
         .empty-icon-btn {
-            width: 64px;
-            height: 64px;
+            width: 54px;
+            height: 54px;
             border-radius: 50%;
             background-color: rgba(255, 255, 255, 0.02);
             border: 1px solid var(--border-subtle);
             color: var(--accent-color);
-            font-size: 28px;
+            font-size: 24px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 16px;
+            margin-bottom: 14px;
             cursor: pointer;
         }
 
         .empty-canvas h3 { font-size: 13px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
-        .empty-canvas p { font-size: 12px; color: var(--text-muted); max-width: 250px; line-height: 1.5; }
+        .empty-canvas p { font-size: 12px; color: var(--text-muted); max-width: 260px; line-height: 1.5; }
 
         .data-list {
             display: flex;
@@ -352,16 +362,14 @@
             align-items: center;
             justify-content: space-between;
             width: 100%;
-            gap: 14px;
+            gap: 12px;
         }
 
-        /* High-Value Telemetry Block Structure */
         .item-meta {
             display: flex;
             flex-direction: column;
             gap: 4px;
             flex: 1;
-            padding-right: 8px;
         }
 
         .item-meta h4 {
@@ -394,7 +402,6 @@
             font-weight: 600;
         }
 
-        /* Structural Dynamic Glyph Container */
         .glyph-container {
             width: 36px;
             height: 36px;
@@ -404,7 +411,6 @@
             flex-shrink: 0;
         }
 
-        /* Metadata Expanded View Architecture */
         .metadata-drawer {
             display: none;
             border-top: 1px dashed var(--border-subtle);
@@ -421,12 +427,35 @@
             font-size: 11px;
             font-family: monospace;
             color: var(--text-muted);
-            word-break: break-all;
             display: flex;
             justify-content: space-between;
         }
         .metadata-line strong {
             color: var(--text-pure);
+        }
+
+        /* Contenedor de Clientes dentro de la Ficha */
+        .embedded-leads-container {
+            border-top: 1px solid var(--border-subtle);
+            padding-top: 12px;
+            margin-top: 6px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .embedded-lead-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: rgba(255, 255, 255, 0.02);
+            padding: 8px 12px;
+            border-radius: 4px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+        .embedded-lead-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .item-actions-wrapper {
@@ -439,49 +468,34 @@
 
         .crystallized-section {
             margin-top: 12px;
-            opacity: 0.55;
+            opacity: 0.6;
             transition: opacity 0.2s ease;
         }
         .crystallized-section:hover { opacity: 0.95; }
         .crystallized-card {
-            background: repeating-linear-gradient(45deg, #000, #000 4px, #08080a 4px, #08080a 8px);
+            background: repeating-linear-gradient(45deg, #000, #000 4px, #060608 4px, #060608 8px);
             border: 1px dotted #3f3f46;
         }
 
         .score-badge {
-            font-size: 11px;
-            font-weight: 700;
-            padding: 4px 10px;
+            font-size: 10px;
+            font-weight: 800;
+            padding: 3px 8px;
             border-radius: 4px;
             font-family: monospace;
-            color: #ffffff;
+            color: #000000;
+            text-transform: uppercase;
+            white-space: nowrap;
         }
-        .score-badge.A1 { background-color: var(--scale-a1); }
-        .score-badge.A2 { background-color: var(--scale-a2); }
+        .score-badge.A  { background-color: var(--scale-a); }
         .score-badge.B1 { background-color: var(--scale-b1); }
         .score-badge.B2 { background-color: var(--scale-b2); }
         .score-badge.C  { background-color: var(--scale-c); }
 
-        .legend-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 6px;
-            margin-top: 4px;
-        }
-        .legend-pill {
-            font-size: 9px;
-            padding: 6px 2px;
-            text-align: center;
-            font-family: monospace;
-            font-weight: bold;
-            color: #fff;
-            border-radius: 3px;
-        }
-
         .wizard-step {
             display: none;
             flex-direction: column;
-            gap: 18px;
+            gap: 16px;
         }
         .wizard-step.active { display: flex; }
 
@@ -501,112 +515,305 @@
             border-radius: 6px;
             cursor: pointer;
             min-height: var(--touch-target-min);
-            transition: border-color 0.2s ease;
+            transition: border-color 0.2s ease, background-color 0.2s ease;
         }
-        .option-btn:active { border-color: var(--accent-color); }
+        .option-btn:active { 
+            border-color: var(--accent-color);
+            background-color: rgba(255,255,255,0.02);
+        }
 
+        /* Arquitectura de Modales y Pantallas de Configuración */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             background-color: var(--bg-oled);
-            z-index: 2000;
+            z-index: 1500;
             display: none;
             flex-direction: column;
-            padding: 32px 24px;
+            padding: 24px;
             overflow-y: auto;
         }
         .modal-overlay.active { display: flex; }
         
-        .tutorial-content {
+        .modal-content-wrapper {
             max-width: 400px;
+            width: 100%;
             margin: 0 auto;
             display: flex;
             flex-direction: column;
             gap: 20px;
         }
-        .tutorial-header h2 { font-size: 18px; text-transform: uppercase; letter-spacing: 2px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 12px;}
-        .tutorial-body { font-size: 14px; line-height: 1.5; color: var(--text-muted); display: flex; flex-direction: column; gap: 14px; }
-        .tutorial-body strong { color: var(--text-pure); }
+
+        /* Recursos de Aislamiento Visual Lumínico y Destellos Cognitivos */
+        @keyframes pulseGlow {
+            0% { outline: 1px solid var(--text-muted); box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.85), 0 0 4px rgba(255, 255, 255, 0.2); }
+            50% { outline: 2px solid var(--text-pure); box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.85), 0 0 16px rgba(255, 255, 255, 0.7); }
+            100% { outline: 1px solid var(--text-muted); box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.85), 0 0 4px rgba(255, 255, 255, 0.2); }
+        }
         
-        .pro-con-box {
+        .ux-spotlight-active {
+            position: relative !important;
+            z-index: 1300 !important;
+            animation: pulseGlow 2s infinite ease-in-out !important;
+            background-color: var(--card-bg) !important;
+        }
+        
+        /* Mitigación estricta de saltos de posición en Onboarding */
+        header.ux-spotlight-active {
+            position: sticky !important;
+            background-color: #000000 !important;
+        }
+        .nav-tabs.ux-spotlight-active {
+            position: fixed !important;
+            background-color: #000000 !important;
+        }
+
+        /* Bloqueador Global de Interacciones durante el Tour */
+        .tour-interaction-blocker {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 1800;
+            display: none;
+            background: transparent;
+            pointer-events: auto;
+        }
+
+        /* Sistema Inyectado de Notificaciones Toast Minimalistas */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 3000;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: calc(100% - 32px);
+            max-width: 360px;
+            pointer-events: none;
+        }
+        .toast-notification {
             background-color: var(--card-bg);
             border: 1px solid var(--border-subtle);
-            padding: 14px;
+            color: var(--text-pure);
+            padding: 12px 16px;
+            font-size: 11px;
+            font-family: monospace;
+            text-transform: uppercase;
+            letter-spacing: 1px;
             border-radius: 6px;
-            font-size: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.9);
+            animation: toastFadeIn 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: auto;
+        }
+        @keyframes toastFadeIn {
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Correcciones de Micro-diseño para pantallas muy pequeñas */
+        @media (max-width: 340px) {
+            body { padding: 0px 4px 85px 4px; }
+            .panel-card { padding: 14px; gap: 12px; }
+            input[type="text"], input[type="number"], select { padding: 10px; font-size: 15px; }
+            .btn-action { padding: 12px; font-size: 12px; }
+            .btn-row-action { padding: 4px 8px; font-size: 10px; }
         }
     </style>
 </head>
 <body>
 
-    <div id="tutorial-modal" class="modal-overlay">
-        <div class="tutorial-content">
-            <div class="tutorial-header">
-                <h2>Marcha Blanca MVP</h2>
-                <p style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; margin-top: 4px;">Instrucciones de Sistema</p>
+    <!-- Bloqueador Táctil para el Tour Guiado -->
+    <div id="tour-blocker" class="tour-interaction-blocker"></div>
+
+    <!-- Onboarding Adaptado: Flujo de Bienvenida con Tono Digno y Claro -->
+    <div id="view-welcome" class="modal-overlay" style="justify-content: center; align-items: center;">
+        <div class="modal-content-wrapper" style="border: 1px solid var(--border-subtle); padding: 24px; background-color: var(--card-bg); border-radius: 8px; box-shadow: 0 12px 32px rgba(0,0,0,0.5);">
+            
+            <!-- Slide 1: Soberanía Absoluta -->
+            <div id="welcome-slide-1" class="welcome-slide">
+                <span style="font-size: 11px; color: var(--text-muted); letter-spacing: 1.5px; font-weight:700;">[PRIVACIDAD INTEGRAL]</span>
+                <h2 style="font-size: 15px; text-transform: uppercase; letter-spacing: 2px; margin: 8px 0 14px 0;">Soberanía Absoluta</h2>
+                <p style="font-size: 13.5px; color: var(--text-pure); line-height: 1.6; margin-bottom: 16px; text-align: left;">
+                    Toda la información y los datos que registre se quedan guardados exclusivamente dentro de este teléfono o computadora. 
+                </p>
+                <p style="font-size: 13px; color: var(--text-muted); line-height: 1.6; margin-bottom: 24px; text-align: left;">
+                    Este sistema no utiliza internet para enviar sus registros a servidores externos ni a otras empresas. Nadie más que usted puede ver sus datos, asegurando un control íntimo, confidencial y sumamente protegido.
+                </p>
+                <button class="btn-action" style="width: 100%;" onclick="advanceWelcomeSlide(2)">
+                    [Siguiente]
+                </button>
             </div>
-            <div class="tutorial-body">
-                <p>Bienvenido al entorno de gestión soberana. Este software opera localmente en aislamiento absoluto de alta velocidad.</p>
-                
-                <div class="pro-con-box">
-                    <span style="color:#248692; font-weight:bold;">✓ Ventajas del Piloto:</span>
-                    <p style="margin-top:4px; color: var(--text-pure)">Carga instantánea sin contraseñas ni servidores de terceros. Privacidad garantizada de extremo a extremo.</p>
-                </div>
 
-                <div class="pro-con-box">
-                    <span style="color:#C73A4A; font-weight:bold;">✗ Restricciones de Uso:</span>
-                    <p style="margin-top:4px; color: var(--text-pure)">Los datos residen de forma estricta en el almacenamiento de este navegador. Borrar la caché destruirá permanentemente los registros de telemetría comercial.</p>
+            <!-- Slide 2: Almacenamiento Local -->
+            <div id="welcome-slide-2" class="welcome-slide" style="display: none;">
+                <span style="font-size: 11px; color: var(--text-muted); letter-spacing: 1.5px; font-weight:700;">[MEMORIA DEL EQUIPO]</span>
+                <h2 style="font-size: 15px; text-transform: uppercase; letter-spacing: 2px; margin: 8px 0 14px 0;">Resguardo Local</h2>
+                <p style="font-size: 13.5px; color: var(--text-pure); line-height: 1.6; margin-bottom: 14px; text-align: left;">
+                    Al no existir contraseñas ni servidores en la nube, los datos dependen enteramente de la memoria interna de su navegador web.
+                </p>
+                <div style="text-align: left; font-size: 12.5px; line-height: 1.5; margin-bottom: 24px; display: flex; flex-direction: column; gap: 12px; border-top: 1px dashed var(--border-subtle); padding-top: 14px;">
+                    <div><strong style="color: var(--scale-c);">▲ ADVERTENCIA IMPORTANTE:</strong> Si usted borra el historial o la cache del navegador, o si decide cambiar de dispositivo, toda la información guardada se perderá permanentemente. Se aconseja utilizar la opción de respaldo en archivo JSON para prevenir pérdidas.</div>
                 </div>
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn-action btn-secondary" style="flex: 1;" onclick="advanceWelcomeSlide(1)">[Atrás]</button>
+                    <button class="btn-action" style="flex: 2;" onclick="advanceWelcomeSlide(3)">[Siguiente]</button>
+                </div>
+            </div>
 
-                <div class="form-group">
-                    <label>Escala Inmutable de Calificación (Progreso Cromático)</label>
-                    <div class="legend-grid">
-                        <div class="legend-pill" style="background-color:var(--scale-c)">C-Sangre</div>
-                        <div class="legend-pill" style="background-color:var(--scale-b2)">B2-Most</div>
-                        <div class="legend-pill" style="background-color:var(--scale-b1)">B1-Tierr</div>
-                        <div class="legend-pill" style="background-color:var(--scale-a2)">A2-Cobre</div>
-                        <div class="legend-pill" style="background-color:var(--scale-a1)">A1-Amat</div>
+            <!-- Slide 3: Calificación Inmobiliaria -->
+            <div id="welcome-slide-3" class="welcome-slide" style="display: none;">
+                <span style="font-size: 11px; color: var(--text-muted); letter-spacing: 1.5px; font-weight:700;">[EVALUACIÓN DIGNA]</span>
+                <h2 style="font-size: 15px; text-transform: uppercase; letter-spacing: 2px; margin: 8px 0 14px 0;">Prioridad de Clientes</h2>
+                <p style="font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 14px; text-align: left;">
+                    El sistema clasifica de forma automática el interés y viabilidad de los prospectos mediante un orden claro y ad-hoc al contexto de corretaje:
+                </p>
+                <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; text-align: left;">
+                    <div style="border: 1px solid rgba(255,255,255,0.03); padding: 8px; border-radius: 4px; background: rgba(0,0,0,0.2); display: flex; align-items: center; gap: 10px;">
+                        <span class="score-badge A">A</span>
+                        <span style="font-size:11.5px; color:var(--text-pure);">Cliente con fondos listos o crédito aprobado para comprar ya.</span>
+                    </div>
+                    <div style="border: 1px solid rgba(255,255,255,0.03); padding: 8px; border-radius: 4px; background: rgba(0,0,0,0.2); display: flex; align-items: center; gap: 10px;">
+                        <span class="score-badge B1">B</span>
+                        <span style="font-size:11.5px; color:var(--text-pure);">Cliente sumamente interesado en plazos estándar de búsqueda.</span>
+                    </div>
+                    <div style="border: 1px solid rgba(255,255,255,0.03); padding: 8px; border-radius: 4px; background: rgba(0,0,0,0.2); display: flex; align-items: center; gap: 10px;">
+                        <span class="score-badge B2">C</span>
+                        <span style="font-size:11.5px; color:var(--text-pure);">Cliente evaluando opciones comerciales o aprobación bancaria.</span>
+                    </div>
+                    <div style="border: 1px solid rgba(255,255,255,0.03); padding: 8px; border-radius: 4px; background: rgba(0,0,0,0.2); display: flex; align-items: center; gap: 10px;">
+                        <span class="score-badge C">D</span>
+                        <span style="font-size:11.5px; color:var(--text-pure);">Interés inicial muy temprano, o posee dificultades comerciales.</span>
                     </div>
                 </div>
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn-action btn-secondary" style="flex: 1;" onclick="advanceWelcomeSlide(2)">[Atrás]</button>
+                    <button class="btn-action" style="flex: 2;" onclick="advanceWelcomeSlide(4)">[Siguiente]</button>
+                </div>
             </div>
-            <button class="btn-action" style="margin-top: 12px;" onclick="closeTutorialOnboarding()">
-                Entrar al Panel <span>→</span>
-            </button>
+
+            <!-- Slide 4: Capacidad Máxima -->
+            <div id="welcome-slide-4" class="welcome-slide" style="display: none;">
+                <span style="font-size: 11px; color: var(--text-muted); letter-spacing: 1.5px; font-weight:700;">[LÍMITES DEL PILOTO]</span>
+                <h2 style="font-size: 15px; text-transform: uppercase; letter-spacing: 2px; margin: 8px 0 14px 0;">Control de Carga</h2>
+                <p style="font-size: 13.5px; color: var(--text-pure); line-height: 1.6; margin-bottom: 16px; text-align: left;">
+                    Para conservar un enfoque nítido y asegurar un rendimiento óptimo y liviano, el piloto impone dos límites físicos:
+                </p>
+                <div style="text-align: left; font-size: 12.5px; line-height: 1.5; margin-bottom: 24px; display: flex; flex-direction: column; gap: 10px; border-top: 1px dashed var(--border-subtle); padding-top: 14px;">
+                    <div><strong style="color: var(--text-pure);">■ PROPIEDADES ACTIVAS:</strong> Un máximo estricto de hasta 4 propiedades en gestión paralela. Se pueden archivar para dar espacio a otras.</div>
+                    <div><strong style="color: var(--text-pure);">■ MÁXIMO DE CLIENTES:</strong> Cada propiedad puede almacenar un tope máximo de hasta 10 clientes calificados de forma simultánea.</div>
+                </div>
+                <div style="display: flex; gap: 8px; width: 100%;">
+                    <button class="btn-action btn-secondary" style="flex: 1;" onclick="advanceWelcomeSlide(3)">[Atrás]</button>
+                    <button class="btn-action" style="flex: 2;" onclick="initializeInterfaceMapOnboarding()">[Entrar]</button>
+                </div>
+            </div>
+
         </div>
     </div>
 
-    <div class="crm-viewport">
-        
-        <header>
-            <h1 id="ui-brand-name">Boutique Assets</h1>
-            <p>Control de Calificación Interna</p>
-        </header>
+    <!-- Panel de Guiado Centralizado (Con Botones de Navegación Estrictos de Avance y Retroceso) -->
+    <div id="onboarding-guide-widget" style="position: fixed; width: calc(100% - 24px); max-width: 400px; background-color: #09090b; border: 1px solid var(--border-subtle); border-radius: 8px; padding: 18px; z-index: 2000; display: none; flex-direction: column; gap: 12px; box-shadow: 0 16px 36px rgba(0,0,0,0.95); left: 50%; transform: translateX(-50%); transition: top 0.25s ease, bottom 0.25s ease;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span id="onboarding-widget-title" style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--scale-a);">Fase Guía</span>
+        </div>
+        <p id="onboarding-widget-body" style="font-size: 13px; line-height: 1.5; color: var(--text-pure);"></p>
+        <div id="onboarding-widget-actions" style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 4px;"></div>
+    </div>
 
-        <main id="view-profile" class="crm-view active">
-            <div class="panel-card">
-                <div class="panel-title">Identidad del Backoffice</div>
+    <!-- Ajustes / Perfil -->
+    <div id="view-profile" class="modal-overlay">
+        <!-- Sub-Tour Guiado exclusivo dentro de la sección de ajustes -->
+        <div id="settings-guide-widget" style="max-width: 400px; width:100%; margin: 0 auto 12px auto; background-color: #0d0d11; border: 1px solid var(--scale-a); border-radius: 6px; padding: 14px; display: none; flex-direction: column; gap: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.8);">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-size:10px; font-weight:700; text-transform:uppercase; color:var(--scale-a);">Guía Interna de Ajustes</span>
+                <span id="settings-guide-step" style="font-size:10px; font-family:monospace; color:var(--text-muted);">Paso 1 de 2</span>
+            </div>
+            <p id="settings-guide-text" style="font-size:12px; line-height:1.4; color:var(--text-pure);"></p>
+            <div style="display:flex; gap:6px; justify-content:flex-end; margin-top:4px;">
+                <button id="btn-settings-prev" class="btn-row-action" style="padding:2px 8px; font-size:10px;" onclick="navigateSettingsTour(-1)">[Atrás]</button>
+                <button id="btn-settings-next" class="btn-row-action" style="padding:2px 8px; font-size:10px; border-color:var(--text-pure);" onclick="navigateSettingsTour(1)">[Siguiente]</button>
+            </div>
+        </div>
+
+        <div class="modal-content-wrapper">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-subtle); padding-bottom: 12px;">
+                <h2 style="font-size: 14px; text-transform: uppercase; letter-spacing: 2px;">Configuración</h2>
+                <button class="btn-row-action" onclick="toggleProfileModal(false)">[Cerrar]</button>
+            </div>
+
+            <div class="panel-card" id="settings-card-profile">
+                <div class="panel-title">Perfil Comercial</div>
                 <div class="form-group">
-                    <label for="input-broker-name">Nombre Comercial de la Oficina</label>
+                    <label for="input-broker-name">Nombre de la Oficina</label>
                     <input type="text" id="input-broker-name" placeholder="Ej: Altura Propiedades">
                 </div>
-                
-                <button class="btn-action" style="margin-top: 6px;" onclick="saveProfileData()">
-                    Actualizar Panel Ejecutivo <span>[✓]</span>
+                <button class="btn-action" onclick="saveProfileConfiguration()">
+                    [Guardar Cambios]
                 </button>
             </div>
-        </main>
 
-        <main id="view-inventory" class="crm-view">
+            <div class="panel-card" id="settings-card-templates">
+                <div class="panel-title">Mensajes para WhatsApp</div>
+                <p style="font-size:11px; color:var(--text-muted); line-height:1.4;">Personalice los textos según la prioridad del cliente. Use: <code>{name}</code> para el cliente, <code>{slug}</code> para la propiedad y <code>{broker}</code> para su oficina.</p>
+                
+                <div class="form-group">
+                    <label style="color: var(--scale-a);">Prioridad Alta [A-Cierre]</label>
+                    <input type="text" id="wats-template-A">
+                </div>
+                <div class="form-group">
+                    <label style="color: var(--scale-b1);">Prioridad Media Alta [B1-Calificado]</label>
+                    <input type="text" id="wats-template-B1">
+                </div>
+                <div class="form-group">
+                    <label style="color: var(--scale-b2);">Prioridad Media Baja [B2-Evaluación]</label>
+                    <input type="text" id="wats-template-B2">
+                </div>
+                <div class="form-group">
+                    <label style="color: var(--scale-c);">Prioridad Baja [C-Fricción]</label>
+                    <input type="text" id="wats-template-C">
+                </div>
+                
+                <button class="btn-action" onclick="saveProfileConfiguration()">
+                    [Actualizar Mensajes]
+                </button>
+            </div>
+
+            <div class="panel-card">
+                <div class="panel-title">Asistencia Operacional</div>
+                <p style="font-size:12px; color:var(--text-muted); line-height:1.4;">¿Desea reiniciar el ciclo guiado por el mapa y la simulación táctica desde el inicio?</p>
+                <button class="btn-action btn-secondary" onclick="restartInteractiveTutorial()">
+                    [Iniciar Guía de Uso]
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Viewport Principal -->
+    <div class="crm-viewport">
+        
+        <header id="ui-main-header">
+            <div class="header-meta">
+                <h1 id="ui-brand-name">Boutique Assets</h1>
+                <p id="ui-agent-badge">Agente: Psicoandino</p>
+            </div>
+            <button id="ui-settings-trigger" class="btn-row-action" onclick="toggleProfileModal(true)" style="border-radius: 50%; width: 40px; height: 40px; padding: 0; display: flex; align-items: center; justify-content: center;" title="Ajustes">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+            </button>
+        </header>
+
+        <!-- Vista: Inventario / Propiedades -->
+        <main id="view-inventory" class="crm-view active">
             <div class="panel-card" id="inventory-form-card" style="display: none;">
                 <div class="panel-title">
-                    <span>Crear Nuevo Activo Único</span>
+                    <span>Agregar Nueva Propiedad</span>
                     <span id="inventory-counter" style="font-family: monospace;">0 / 4</span>
                 </div>
                 <form id="form-property" class="form-group" style="gap:16px;" onsubmit="createNewAsset(event)">
                     <div class="form-group">
-                        <label for="prop-slug">Prefijo o Alias del Activo (Slug)</label>
-                        <input type="text" id="prop-slug" placeholder="Ej: vitacura205, lo-barnechea-alta" required>
-                        <p class="immutable-warning">* Campo inmutable posterior al alta del sistema.</p>
+                        <label for="prop-slug">Código o Nombre Corto</label>
+                        <input type="text" id="prop-slug" placeholder="Ej: vitacura-205, depto-isabel" required>
+                        <p class="input-hint">* Este nombre abreviado no se podrá modificar posteriormente.</p>
                     </div>
                     <div class="form-group">
                         <label for="prop-commune">Comuna</label>
@@ -616,197 +823,594 @@
                             <option value="Las Condes">Las Condes</option>
                             <option value="Otros">Otros</option>
                         </select>
-                        <p class="immutable-warning">* Campo inmutable posterior al alta del sistema.</p>
                     </div>
                     <div class="form-group">
-                        <label for="prop-price">Valor (UF)</label>
+                        <label for="prop-price">Precio Sugerido (UF)</label>
                         <input type="number" id="prop-price" placeholder="Ej: 24000" min="1" required>
-                        <p class="immutable-warning">* Campo inmutable posterior al alta del sistema.</p>
                     </div>
                     <div style="display:flex; gap:10px; margin-top:4px;">
-                        <button type="submit" class="btn-action" style="flex:2;">Confirmar Alta <span>[+]</span></button>
-                        <button type="button" class="btn-action btn-secondary" style="flex:1;" onclick="toggleAssetForm(false)">Cancelar</button>
+                        <button type="submit" class="btn-action" style="flex:2;">[Guardar Propiedad]</button>
+                        <button type="button" class="btn-action btn-secondary" style="flex:1;" onclick="toggleAssetForm(false)">[Cancelar]</button>
                     </div>
                 </form>
             </div>
 
             <div class="panel-card" id="active-assets-card">
                 <div class="panel-title">
-                    <span>Catálogo Activo en Circulación</span>
-                    <button id="btn-trigger-add" class="btn-row-action" onclick="toggleAssetForm(true)">+ Añadir Activo</button>
+                    <span>Propiedades Activas</span>
+                    <button id="btn-trigger-add" class="btn-row-action" onclick="toggleAssetForm(true)">[Añadir]</button>
                 </div>
                 <div id="active-inventory-list" class="data-list"></div>
             </div>
 
             <div class="panel-card crystallized-section" id="crystallized-assets-card">
-                <div class="panel-title" style="border-color:#3f3f46;">Estructuras Cristalizadas (Preservación Histórica)</div>
+                <div class="panel-title" style="border-color:#3f3f46;">Propiedades Archivadas</div>
                 <div id="crystallized-inventory-list" class="data-list"></div>
             </div>
         </main>
 
+        <!-- Vista: Clientes -->
         <main id="view-leads" class="crm-view">
-            <div class="panel-card">
-                <div class="panel-title">Consola de Control de Prospectos</div>
+            <div class="panel-card" id="leads-main-panel">
+                <div class="panel-title">Panel de Clientes</div>
                 
                 <div class="filter-stack">
-                    <button class="filter-chip active" id="filter-all" onclick="setLeadFilter('ALL')">Todos los registros</button>
-                    <button class="filter-chip" id="filter-premium" onclick="setLeadFilter('HIGH')">Rango A1/A2 Premium</button>
-                    <button class="filter-chip" id="filter-rev" onclick="toggleLeadSortOrder()">Invertir Cronología</button>
+                    <button class="filter-chip active" id="filter-all" onclick="setLeadFilter('ALL')">[Todos]</button>
+                    <button class="filter-chip" id="filter-premium" onclick="setLeadFilter('HIGH')">[Destacados (A-Cierre)]</button>
+                    <button class="filter-chip" id="filter-rev" onclick="toggleLeadSortOrder()">[Invertir Lista]</button>
                 </div>
 
                 <div id="leads-list" class="data-list"></div>
             </div>
         </main>
 
+        <!-- Vista: Simulador -->
         <main id="view-sandbox" class="crm-view">
             <div class="panel-card" id="sandbox-setup">
-                <div class="panel-title">Simulador de Espejo de Cuestionarios</div>
-                <p style="font-size:12px; color:var(--text-muted); line-height:1.4;">Inserta prospectos simulados directamente en la aduana de control para verificar las clasificaciones.</p>
+                <div class="panel-title">Evaluador de Clientes</div>
+                <p style="font-size:12px; color:var(--text-muted); line-height:1.4;">Responda este breve cuestionario guiado para clasificar la prioridad de un nuevo cliente prospecto.</p>
+                
                 <div class="form-group" style="margin-top:6px;">
-                    <label for="sandbox-prop-select">Asociar a Propiedad del Inventario</label>
+                    <label for="sandbox-prop-select">Asignar a Propiedad</label>
                     <select id="sandbox-prop-select"></select>
                 </div>
                 <div class="form-group">
-                    <label for="sandbox-lead-name">Nombre del Lead de Prueba</label>
+                    <label for="sandbox-lead-name">Nombre del Cliente</label>
                     <input type="text" id="sandbox-lead-name" placeholder="Ej: Constanza Riesco">
                 </div>
                 <div class="form-group">
-                    <label for="sandbox-lead-phone">WhatsApp de Destino</label>
+                    <label for="sandbox-lead-phone">Teléfono de WhatsApp</label>
                     <input type="text" id="sandbox-lead-phone" placeholder="Ej: +56912345678">
                 </div>
-                <button class="btn-action" onclick="initiateWizardExecution()">
-                    Ejecutar Protocolo de Testeo <span>[→]</span>
+                <button class="btn-action" id="btn-start-wizard" onclick="initiateWizardExecution()">
+                    [Comenzar Cuestionario]
                 </button>
             </div>
 
             <div class="panel-card" id="sandbox-wizard" style="display: none;">
                 <div class="panel-title">
-                    <span>Métricas de Calificación en Proceso</span>
+                    <span>Preguntas de Calificación</span>
                     <span id="wizard-progress" style="font-family: monospace;">Pregunta 1 de 4</span>
                 </div>
 
                 <div class="wizard-step active" id="step-1">
-                    <label>1. Dimensión Urgencia: ¿Plazo estimado para formalización legal?</label>
+                    <label>1. ¿En cuánto tiempo estima realizar la compra de la propiedad?</label>
                     <div class="options-stack">
-                        <button class="option-btn" onclick="registerWizardStepScore(1, 3, '&lt; 90 días')">&lt; 90 días (Prioridad Crítica)</button>
-                        <button class="option-btn" onclick="registerWizardStepScore(1, 2, '3-6 meses')">De 3 a 6 meses (Rango Estándar)</button>
-                        <button class="option-btn" onclick="registerWizardStepScore(1, 1, '+6 meses')">Superior a 6 meses (Medio Plazo)</button>
+                        <button class="option-btn" onclick="registerWizardStepScore(1, 3, '&lt; 90 días')">Menos de 90 días (Prioridad Inmediata)</button>
+                        <button class="option-btn" onclick="registerWizardStepScore(1, 2, '3-6 meses')">De 3 a 6 meses (Plazo Estándar)</button>
+                        <button class="option-btn" onclick="registerWizardStepScore(1, 1, '+6 meses')">Mayor a 6 meses / Etapa Inicial</button>
                     </div>
                 </div>
 
                 <div class="wizard-step" id="step-2">
-                    <label>2. Dimensión Capacidad: ¿Estructura de respaldo patrimonial?</label>
+                    <label>2. ¿Con qué respaldo financiero cuenta el interesado?</label>
                     <div class="options-stack">
-                        <button class="option-btn" onclick="registerWizardStepScore(2, 3, 'Fondos propios')">Fondos Propios Consolidados (Cash)</button>
-                        <button class="option-btn" onclick="registerWizardStepScore(2, 2, 'Pre-aprobado')">Línea de Crédito Hipotecario Pre-aprobada</button>
-                        <button class="option-btn" onclick="registerWizardStepScore(2, 1, 'En evaluación')">En Fase de Evaluación Bancaria</button>
+                        <button class="option-btn" onclick="registerWizardStepScore(2, 3, 'Fondos propios')">Fondos Propios (Compra al contado)</button>
+                        <button class="option-btn" onclick="registerWizardStepScore(2, 2, 'Pre-aprobado')">Crédito Hipotecario Pre-aprobado</button>
+                        <button class="option-btn" onclick="registerWizardStepScore(2, 1, 'En evaluación')">En Fase Inicial de Evaluación Bancaria</button>
                     </div>
                 </div>
 
                 <div class="wizard-step" id="step-3">
-                    <label>3. Dimensión Exclusividad: ¿Mantiene compromisos de corretaje vigentes?</label>
+                    <label>3. ¿Tiene exclusividad comercial de asesoría con usted?</label>
                     <div class="options-stack">
-                        <button class="option-btn" onclick="registerWizardStepScore(3, 2, 'No')">No. Requiere consultoría boutique exclusiva</button>
-                        <button class="option-btn" onclick="registerWizardStepScore(3, 1, 'Sí')">Sí. Evalúa múltiples agencias en paralelo</button>
+                        <button class="option-btn" onclick="registerWizardStepScore(3, 2, 'Sí')">Sí, busca asesoría dedicada y exclusiva</button>
+                        <button class="option-btn" onclick="registerWizardStepScore(3, 1, 'No')">No, está evaluando opciones con múltiples agencias</button>
                     </div>
                 </div>
 
                 <div class="wizard-step" id="step-4">
-                    <label>4. Dimensión Propósito: ¿Asignación de uso prioritario?</label>
+                    <label>4. ¿Cuál será el uso de la propiedad?</label>
                     <div class="options-stack">
-                        <button class="option-btn" onclick="registerWizardStepScore(4, 2, 'Residencia')">Residencia Exclusiva / Familiar</button>
-                        <button class="option-btn" onclick="registerWizardStepScore(4, 2, 'Inversión')">Inversión Patrimonial / Renta Urbana</button>
+                        <button class="option-btn" onclick="registerWizardStepScore(4, 2, 'Residencia')">Vivienda Principal o Familiar</button>
+                        <button class="option-btn" onclick="registerWizardStepScore(4, 2, 'Inversión')">Inversión Patrimonial o Renta Urbana</button>
                     </div>
                 </div>
             </div>
         </main>
 
-        <nav class="nav-tabs">
-            <button class="tab-btn active" onclick="executeViewMutation('profile')">Perfil</button>
-            <button class="tab-btn" onclick="executeViewMutation('inventory')">Inventario</button>
-            <button class="tab-btn" onclick="executeViewMutation('leads')">Leads</button>
-            <button class="tab-btn" onclick="executeViewMutation('sandbox')">Sandbox</button>
+        <!-- Barra Fija Inferior con Dinámica Interactiva de Brackets -->
+        <nav class="nav-tabs" id="ui-bottom-tabs">
+            <button class="tab-btn active" id="tab-nav-inventory" onclick="executeViewMutation('inventory')">{Propiedades}</button>
+            <button class="tab-btn" id="tab-nav-leads" onclick="executeViewMutation('leads')">[Clientes]</button>
+            <button class="tab-btn" id="tab-nav-sandbox" onclick="executeViewMutation('sandbox')">[Simulador]</button>
         </nav>
 
     </div>
 
     <script>
-        // Centralized Application Core State
+        // Máquina de Estado Centralizada de Arquitectura SOBERANA
         let state = {
-            profile: { name: 'Boutique Assets', tutorialSeen: false },
-            properties: [
-                { property_id: 'vitacura_20260410_00108', slug: 'vitacura205', location_commune: 'Vitacura', price_uf: 24500, archived: false, timestamp: '10/04/2026 10:42' },
-                { property_id: 'lobarnechea_20260412_00216', slug: 'lo-barnechea-alta', location_commune: 'Lo Barnechea', price_uf: 31200, archived: false, timestamp: '12/04/2026 15:18' }
-            ],
-            leads: [
-                { property_id: 'vitacura_20260410_00108', name: 'Constanza Riesco', phone: '56912345678', score: 'A1', timestamp: '10:42' }
-            ],
+            profile: { 
+                name: 'Boutique Assets', 
+                welcomeSeen: false,
+                onboardingState: 'WELCOME', // Rango: 'WELCOME' | 'MAP' | 'CHOICE' | 'SIMULATION' | 'COMPLETED'
+                mapStep: 1,
+                tutorialStep: 1,
+                settingsTourSeen: false,
+                settingsStep: 1,
+                whatsappTemplates: {
+                    'A': 'Hola {name}, soy parte del equipo de {broker}. Analicé sus requerimientos de alta prioridad para la propiedad {slug}. Coordinemos una llamada de inmediato.',
+                    'B1': 'Hola {name}, coordinemos una llamada para revisar los detalles sobre la propiedad {slug} en {broker}.',
+                    'B2': 'Hola {name}, recibimos su solicitud de información para la propiedad {slug} en {broker}. Le comparto los datos.',
+                    'C': 'Hola {name}, confirmamos la recepción de sus datos para la propiedad {slug} en {broker}. Saludos.'
+                }
+            },
+            properties: [],
+            leads: [],
             sandboxWizard: { currentStep: 1, totalScore: 0, currentLead: {} },
             runtimeFilters: { leadFilter: 'ALL', reverseLeads: false }
         };
 
-        const UF_CONVERSION_FACTOR = 38560; // Estimated 2026 baseline for structural complexity scaling
+        const UF_CONVERSION_FACTOR = 38560; 
+
+        // Glosario de Capas de Prioridad Inmobiliaria
+        const TIER_NAMES = {
+            'A': 'A-Cierre',
+            'B1': 'B1-Calificado',
+            'B2': 'B2-Evaluación',
+            'C': 'C-Fricción'
+        };
 
         document.addEventListener('DOMContentLoaded', () => {
             loadStateFromStorage();
-            evaluateOnboardingState();
-            syncProfileFormElements();
+            
+            const welcomeModal = document.getElementById('view-welcome');
+            if (!state.profile.welcomeSeen) {
+                welcomeModal.classList.add('active');
+                welcomeModal.style.display = 'flex';
+                advanceWelcomeSlide(1);
+            } else {
+                welcomeModal.classList.remove('active');
+                welcomeModal.style.display = 'none';
+                evaluateOnboardingStateExecution();
+            }
+
+            syncFormElements();
             renderIntegratedInventory();
             renderLeadsConsole();
             refreshSandboxPropertyAllocation();
+            updateTabDynamicBrackets('inventory');
         });
 
         function triggerHapticFeedback() {
             if (navigator.vibrate) {
-                navigator.vibrate(12);
+                navigator.vibrate(10);
             }
         }
 
+        function showToast(message) {
+            let container = document.getElementById('toast-container');
+            if (!container) {
+                container = document.createElement('div');
+                container.id = 'toast-container';
+                container.className = 'toast-container';
+                document.body.appendChild(container);
+            }
+            const toast = document.createElement('div');
+            toast.className = 'toast-notification';
+            toast.innerHTML = `<span>${message}</span>`;
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.22s ease';
+                setTimeout(() => toast.remove(), 220);
+            }, 3000);
+        }
+
         function saveStateToStorage() {
-            localStorage.setItem('sovereign_crm_state_v4', JSON.stringify(state));
+            localStorage.setItem('sovereign_crm_state_v8', JSON.stringify(state));
         }
 
         function loadStateFromStorage() {
-            const stored = localStorage.getItem('sovereign_crm_state_v4');
-            if (stored) {
+            let storedItem = localStorage.getItem('sovereign_crm_state_v8');
+            if (storedItem) {
                 try {
-                    state = JSON.parse(stored);
-                    if (!state.properties) state.properties = [];
-                    if (!state.leads) state.leads = [];
-                    if (!state.profile) state.profile = { name: 'Boutique Assets', tutorialSeen: false };
-                    if (!state.runtimeFilters) state.runtimeFilters = { leadFilter: 'ALL', reverseLeads: false };
+                    const parsed = JSON.parse(storedItem);
+                    if (parsed && typeof parsed === 'object') {
+                        state = parsed;
+                        if (!state.properties) state.properties = [];
+                        if (!state.leads) state.leads = [];
+                        if (!state.profile) state.profile = { name: 'Boutique Assets', welcomeSeen: false, onboardingState: 'WELCOME' };
+                        if (state.profile.onboardingState === undefined) state.profile.onboardingState = 'WELCOME';
+                        if (state.profile.mapStep === undefined) state.profile.mapStep = 1;
+                        if (state.profile.tutorialStep === undefined) state.profile.tutorialStep = 1;
+                        if (state.profile.settingsTourSeen === undefined) state.profile.settingsTourSeen = false;
+                        if (state.profile.settingsStep === undefined) state.profile.settingsStep = 1;
+                    }
                 } catch (e) {
-                    console.error("Memoria local corrupta. Reestableciendo estados por defecto.");
+                    console.error("Error al leer la base de datos local.");
                 }
             }
         }
 
-        function evaluateOnboardingState() {
-            if (!state.profile.tutorialSeen) {
-                document.getElementById('tutorial-modal').classList.add('active');
+        /* --- MOTOR DE ONBOARDING REESTRUCTURADO --- */
+
+        function advanceWelcomeSlide(slideNum) {
+            triggerHapticFeedback();
+            document.querySelectorAll('.welcome-slide').forEach(s => s.style.display = 'none');
+            document.getElementById(`welcome-slide-${slideNum}`).style.display = 'block';
+        }
+        
+        function initializeInterfaceMapOnboarding() {
+            triggerHapticFeedback();
+            state.profile.welcomeSeen = true;
+            state.profile.onboardingState = 'MAP';
+            state.profile.mapStep = 1;
+            saveStateToStorage();
+            
+            document.getElementById('view-welcome').style.display = 'none';
+            document.getElementById('view-welcome').classList.remove('active');
+            executeViewMutation('inventory');
+            evaluateOnboardingStateExecution();
+        }
+
+        function bypassOnboardingCompletely() {
+            triggerHapticFeedback();
+            state.profile.welcomeSeen = true;
+            state.profile.onboardingState = 'COMPLETED';
+            state.profile.mapStep = 0;
+            state.profile.tutorialStep = 0;
+            saveStateToStorage();
+            
+            document.getElementById('view-welcome').style.display = 'none';
+            document.getElementById('view-welcome').classList.remove('active');
+            document.getElementById('onboarding-guide-widget').style.display = 'none';
+            document.getElementById('tour-blocker').style.display = 'none';
+            
+            document.querySelectorAll('.ux-spotlight-active').forEach(el => el.classList.remove('ux-spotlight-active'));
+        }
+
+        function setWidgetPosition(verticalAlignment) {
+            const widget = document.getElementById('onboarding-guide-widget');
+            if (!widget) return;
+            if (verticalAlignment === 'top') {
+                widget.style.bottom = 'auto';
+                widget.style.top = '20px';
+            } else if (verticalAlignment === 'safe-top') {
+                widget.style.bottom = 'auto';
+                widget.style.top = '500px'; // Posición estética que previene oclusiones en el paso 3 de 3
+            } else {
+                widget.style.top = 'auto';
+                widget.style.bottom = 'calc(16px + env(safe-area-inset-bottom, 0px) + 75px)';
             }
         }
 
-        function closeTutorialOnboarding() {
+        function updateTabDynamicBrackets(activeViewId) {
+            const tabData = {
+                'inventory': 'Propiedades',
+                'leads': 'Clientes',
+                'sandbox': 'Simulador'
+            };
+            for (const [key, label] of Object.entries(tabData)) {
+                const button = document.getElementById(`tab-nav-${key}`);
+                if (button) {
+                    button.innerText = (key === activeViewId) ? `{${label}}` : `[${label}]`;
+                }
+            }
+        }
+
+        function evaluateOnboardingStateExecution() {
+            const widget = document.getElementById('onboarding-guide-widget');
+            const title = document.getElementById('onboarding-widget-title');
+            const body = document.getElementById('onboarding-widget-body');
+            const actions = document.getElementById('onboarding-widget-actions');
+            const blocker = document.getElementById('tour-blocker');
+
+            // Limpieza de estados spotlight previos
+            document.querySelectorAll('.ux-spotlight-active').forEach(el => el.classList.remove('ux-spotlight-active'));
+
+            if (state.profile.onboardingState === 'COMPLETED' || state.profile.onboardingState === 'WELCOME') {
+                widget.style.display = 'none';
+                blocker.style.display = 'none';
+                return;
+            }
+
+            widget.style.display = 'flex';
+            blocker.style.display = 'block'; // Forzar interacción exclusiva mediante el widget de guía
+
+            // FASE 1: Mapa Estricto de la Interfaz
+            if (state.profile.onboardingState === 'MAP') {
+                switch(state.profile.mapStep) {
+                    case 1:
+                        setWidgetPosition('bottom');
+                        const headerEl = document.getElementById('ui-main-header');
+                        if (headerEl) headerEl.classList.add('ux-spotlight-active');
+                        title.innerText = "Mapa: Paso 1 de 3";
+                        body.innerHTML = "Este es el <strong>Encabezado de Identidad</strong>. Aquí visualiza el nombre de su firma de corretaje y el agente a cargo en tiempo real.";
+                        actions.innerHTML = `
+                            <button class="btn-row-action" style="border-color: var(--text-pure);" onclick="navigateMapOnboarding(1)">[Siguiente]</button>
+                        `;
+                        break;
+                    case 2:
+                        setWidgetPosition('top'); // Barra abajo, guía arriba sin alterar flujos fijos
+                        const tabsEl = document.getElementById('ui-bottom-tabs');
+                        if (tabsEl) tabsEl.classList.add('ux-spotlight-active');
+                        title.innerText = "Mapa: Paso 2 de 3";
+                        body.innerHTML = "Esta es la <strong>Barra de Navegación por Pestañas</strong>. Se sitúa abajo para facilitar el uso táctil y le permite cambiar entre Propiedades, Clientes y el Evaluador.";
+                        actions.innerHTML = `
+                            <button class="btn-row-action" onclick="navigateMapOnboarding(-1)">[Atrás]</button>
+                            <button class="btn-row-action" style="border-color: var(--text-pure);" onclick="navigateMapOnboarding(1)">[Siguiente]</button>
+                        `;
+                        break;
+                    case 3:
+                        setWidgetPosition('safe-top'); // Previene la superposición en el cuadro estético inferior
+                        const inventoryCard = document.getElementById('active-assets-card');
+                        if (inventoryCard) inventoryCard.classList.add('ux-spotlight-active');
+                        title.innerText = "Mapa: Paso 3 de 3";
+                        body.innerHTML = "Este panel lista sus <strong>Propiedades Activas</strong>. Dispone de un límite estricto de 4 espacios paralelos para mantener el foco en sus cierres comerciales más rentables.";
+                        actions.innerHTML = `
+                            <button class="btn-row-action" onclick="navigateMapOnboarding(-1)">[Atrás]</button>
+                            <button class="btn-row-action" style="border-color: var(--scale-a); color: var(--scale-a);" onclick="concludeMapAndOfferSimulation()">[Concluir]</button>
+                        `;
+                        break;
+                }
+            }
+            
+            // FASE 2: Decisión de Simulación Operativa
+            else if (state.profile.onboardingState === 'CHOICE') {
+                setWidgetPosition('bottom');
+                title.innerText = "Mapa Concluido";
+                body.innerHTML = "¿Desea iniciar una <strong>Simulación Práctica</strong> guiada imitando un caso real de atención, o prefiere comenzar a operar el sistema de inmediato?";
+                actions.innerHTML = `
+                    <button class="btn-row-action" style="border-color: var(--scale-b1); color: var(--scale-b1);" onclick="activateSimulationStage()">[Ver Simulación]</button>
+                    <button class="btn-row-action" onclick="bypassOnboardingCompletely()">[Entrar Directo]</button>
+                `;
+            }
+
+            // FASE 3: Caso de Uso Comercial Guiado paso a paso
+            else if (state.profile.onboardingState === 'SIMULATION') {
+                switch(state.profile.tutorialStep) {
+                    case 1:
+                        setWidgetPosition('bottom');
+                        const addBtn = document.getElementById('btn-trigger-add');
+                        if (addBtn) addBtn.classList.add('ux-spotlight-active');
+                        title.innerText = "Simulación: Caso Real (1/5)";
+                        body.innerHTML = "Paso 1: Simularemos ingresar una propiedad de alta gama. Presione el botón de acceso rápido <strong>[Añadir]</strong>.";
+                        actions.innerHTML = `
+                            <button class="btn-row-action" onclick="navigateSimulationStep(-1)">[Atrás]</button>
+                        `;
+                        break;
+                    case 2:
+                        setWidgetPosition('top');
+                        const sandboxTab = document.getElementById('tab-nav-sandbox');
+                        if (sandboxTab) sandboxTab.classList.add('ux-spotlight-active');
+                        title.innerText = "Simulación: Caso Real (2/5)";
+                        body.innerHTML = "¡Propiedad registrada exitosamente! Ahora simularemos que ingresa un interesado. Diríjase a la pestaña inferior del <strong>Simulador</strong>.";
+                        actions.innerHTML = `
+                            <button class="btn-row-action" onclick="navigateSimulationStep(-1)">[Atrás]</button>
+                        `;
+                        break;
+                    case 3:
+                        setWidgetPosition('bottom');
+                        const sandboxSetup = document.getElementById('sandbox-setup');
+                        if (sandboxSetup) sandboxSetup.classList.add('ux-spotlight-active');
+                        title.innerText = "Simulación: Caso Real (3/5)";
+                        body.innerHTML = "Paso 3: Complete los campos con un nombre y teléfono simulado, y luego presione <strong>[Comenzar Cuestionario]</strong>.";
+                        actions.innerHTML = `
+                            <button class="btn-row-action" onclick="navigateSimulationStep(-1)">[Atrás]</button>
+                        `;
+                        break;
+                    case 4:
+                        setWidgetPosition('top');
+                        const firstInfoBtn = document.querySelector('#active-inventory-list .btn-row-action');
+                        if (firstInfoBtn) firstInfoBtn.classList.add('ux-spotlight-active');
+                        title.innerText = "Simulación: Caso Real (4/5)";
+                        body.innerHTML = "¡Cliente clasificado por el algoritmo! El sistema lo redirigió automáticamente. Presione <strong>[+Info]</strong> sobre la propiedad para ver la ficha.";
+                        actions.innerHTML = `
+                            <button class="btn-row-action" onclick="navigateSimulationStep(-1)">[Atrás]</button>
+                        `;
+                        break;
+                    case 5:
+                        setWidgetPosition('top');
+                        const archiveBtn = document.querySelector('#active-inventory-list .item-actions-wrapper .btn-row-action[style*="scale-c"]');
+                        if (archiveBtn) archiveBtn.classList.add('ux-spotlight-active');
+                        title.innerText = "Simulación: Caso Real (5/5)";
+                        body.innerHTML = "¡Ficha técnica desplegada! Aquí visualiza al prospecto, su nivel de prioridad y el enlace a WhatsApp. Para concluir definitivamente el tour, presione <strong>[Archivar]</strong>.";
+                        actions.innerHTML = `
+                            <button class="btn-row-action" onclick="navigateSimulationStep(-1)">[Atrás]</button>
+                        `;
+                        break;
+                }
+            }
+        }
+
+        function navigateMapOnboarding(direction) {
             triggerHapticFeedback();
-            state.profile.tutorialSeen = true;
-            document.getElementById('tutorial-modal').classList.remove('remove');
-            document.getElementById('tutorial-modal').style.display = 'none';
+            state.profile.mapStep += direction;
+            if (state.profile.mapStep < 1) state.profile.mapStep = 1;
             saveStateToStorage();
+            evaluateOnboardingStateExecution();
         }
 
-        function syncProfileFormElements() {
-            document.getElementById('input-broker-name').value = state.profile.name;
-            document.getElementById('ui-brand-name').innerText = state.profile.name;
+        function navigateSimulationStep(direction) {
+            triggerHapticFeedback();
+            state.profile.tutorialStep += direction;
+            
+            if (state.profile.tutorialStep < 1) {
+                state.profile.onboardingState = 'CHOICE';
+                saveStateToStorage();
+                evaluateOnboardingStateExecution();
+                return;
+            }
+            
+            // Revertir estados visuales físicos según el paso al retroceder
+            if (state.profile.tutorialStep === 1) {
+                executeViewMutation('inventory');
+                toggleAssetForm(false);
+            } else if (state.profile.tutorialStep === 2) {
+                executeViewMutation('inventory');
+                // Eliminar propiedad de prueba si existiese para reiniciar limpio
+                if (state.properties.length > 0 && direction < 0) {
+                    state.properties.pop();
+                    renderIntegratedInventory();
+                }
+            } else if (state.profile.tutorialStep === 3) {
+                executeViewMutation('sandbox');
+                resetSandboxWizardState();
+            } else if (state.profile.tutorialStep === 4) {
+                executeViewMutation('inventory');
+                if (state.leads.length > 0 && direction < 0) {
+                    state.leads.shift();
+                    renderLeadsConsole();
+                    renderIntegratedInventory();
+                }
+            }
+            
+            saveStateToStorage();
+            evaluateOnboardingStateExecution();
         }
 
-        function saveProfileData() {
+        function concludeMapAndOfferSimulation() {
+            triggerHapticFeedback();
+            state.profile.onboardingState = 'CHOICE';
+            saveStateToStorage();
+            evaluateOnboardingStateExecution();
+        }
+
+        function activateSimulationStage() {
+            triggerHapticFeedback();
+            state.profile.onboardingState = 'SIMULATION';
+            state.profile.tutorialStep = 1;
+            saveStateToStorage();
+            executeViewMutation('inventory');
+            evaluateOnboardingStateExecution();
+        }
+
+        function restartInteractiveTutorial() {
+            triggerHapticFeedback();
+            state.profile.welcomeSeen = true;
+            state.profile.onboardingState = 'MAP';
+            state.profile.mapStep = 1;
+            state.profile.tutorialStep = 1;
+            state.profile.settingsTourSeen = false;
+            state.profile.settingsStep = 1;
+            saveStateToStorage();
+            toggleProfileModal(false);
+            executeViewMutation('inventory');
+            evaluateOnboardingStateExecution();
+        }
+
+        /* --- MOTOR DE SUB-TOUR: PANTALLA DE AJUSTES --- */
+        function triggerSettingsSubTourLogic() {
+            const guideWidget = document.getElementById('settings-guide-widget');
+            if (state.profile.settingsTourSeen) {
+                guideWidget.style.display = 'none';
+                return;
+            }
+            guideWidget.style.display = 'flex';
+            renderSettingsTourStep();
+        }
+
+        function renderSettingsTourStep() {
+            const textEl = document.getElementById('settings-guide-text');
+            const stepEl = document.getElementById('settings-guide-step');
+            const btnPrev = document.getElementById('btn-settings-prev');
+            
+            document.getElementById('settings-card-profile').style.outline = 'none';
+            document.getElementById('settings-card-templates').style.outline = 'none';
+
+            if (state.profile.settingsStep === 1) {
+                stepEl.innerText = "Paso 1 de 2";
+                textEl.innerHTML = "En el bloque de <strong>Perfil Comercial</strong>, usted define el nombre público de su marca u oficina inmobiliaria para personalizar el sistema.";
+                document.getElementById('settings-card-profile').style.outline = "2px solid var(--scale-a)";
+                btnPrev.style.visibility = 'hidden';
+            } else {
+                stepEl.innerText = "Paso 2 de 2";
+                textEl.innerHTML = "En <strong>Mensajes para WhatsApp</strong>, puede dictar las plantillas exactas que recibirá cada cliente de acuerdo a su rango de prioridad calculado.";
+                document.getElementById('settings-card-templates').style.outline = "2px solid var(--scale-a)";
+                btnPrev.style.visibility = 'visible';
+            }
+        }
+
+        function navigateSettingsTour(direction) {
+            triggerHapticFeedback();
+            state.profile.settingsStep += direction;
+            if (state.profile.settingsStep > 2) {
+                state.profile.settingsTourSeen = true;
+                state.profile.settingsStep = 1;
+                document.getElementById('settings-guide-widget').style.display = 'none';
+                document.getElementById('settings-card-profile').style.outline = 'none';
+                document.getElementById('settings-card-templates').style.outline = 'none';
+                saveStateToStorage();
+                showToast("Guía de ajustes completada");
+                return;
+            }
+            if (state.profile.settingsStep < 1) state.profile.settingsStep = 1;
+            saveStateToStorage();
+            renderSettingsTourStep();
+        }
+
+
+        /* --- CONTROL DE VISTAS Y CONFIGURACIÓN --- */
+
+        function toggleProfileModal(shouldOpen) {
+            triggerHapticFeedback();
+            const modal = document.getElementById('view-profile');
+            if (shouldOpen) {
+                syncFormElements();
+                modal.classList.add('active');
+                // Disparar sub-mapa guiado si está completado el onboarding macro y es la primera vez
+                if (state.profile.onboardingState === 'COMPLETED') {
+                    triggerSettingsSubTourLogic();
+                }
+            } else {
+                modal.classList.remove('active');
+                // Limpiar contornos por seguridad visual
+                document.getElementById('settings-card-profile').style.outline = 'none';
+                document.getElementById('settings-card-templates').style.outline = 'none';
+            }
+        }
+
+        function syncFormElements() {
+            document.getElementById('input-broker-name').value = state.profile.name || 'Boutique Assets';
+            document.getElementById('ui-brand-name').innerText = state.profile.name || 'Boutique Assets';
+            
+            if (state.profile.whatsappTemplates) {
+                document.getElementById('wats-template-A').value = state.profile.whatsappTemplates['A'] || '';
+                document.getElementById('wats-template-B1').value = state.profile.whatsappTemplates['B1'] || '';
+                document.getElementById('wats-template-B2').value = state.profile.whatsappTemplates['B2'] || '';
+                document.getElementById('wats-template-C').value = state.profile.whatsappTemplates['C'] || '';
+            }
+        }
+
+        function saveProfileConfiguration() {
             triggerHapticFeedback();
             const nameValue = document.getElementById('input-broker-name').value.trim();
             state.profile.name = nameValue || 'Boutique Assets';
             document.getElementById('ui-brand-name').innerText = state.profile.name;
+            
+            if (!state.profile.whatsappTemplates) state.profile.whatsappTemplates = {};
+            state.profile.whatsappTemplates['A'] = document.getElementById('wats-template-A').value.trim();
+            state.profile.whatsappTemplates['B1'] = document.getElementById('wats-template-B1').value.trim();
+            state.profile.whatsappTemplates['B2'] = document.getElementById('wats-template-B2').value.trim();
+            state.profile.whatsappTemplates['C'] = document.getElementById('wats-template-C').value.trim();
+            
             saveStateToStorage();
-            alert("Identidad corporativa actualizada.");
+            renderLeadsConsole();
+            renderIntegratedInventory();
+            showToast("Configuración guardada");
         }
 
         function executeViewMutation(viewTargetId) {
@@ -815,10 +1419,21 @@
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             
             document.getElementById(`view-${viewTargetId}`).classList.add('active');
-            event.currentTarget.classList.add('active');
+            document.getElementById(`tab-nav-${viewTargetId}`).classList.add('active');
 
-            if (viewTargetId === 'sandbox') resetSandboxWizardState();
-            if (viewTargetId === 'inventory') toggleAssetForm(false);
+            updateTabDynamicBrackets(viewTargetId);
+
+            if (viewTargetId === 'sandbox') {
+                resetSandboxWizardState();
+                if (state.profile.onboardingState === 'SIMULATION' && state.profile.tutorialStep === 2) {
+                    state.profile.tutorialStep = 3;
+                    saveStateToStorage();
+                }
+            }
+            if (viewTargetId === 'inventory') {
+                toggleAssetForm(false);
+            }
+            evaluateOnboardingStateExecution();
         }
 
         function toggleAssetForm(shouldOpen) {
@@ -827,21 +1442,25 @@
             const activeCard = document.getElementById('active-assets-card');
             
             if (shouldOpen && state.properties.filter(p => !p.archived).length >= 4) {
-                alert("Límite de curatoría activo (Máximo 4). Archive un inmueble antes de continuar.");
+                showToast("Máximo 4 propiedades activas permitidas");
                 return;
             }
 
             formCard.style.display = shouldOpen ? 'flex' : 'none';
             activeCard.style.display = shouldOpen ? 'none' : 'flex';
+
+            if (shouldOpen && state.profile.onboardingState === 'SIMULATION' && state.profile.tutorialStep === 1) {
+                document.querySelectorAll('.ux-spotlight-active').forEach(el => el.classList.remove('ux-spotlight-active'));
+                const formTarget = document.getElementById('inventory-form-card');
+                if (formTarget) formTarget.classList.add('ux-spotlight-active');
+            }
         }
 
-        /* Pure Dynamic Procedural SVG Vector Generator Engine */
-        function generateSovereignGlyph(propertyId, priceUf) {
+        function generateGeometricGlyph(propertyId, priceUf) {
             let seed = 0;
             for (let i = 0; i < propertyId.length; i++) {
                 seed += propertyId.charCodeAt(i);
             }
-            // Linear geometric complexity proportional to the asset valuation tier
             const linesCount = Math.min(14, Math.max(4, Math.floor(priceUf / 4500)));
             const radius = 14;
             const center = 18;
@@ -860,11 +1479,6 @@
                 
                 svgString += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#a1a1aa" stroke-width="0.75" opacity="0.65"/>`;
             }
-
-            if (priceUf > 28000) { // Complex ornamental architecture layout for Ultra-High-Value tier properties
-                svgString += `<polygon points="13,13 23,13 23,23 13,23" fill="none" stroke="#ffffff" stroke-width="0.5" transform="rotate(${seed % 90} 18 18)" opacity="0.8"/>`;
-            }
-            
             svgString += `</svg>`;
             return svgString;
         }
@@ -875,33 +1489,37 @@
             if (drawer) {
                 const isCurrentlyActive = drawer.classList.contains('active');
                 drawer.classList.toggle('active', !isCurrentlyActive);
-                document.getElementById(`btn-info-${propertyId}`).innerText = isCurrentlyActive ? '[+ Info]' : '[- Ocultar]';
+                document.getElementById(`btn-info-${propertyId}`).innerText = isCurrentlyActive ? '[+Info]' : '[-Info]';
+                
+                if (!isCurrentlyActive && state.profile.onboardingState === 'SIMULATION' && state.profile.tutorialStep === 4) {
+                    state.profile.tutorialStep = 5;
+                    saveStateToStorage();
+                    evaluateOnboardingStateExecution();
+                }
             }
         }
 
-        function executeJsonPayloadExtraction(propertyId) {
+        function executeExportJsonPayload(propertyId) {
             triggerHapticFeedback();
             const targetedAsset = state.properties.find(p => p.property_id === propertyId);
             if (!targetedAsset) return;
 
             const structuredData = {
-                system_integrity: "SOVEREIGN_CRM_CRYSTAL_RECORD",
-                payload: {
-                    ...targetedAsset,
-                    associated_leads: state.leads.filter(l => l.property_id === propertyId)
-                }
+                key: "CRM_EXPORT_RECORD",
+                property: targetedAsset,
+                associated_leads: state.leads.filter(l => l.property_id === propertyId)
             };
 
-            const parsedDataString = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(structuredData, null, 4));
-            const downloadElementAnchor = document.createElement('a');
-            downloadElementAnchor.setAttribute("href", parsedDataString);
-            downloadElementAnchor.setAttribute("download", `asset_telemetry_${targetedAsset.slug}.json`);
-            document.body.appendChild(downloadElementAnchor);
-            downloadElementAnchor.click();
-            downloadElementAnchor.remove();
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(structuredData, null, 4));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", `ficha_${targetedAsset.slug}.json`);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+            showToast("Archivo JSON exportado");
         }
 
-        /* Inventory Rendering Engine with Real-Time Telemetry & Advanced Structural Changes */
         function renderIntegratedInventory() {
             const activeContainer = document.getElementById('active-inventory-list');
             const crystallizedContainer = document.getElementById('crystallized-inventory-list');
@@ -914,51 +1532,79 @@
             const activeSubset = state.properties.filter(p => !p.archived);
             const crystallizedSubset = state.properties.filter(p => p.archived);
 
-            counterLabel.innerText = `${activeSubset.length} / 4 Activos`;
+            counterLabel.innerText = `${activeSubset.length} / 4 Propiedades`;
             triggerAddButton.style.display = activeSubset.length >= 4 ? 'none' : 'inline-block';
 
             if (activeSubset.length === 0) {
                 activeContainer.innerHTML = `
                     <div class="empty-canvas">
                         <div class="empty-icon-btn" onclick="toggleAssetForm(true)">+</div>
-                        <h3>Sin Activos Disponibles</h3>
-                        <p>No hay propiedades bajo gestión en este ciclo comercial.</p>
+                        <h3>Sin Propiedades Activas</h3>
+                        <p>No registra propiedades bajo gestión de venta actual.</p>
                     </div>
                 `;
             } else {
                 activeSubset.forEach((prop) => {
                     const propertyLeads = state.leads.filter(l => l.property_id === prop.property_id);
-                    const leadsCount = propertyLeads.length;
-                    const lastActivityText = leadsCount > 0 ? `Hace: ${propertyLeads[0].timestamp}` : 'Sin Actividad';
-                    const estimatedClpValuation = prop.price_uf * UF_CONVERSION_FACTOR;
+                    const estimatedClp = prop.price_uf * UF_CONVERSION_FACTOR;
+
+                    let embeddedLeadsHtml = '';
+                    if (propertyLeads.length === 0) {
+                        embeddedLeadsHtml = `<p style="font-size:11px; color:var(--text-muted); margin-top:4px;">No hay prospectos asignados a esta propiedad.</p>`;
+                    } else {
+                        embeddedLeadsHtml = `<div class="embedded-leads-container">`;
+                        propertyLeads.forEach(lead => {
+                            const scoreKey = lead.score || 'C';
+                            const baseText = state.profile.whatsappTemplates[scoreKey] || '';
+                            const finalMessage = baseText
+                                .replace(/{name}/g, lead.name)
+                                .replace(/{broker}/g, state.profile.name)
+                                .replace(/{slug}/g, prop.slug);
+                            const waUrl = `https://wa.me/${lead.phone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(finalMessage)}`;
+
+                            embeddedLeadsHtml += `
+                                <div class="embedded-lead-row">
+                                    <div class="embedded-lead-info">
+                                        <span class="score-badge ${lead.score}">${TIER_NAMES[lead.score] || lead.score}</span>
+                                        <span style="font-size:12px; font-weight:500;">${lead.name}</span>
+                                    </div>
+                                    <a href="${waUrl}" target="_blank" class="btn-row-action" style="border-color: var(--scale-a); font-size:10px; min-height:30px; padding:2px 8px;">[WhatsApp]</a>
+                                </div>
+                            `;
+                        });
+                        embeddedLeadsHtml += `</div>`;
+                    }
 
                     const el = document.createElement('div');
                     el.className = 'list-item';
                     el.innerHTML = `
                         <div class="item-main-row">
-                            <div class="glyph-container">${generateSovereignGlyph(prop.property_id, prop.price_uf)}</div>
+                            <div class="glyph-container">${generateGeometricGlyph(prop.property_id, prop.price_uf)}</div>
                             <div class="item-meta">
                                 <h4>${prop.slug}</h4>
                                 <p>${prop.location_commune} • <strong>${Number(prop.price_uf).toLocaleString('es-CL')} UF</strong></p>
                                 <div class="telemetry-row">
-                                    <span>Leads: <strong class="telemetry-badge">${leadsCount}</strong></span>
-                                    <span style="color: ${leadsCount > 0 ? 'var(--scale-a2)' : 'var(--text-muted)'}">${lastActivityText}</span>
+                                    <span>Clientes: <strong class="telemetry-badge">${propertyLeads.length} / 10</strong></span>
                                 </div>
                             </div>
                             <div style="display:flex; flex-direction:column; gap:4px;">
-                                <button id="btn-info-${prop.property_id}" class="btn-row-action" onclick="toggleMetadataDrawer('${prop.property_id}')">[+ Info]</button>
+                                <button id="btn-info-${prop.property_id}" class="btn-row-action" onclick="toggleMetadataDrawer('${prop.property_id}')">[+Info]</button>
                             </div>
                         </div>
                         
                         <div id="drawer-${prop.property_id}" class="metadata-drawer">
-                            <div class="metadata-line"><span>ID SISTEMA:</span> <strong>${prop.property_id}</strong></div>
-                            <div class="metadata-line"><span>REGISTRO ALTA:</span> <strong>${prop.timestamp || 'Pre-existente'}</strong></div>
-                            <div class="metadata-line"><span>VALOR ESTIMADO CLP:</span> <strong>$${estimatedClpValuation.toLocaleString('es-CL')}</strong></div>
+                            <div class="metadata-line"><span>ID INTERNO:</span> <strong>${prop.property_id}</strong></div>
+                            <div class="metadata-line"><span>FECHA REGISTRO:</span> <strong>${prop.timestamp || 'Base'}</strong></div>
+                            <div class="metadata-line"><span>VALOR ESTIMADO EN PESOS:</span> <strong>$${estimatedClp.toLocaleString('es-CL')}</strong></div>
+                            <div style="margin-top:8px; margin-bottom:4px;">
+                                <p style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); font-weight: 700; margin-bottom: 6px;">Clientes Vinculados:</p>
+                                ${embeddedLeadsHtml}
+                            </div>
                         </div>
 
                         <div class="item-actions-wrapper">
-                            <button class="btn-row-action" onclick="executeJsonPayloadExtraction('${prop.property_id}')">↓ Exportar JSON</button>
-                            <button class="btn-row-action" style="border-color: var(--scale-c); color: var(--scale-c);" onclick="modifyAssetCrystallization('${prop.property_id}', true)">■ Archivar</button>
+                            <button class="btn-row-action" onclick="executeExportJsonPayload('${prop.property_id}')">[Copia JSON]</button>
+                            <button class="btn-row-action" style="border-color: var(--scale-c); color: var(--scale-c);" onclick="modifyAssetCrystallization('${prop.property_id}', true)">[Archivar]</button>
                         </div>
                     `;
                     activeContainer.appendChild(el);
@@ -966,30 +1612,28 @@
             }
 
             if (crystallizedSubset.length === 0) {
-                crystallizedContainer.innerHTML = '<p style="font-size:12px; color:var(--text-muted); padding:4px;">No existen estructuras en estado criogénico/histórico.</p>';
+                crystallizedContainer.innerHTML = '<p style="font-size:12px; color:var(--text-muted); padding:4px;">No existen propiedades en el archivo histórico.</p>';
             } else {
                 crystallizedSubset.forEach((prop) => {
-                    const estimatedClpValuation = prop.price_uf * UF_CONVERSION_FACTOR;
                     const el = document.createElement('div');
                     el.className = 'list-item crystallized-card';
                     el.innerHTML = `
                         <div class="item-main-row">
-                            <div class="glyph-container">${generateSovereignGlyph(prop.property_id, prop.price_uf)}</div>
+                            <div class="glyph-container">${generateGeometricGlyph(prop.property_id, prop.price_uf)}</div>
                             <div class="item-meta">
-                                <h4 style="color: var(--text-muted); text-decoration: line-through;">${prop.slug}</h4>
-                                <p style="font-size:11px;">Estructura Cristalizada Preservada Inmutable</p>
+                                <h4>${prop.slug}</h4>
+                                <p style="font-size:11px;">Propiedad guardada en el archivo histórico inmutable</p>
                             </div>
-                            <button id="btn-info-${prop.property_id}" class="btn-row-action" onclick="toggleMetadataDrawer('${prop.property_id}')">[+ Info]</button>
+                            <button id="btn-info-${prop.property_id}" class="btn-row-action" onclick="toggleMetadataDrawer('${prop.property_id}')">[+Info]</button>
                         </div>
 
                         <div id="drawer-${prop.property_id}" class="metadata-drawer">
-                            <div class="metadata-line"><span>ID COMPUESTO:</span> <strong>${prop.property_id}</strong></div>
-                            <div class="metadata-line"><span>CONGELACIÓN:</span> <strong>Inmutable</strong></div>
-                            <div class="metadata-line"><span>VALORACIÓN HISTÓRICA:</span> <strong>${Number(prop.price_uf).toLocaleString('es-CL')} UF (~$${estimatedClpValuation.toLocaleString('es-CL')})</strong></div>
+                            <div class="metadata-line"><span>ESTADO:</span> <strong>Archivado Inalterable</strong></div>
+                            <div class="metadata-line"><span>VALOR HISTÓRICO:</span> <strong>${Number(prop.price_uf).toLocaleString('es-CL')} UF</strong></div>
                         </div>
 
                         <div class="item-actions-wrapper">
-                            <button class="btn-action btn-secondary" style="width:100%; min-height:36px; font-size:11px;" onclick="executeJsonPayloadExtraction('${prop.property_id}')">↓ Descargar JSON de Resguardo Histórico</button>
+                            <button class="btn-action btn-secondary" style="width:100%; min-height:34px; font-size:11px;" onclick="executeExportJsonPayload('${prop.property_id}')">[Exportar Respaldo]</button>
                         </div>
                     `;
                     crystallizedContainer.appendChild(el);
@@ -999,57 +1643,64 @@
             refreshSandboxPropertyAllocation();
         }
 
-        /* Pure Deterministic and Alphanumeric ID Creation Engine */
         function createNewAsset(e) {
             e.preventDefault();
             const activeSubset = state.properties.filter(p => !p.archived);
             if (activeSubset.length >= 4) return;
 
             const rawSlug = document.getElementById('prop-slug').value.trim().toLowerCase()
-                .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // Clear diacritics
-                .replace(/[^a-z0-9_-]/g, ''); // Clear unsafe characters
+                .normalize("NFD").replace(/[\u0300-\u036f]/g, "") 
+                .replace(/[^a-z0-9_-]/g, ''); 
             
             const communeInput = document.getElementById('prop-commune').value;
             const priceInput = document.getElementById('prop-price').value;
 
             if (!rawSlug) {
-                alert("Identificador o slug inválido.");
+                showToast("Identificador no válido");
                 return;
             }
 
             const dateObj = new Date();
-            const yyyymmdd = dateObj.getFullYear().toString() + 
-                             (dateObj.getMonth() + 1).toString().padStart(2, '0') + 
-                             dateObj.getDate().toString().padStart(2, '0');
-            
-            const hoursMinString = dateObj.getHours().toString().padStart(2, '0') + ":" + dateObj.getMinutes().toString().padStart(2, '0');
-            
-            // Replaced Math.random with clean deterministic matrix sequence markers
-            const systemSequenceIndex = (state.properties.length + 1).toString().padStart(3, '0');
-            const uniqueCompositeId = `${rawSlug}_${yyyymmdd}_${systemSequenceIndex}`;
+            const timestampStr = `${dateObj.getDate().toString().padStart(2, '0')}/${(dateObj.getMonth() + 1).toString().padStart(2, '0')}/${dateObj.getFullYear()} ${dateObj.getHours().toString().padStart(2, '0')}:${dateObj.getMinutes().toString().padStart(2, '0')}`;
+            const uniqueId = `${rawSlug}_${Date.now()}`;
 
             state.properties.push({
-                property_id: uniqueCompositeId,
+                property_id: uniqueId,
                 slug: rawSlug,
                 location_commune: communeInput,
                 price_uf: parseInt(priceInput),
                 archived: false,
-                timestamp: `${dateObj.getDate().toString().padStart(2, '0')}/${(dateObj.getMonth() + 1).toString().padStart(2, '0')}/${dateObj.getFullYear()} ${hoursMinString}`
+                timestamp: timestampStr
             });
 
             saveStateToStorage();
             renderIntegratedInventory();
             document.getElementById('form-property').reset();
             toggleAssetForm(false);
+
+            if (state.profile.onboardingState === 'SIMULATION' && state.profile.tutorialStep === 1) {
+                state.profile.tutorialStep = 2;
+                saveStateToStorage();
+            }
+            executeViewMutation('inventory');
+            showToast("Propiedad indexada");
         }
 
-        function modifyAssetCrystallization(propertyId, shouldCrystallize) {
+        function modifyAssetCrystallization(propertyId, shouldArchive) {
             triggerHapticFeedback();
-            const item = state.properties.find(p => p.property_id === propertyId && !p.archived);
+            const item = state.properties.find(p => p.property_id === propertyId);
             if (item) {
-                item.archived = shouldCrystallize;
+                item.archived = shouldArchive;
                 saveStateToStorage();
                 renderIntegratedInventory();
+                renderLeadsConsole();
+                
+                if (shouldArchive && state.profile.onboardingState === 'SIMULATION' && state.profile.tutorialStep === 5) {
+                    bypassOnboardingCompletely();
+                    showToast("Ciclo operativo guiado completado");
+                } else {
+                    showToast("Propiedad archivada");
+                }
             }
         }
 
@@ -1079,7 +1730,7 @@
             let subset = [...state.leads];
 
             if (state.runtimeFilters.leadFilter === 'HIGH') {
-                subset = subset.filter(l => l.score === 'A1' || l.score === 'A2');
+                subset = subset.filter(l => l.score === 'A');
             }
 
             if (state.runtimeFilters.reverseLeads) {
@@ -1087,7 +1738,7 @@
             }
 
             if (subset.length === 0) {
-                container.innerHTML = '<p style="font-size:12px; color:var(--text-muted); text-align:center; padding:24px 10px;">Consola vacía bajo este criterio.</p>';
+                container.innerHTML = '<p style="font-size:12px; color:var(--text-muted); text-align:center; padding:24px 10px;">No se registran clientes bajo este criterio.</p>';
                 return;
             }
 
@@ -1096,23 +1747,29 @@
                 itemBox.className = 'list-item';
                 
                 const parentProp = state.properties.find(p => p.property_id === lead.property_id);
-                const displaySlug = parentProp ? parentProp.slug : 'Asignación Remota';
-                const isCrystallized = parentProp ? parentProp.archived : true;
-                const statusLabelString = isCrystallized ? ' [Cerrado/Cristalizado]' : '';
+                const displaySlug = parentProp ? parentProp.slug : 'Sin propiedad asignada';
+                const isArchived = parentProp ? parentProp.archived : false;
 
-                const whatsappMessage = `Hola ${lead.name}, soy parte del equipo de ${state.profile.name}. He analizado tus requerimientos para el activo de referencia: ${displaySlug}. Conversemos.`;
+                const scoreKey = lead.score || 'C';
+                const defaultTemplate = state.profile.whatsappTemplates[scoreKey] || '';
+
+                const whatsappMessage = defaultTemplate
+                    .replace(/{name}/g, lead.name)
+                    .replace(/{broker}/g, state.profile.name)
+                    .replace(/{slug}/g, displaySlug);
+
                 const whatsappUrl = `https://wa.me/${lead.phone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(whatsappMessage)}`;
 
                 itemBox.innerHTML = `
                     <div class="item-main-row">
                         <div class="item-meta">
                             <h4 style="display:flex; align-items:center; gap:10px;">
-                                ${lead.name} <span class="score-badge ${lead.score}">${lead.score}</span>
+                                ${lead.name} <span class="score-badge ${lead.score}">${TIER_NAMES[lead.score] || lead.score}</span>
                             </h4>
-                            <p>Activo: <strong>${displaySlug}</strong>${statusLabelString}</p>
-                            <p style="font-size:11px; color: var(--text-muted);">Calificado a las: ${lead.timestamp}</p>
+                            <p>Propiedad Asociada: <strong>${displaySlug}</strong>${isArchived ? ' [Archivada]' : ''}</p>
+                            <p style="font-size:11px; color: var(--text-muted);">Evaluado a las: ${lead.timestamp}</p>
                         </div>
-                        <a href="${whatsappUrl}" target="_blank" class="btn-row-action" style="border-color: var(--accent-color);" onclick="triggerHapticFeedback()">Handoff <span>→</span></a>
+                        <a href="${whatsappUrl}" target="_blank" class="btn-row-action" style="border-color: var(--accent-color);">[Contactar]</a>
                     </div>
                 `;
                 container.appendChild(itemBox);
@@ -1125,7 +1782,6 @@
             selectEl.innerHTML = '';
             
             const visibleSubset = state.properties.filter(p => !p.archived);
-            
             visibleSubset.forEach(p => {
                 const optionItem = document.createElement('option');
                 optionItem.value = p.property_id;
@@ -1151,13 +1807,26 @@
             const targetLeadPhone = document.getElementById('sandbox-lead-phone').value.trim();
 
             if (!selectedPropertyId || !targetLeadName || !targetLeadPhone) {
-                alert("Asignación de simulación incompleta o sin activos en circulación.");
+                showToast("Completa los campos obligatorios");
+                return;
+            }
+
+            // Validación estricta del tope máximo de 10 clientes por propiedad piloto
+            const activeLeadsCount = state.leads.filter(l => l.property_id === selectedPropertyId).length;
+            if (activeLeadsCount >= 10) {
+                showToast("Tope alcanzado: Máximo 10 clientes por propiedad");
                 return;
             }
 
             state.sandboxWizard.currentLead = { property_id: selectedPropertyId, name: targetLeadName, phone: targetLeadPhone };
             document.getElementById('sandbox-setup').style.display = 'none';
             document.getElementById('sandbox-wizard').style.display = 'flex';
+
+            if (state.profile.onboardingState === 'SIMULATION' && state.profile.tutorialStep === 3) {
+                document.querySelectorAll('.ux-spotlight-active').forEach(el => el.classList.remove('ux-spotlight-active'));
+                const wizardTarget = document.getElementById('sandbox-wizard');
+                if (wizardTarget) wizardTarget.classList.add('ux-spotlight-active');
+            }
         }
 
         function registerWizardStepScore(currentStepIndex, valueGained) {
@@ -1174,10 +1843,9 @@
                 let totalScoreTier = 'C';
                 const finalAggregatePoints = state.sandboxWizard.totalScore;
                 
-                if (finalAggregatePoints >= 10) totalScoreTier = 'A1';
-                else if (finalAggregatePoints >= 8) totalScoreTier = 'A2';
-                else if (finalAggregatePoints >= 6) totalScoreTier = 'B1';
-                else if (finalAggregatePoints >= 4) totalScoreTier = 'B2';
+                if (finalAggregatePoints >= 9) totalScoreTier = 'A';
+                else if (finalAggregatePoints >= 7) totalScoreTier = 'B1';
+                else if (finalAggregatePoints >= 5) totalScoreTier = 'B2';
 
                 const timestampClock = new Date();
                 const displayClockFormatted = `${timestampClock.getHours().toString().padStart(2, '0')}:${timestampClock.getMinutes().toString().padStart(2, '0')}`;
@@ -1191,16 +1859,16 @@
                 state.leads.unshift(constructedLeadObject);
                 saveStateToStorage();
                 renderLeadsConsole();
-                renderIntegratedInventory(); // Forces updates to live block views inside inventory
+                renderIntegratedInventory(); 
                 
-                alert(`Simulación exitosa. Prospecto calificado en rango [${totalScoreTier}]. Derivando a consola central.`);
+                showToast(`Evaluación: Clasificado en [${TIER_NAMES[totalScoreTier]}]`);
                 
-                document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-                const leadsTabItem = Array.from(document.querySelectorAll('.tab-btn')).find(btn => btn.innerText.toLowerCase() === 'leads');
-                if (leadsTabItem) leadsTabItem.classList.add('active');
-                
-                document.getElementById('view-sandbox').classList.remove('active');
-                document.getElementById('view-leads').classList.add('active');
+                if (state.profile.onboardingState === 'SIMULATION' && state.profile.tutorialStep === 3) {
+                    state.profile.tutorialStep = 4;
+                    saveStateToStorage();
+                }
+
+                executeViewMutation('inventory');
             }
         }
     </script>
