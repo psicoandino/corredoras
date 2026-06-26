@@ -4,776 +4,188 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Boutique Assets | Panel de Control</title>
-    <style>
-        /* Variables de Interfaz y Paleta de Colores OLED */
-        :root {
-            --bg-oled: #000000;
-            --card-bg: #09090b;
-            --border-subtle: #27272a; 
-            
-            /* Mitigación de Fatiga Ocular: Atenuación del Blanco Puro a Escala Zinc Antirreflejo */
-            --text-pure: #e4e4e7; 
-            --text-muted: #a1a1aa; 
-            --accent-color: #e4e4e7; 
-            --accent-contrast: #000000;
-            
-            /* Escala Comercial Inmobiliaria de Prioridades */
-            --scale-c:  #C73A4A; /* C-Baja Prioridad */
-            --scale-b2: #B78627; /* B2-En Evaluación */
-            --scale-b1: #6D7C50; /* B1-Perfil Avanzado */
-            --scale-a:  #248692; /* A-Cierre Inmediato */
-            
-            --touch-target-min: 48px;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        body {
-            background-color: var(--bg-oled);
-            color: var(--text-pure);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-            display: flex;
-            justify-content: center;
-            min-height: 100vh;
-            padding: 0px 8px 95px 8px; /* Espacio de seguridad para barra de navegación */
-        }
-
-        .crm-viewport {
-            width: 100%;
-            max-width: 440px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        /* Encabezado Principal */
-        header {
-            position: sticky;
-            top: 0;
-            background-color: rgba(0, 0, 0, 0.9);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--border-subtle);
-            padding: 16px 8px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            z-index: 800;
-            margin-bottom: 4px;
-            transition: all 0.2s ease;
-        }
-
-        .header-meta h1 {
-            font-size: 16px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: var(--text-pure);
-        }
-
-        .header-meta p {
-            font-size: 11px;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-top: 2px;
-        }
-
-        /* Barra de Pestañas Inferior */
-        .nav-tabs {
-            position: fixed;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100%;
-            max-width: 440px;
-            background-color: rgba(0, 0, 0, 0.96);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border-top: 1px solid var(--border-subtle);
-            display: flex;
-            justify-content: space-around;
-            padding: 12px 6px calc(12px + env(safe-area-inset-bottom, 0px)) 6px;
-            z-index: 900;
-            transition: all 0.2s ease;
-        }
-
-        .tab-btn {
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            cursor: pointer;
-            padding: 10px 6px;
-            font-weight: 500;
-            min-height: var(--touch-target-min);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            flex: 1;
-        }
-
-        .tab-btn:active {
-            transform: scale(0.95);
-        }
-
-        .tab-btn.active {
-            color: var(--text-pure);
-            font-weight: 700;
-            letter-spacing: 1.8px;
-            position: relative;
-        }
-
-        .tab-btn.active::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            width: 55%;
-            height: 2px;
-            background-color: var(--accent-color);
-            border-radius: 2px;
-        }
-
-        .crm-view {
-            display: none;
-            flex-direction: column;
-            gap: 20px;
-            animation: viewFadeIn 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .crm-view.active {
-            display: flex;
-        }
-
-        @keyframes viewFadeIn {
-            from { opacity: 0; transform: translateY(4px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .panel-card {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-subtle);
-            border-radius: 8px;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            transition: all 0.2s ease;
-        }
-
-        .panel-title {
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            color: var(--text-muted);
-            border-bottom: 1px solid var(--border-subtle);
-            padding-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-weight: 600;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        label {
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--text-muted);
-            font-weight: 500;
-        }
-
-        input[type="text"], input[type="number"], select {
-            background-color: var(--bg-oled);
-            border: 1px solid var(--border-subtle);
-            color: var(--text-pure);
-            padding: 14px;
-            font-size: 16px; /* Evita el zoom automático en navegadores móviles */
-            font-family: inherit;
-            outline: none;
-            border-radius: 6px;
-            min-height: var(--touch-target-min);
-            transition: border-color 0.2s ease;
-        }
-
-        input[type="text"]:focus, input[type="number"]:focus, select:focus {
-            border-color: var(--accent-color);
-        }
-
-        .input-hint {
-            font-size: 11px; 
-            color: var(--text-muted);
-            margin-top: -2px;
-        }
-
-        .filter-stack {
-            display: flex;
-            gap: 8px;
-            overflow-x: auto;
-            padding-bottom: 4px;
-            scrollbar-width: none;
-        }
-        .filter-stack::-webkit-scrollbar { display: none; }
-
-        .filter-chip {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-subtle);
-            color: var(--text-muted);
-            padding: 10px 16px;
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            border-radius: 20px;
-            white-space: nowrap;
-            cursor: pointer;
-            min-height: 38px;
-        }
-        .filter-chip.active {
-            border-color: var(--accent-color);
-            color: var(--text-pure);
-        }
-
-        .btn-action {
-            background-color: var(--accent-color);
-            color: var(--accent-contrast);
-            border: 1px solid var(--accent-color);
-            padding: 16px;
-            font-size: 13px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            border-radius: 6px;
-            cursor: pointer;
-            min-height: var(--touch-target-min);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            transition: opacity 0.2s ease, transform 0.1s ease;
-            text-decoration: none;
-        }
-
-        .btn-action:disabled {
-            background-color: var(--border-subtle);
-            color: var(--text-muted);
-            border-color: var(--border-subtle);
-            cursor: not-allowed;
-            opacity: 0.4;
-        }
-
-        .btn-action:active:not(:disabled) {
-            transform: scale(0.98);
-        }
-
-        .btn-secondary {
-            background: none;
-            border: 1px solid var(--border-subtle);
-            color: var(--text-pure);
-        }
-
-        .btn-row-action {
-            background-color: transparent;
-            border: 1px solid var(--border-subtle);
-            color: var(--text-pure);
-            padding: 6px 12px;
-            font-size: 11px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            border-radius: 4px;
-            cursor: pointer;
-            min-height: 36px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 4px;
-            transition: border-color 0.2s ease, background-color 0.2s ease;
-            white-space: nowrap;
-        }
-        .btn-row-action:hover, .btn-row-action:active {
-            border-color: var(--text-pure);
-            background-color: rgba(255, 255, 255, 0.05);
-        }
-
-        .empty-canvas {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 36px 20px;
-            text-align: center;
-            border: 2px dashed var(--border-subtle);
-            border-radius: 8px;
-            background-color: var(--card-bg);
-        }
-
-        .empty-icon-btn {
-            width: 54px;
-            height: 54px;
-            border-radius: 50%;
-            background-color: rgba(255, 255, 255, 0.02);
-            border: 1px solid var(--border-subtle);
-            color: var(--accent-color);
-            font-size: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 14px;
-            cursor: pointer;
-        }
-
-        .empty-canvas h3 { font-size: 13px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
-        .empty-canvas p { font-size: 12px; color: var(--text-muted); max-width: 260px; line-height: 1.5; }
-
-        .data-list {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .list-item {
-            border: 1px solid var(--border-subtle);
-            border-radius: 6px;
-            padding: 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            background-color: var(--card-bg);
-        }
-
-        .item-main-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            width: 100%;
-            gap: 12px;
-        }
-
-        .item-meta {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            flex: 1;
-        }
-
-        .item-meta h4 {
-            font-size: 15px;
-            font-weight: 600;
-            color: var(--text-pure);
-            word-break: break-all;
-        }
-
-        .item-meta p {
-            font-size: 12px;
-            color: var(--text-muted);
-        }
-
-        .telemetry-row {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-top: 4px;
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .telemetry-badge {
-            background-color: rgba(255,255,255,0.06);
-            color: var(--text-pure);
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-weight: 600;
-        }
-
-        .glyph-container {
-            width: 36px;
-            height: 36px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-
-        .metadata-drawer {
-            display: none;
-            border-top: 1px dashed var(--border-subtle);
-            padding-top: 10px;
-            margin-top: 4px;
-            flex-direction: column;
-            gap: 6px;
-            animation: viewFadeIn 0.15s ease-out;
-        }
-        .metadata-drawer.active {
-            display: flex;
-        }
-        .metadata-line {
-            font-size: 11px;
-            font-family: monospace;
-            color: var(--text-muted);
-            display: flex;
-            justify-content: space-between;
-        }
-        .metadata-line strong {
-            color: var(--text-pure);
-        }
-
-        /* Contenedor de Clientes dentro de la Ficha */
-        .embedded-leads-container {
-            border-top: 1px solid var(--border-subtle);
-            padding-top: 12px;
-            margin-top: 6px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        .embedded-lead-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background-color: rgba(255, 255, 255, 0.02);
-            padding: 8px 12px;
-            border-radius: 4px;
-            border: 1px solid rgba(255, 255, 255, 0.04);
-        }
-        .embedded-lead-info {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .item-actions-wrapper {
-            display: flex;
-            gap: 8px;
-            justify-content: flex-end;
-            width: 100%;
-            margin-top: 4px;
-        }
-
-        .crystallized-section {
-            margin-top: 12px;
-            opacity: 0.6;
-            transition: opacity 0.2s ease;
-        }
-        .crystallized-section:hover { opacity: 0.95; }
-        .crystallized-card {
-            background: repeating-linear-gradient(45deg, #000, #000 4px, #060608 4px, #060608 8px);
-            border: 1px dotted #3f3f46;
-        }
-
-        .score-badge {
-            font-size: 10px;
-            font-weight: 800;
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-family: monospace;
-            color: #000000;
-            text-transform: uppercase;
-            white-space: nowrap;
-        }
-        .score-badge.A  { background-color: var(--scale-a); }
-        .score-badge.B1 { background-color: var(--scale-b1); }
-        .score-badge.B2 { background-color: var(--scale-b2); }
-        .score-badge.C  { background-color: var(--scale-c); }
-
-        .wizard-step {
-            display: none;
-            flex-direction: column;
-            gap: 16px;
-        }
-        .wizard-step.active { display: flex; }
-
-        .options-stack {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .option-btn {
-            background-color: var(--bg-oled);
-            border: 1px solid var(--border-subtle);
-            color: var(--text-pure);
-            padding: 16px;
-            text-align: left;
-            font-size: 14px;
-            border-radius: 6px;
-            cursor: pointer;
-            min-height: var(--touch-target-min);
-            transition: border-color 0.2s ease, background-color 0.2s ease;
-        }
-        .option-btn:active { 
-            border-color: var(--accent-color);
-            background-color: rgba(255,255,255,0.02);
-        }
-
-        /* Arquitectura de Modales y Pantallas de Configuración */
-        .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-color: var(--bg-oled);
-            z-index: 1500;
-            display: none;
-            flex-direction: column;
-            padding: 24px;
-            overflow-y: auto;
-        }
-        .modal-overlay.active { display: flex; }
-        
-        .modal-content-wrapper {
-            max-width: 400px;
-            width: 100%;
-            margin: 0 auto;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        /* Recursos de Aislamiento Visual Lumínico y Destellos Cognitivos */
-        @keyframes pulseGlow {
-            0% { outline: 1px solid var(--text-muted); box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.85), 0 0 4px rgba(255, 255, 255, 0.2); }
-            50% { outline: 2px solid var(--text-pure); box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.85), 0 0 16px rgba(255, 255, 255, 0.7); }
-            100% { outline: 1px solid var(--text-muted); box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.85), 0 0 4px rgba(255, 255, 255, 0.2); }
-        }
-        
-        .ux-spotlight-active {
-            position: relative !important;
-            z-index: 1300 !important;
-            animation: pulseGlow 2s infinite ease-in-out !important;
-            background-color: var(--card-bg) !important;
-        }
-        
-        /* Mitigación estricta de saltos de posición en Onboarding */
-        header.ux-spotlight-active {
-            position: sticky !important;
-            background-color: #000000 !important;
-        }
-        .nav-tabs.ux-spotlight-active {
-            position: fixed !important;
-            background-color: #000000 !important;
-        }
-
-        /* Bloqueador Global de Interacciones durante el Tour */
-        .tour-interaction-blocker {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 1800;
-            display: none;
-            background: transparent;
-            pointer-events: auto;
-        }
-
-        /* Sistema Inyectado de Notificaciones Toast Minimalistas */
-        .toast-container {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 3000;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            width: calc(100% - 32px);
-            max-width: 360px;
-            pointer-events: none;
-        }
-        .toast-notification {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-subtle);
-            color: var(--text-pure);
-            padding: 12px 16px;
-            font-size: 11px;
-            font-family: monospace;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            border-radius: 6px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.9);
-            animation: toastFadeIn 0.22s cubic-bezier(0.4, 0, 0.2, 1);
-            pointer-events: auto;
-        }
-        @keyframes toastFadeIn {
-            from { opacity: 0; transform: translateY(-8px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Correcciones de Micro-diseño para pantallas muy pequeñas */
-        @media (max-width: 340px) {
-            body { padding: 0px 4px 85px 4px; }
-            .panel-card { padding: 14px; gap: 12px; }
-            input[type="text"], input[type="number"], select { padding: 10px; font-size: 15px; }
-            .btn-action { padding: 12px; font-size: 12px; }
-            .btn-row-action { padding: 4px 8px; font-size: 10px; }
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-    <!-- Bloqueador Táctil para el Tour Guiado -->
     <div id="tour-blocker" class="tour-interaction-blocker"></div>
 
-    <!-- Onboarding Adaptado: Flujo de Bienvenida con Tono Digno y Claro -->
-    <div id="view-welcome" class="modal-overlay" style="justify-content: center; align-items: center;">
-        <div class="modal-content-wrapper" style="border: 1px solid var(--border-subtle); padding: 24px; background-color: var(--card-bg); border-radius: 8px; box-shadow: 0 12px 32px rgba(0,0,0,0.5);">
+    <div id="view-welcome" class="modal-overlay">
+        <div class="modal-content-wrapper" style="height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
             
-            <!-- Slide 1: Soberanía Absoluta -->
+            <div style="width:100%; margin-bottom:12px; display:flex; gap:5px;">
+                <div id="pb-1" style="flex:1; height:4px; background:var(--text-pure); border-radius:2px; transition:background 0.15s ease;"></div>
+                <div id="pb-2" style="flex:1; height:4px; background:#27272a; border-radius:2px; transition:background 0.15s ease;"></div>
+                <div id="pb-3" style="flex:1; height:4px; background:#27272a; border-radius:2px; transition:background 0.15s ease;"></div>
+                <div id="pb-4" style="flex:1; height:4px; background:#27272a; border-radius:2px; transition:background 0.15s ease;"></div>
+            </div>
+            
             <div id="welcome-slide-1" class="welcome-slide">
-                <span style="font-size: 11px; color: var(--text-muted); letter-spacing: 1.5px; font-weight:700;">[PRIVACIDAD INTEGRAL]</span>
-                <h2 style="font-size: 15px; text-transform: uppercase; letter-spacing: 2px; margin: 8px 0 14px 0;">Soberanía Absoluta</h2>
-                <p style="font-size: 13.5px; color: var(--text-pure); line-height: 1.6; margin-bottom: 16px; text-align: left;">
-                    Toda la información y los datos que registre se quedan guardados exclusivamente dentro de este teléfono o computadora. 
-                </p>
-                <p style="font-size: 13px; color: var(--text-muted); line-height: 1.6; margin-bottom: 24px; text-align: left;">
-                    Este sistema no utiliza internet para enviar sus registros a servidores externos ni a otras empresas. Nadie más que usted puede ver sus datos, asegurando un control íntimo, confidencial y sumamente protegido.
-                </p>
-                <button class="btn-action" style="width: 100%;" onclick="advanceWelcomeSlide(2)">
-                    [Siguiente]
-                </button>
+                <div class="slide-header" style="margin-top: 56px; text-align: center;">
+                    <span style="font-size: 16px; color: var(--text-muted); letter-spacing: 1.5px; font-weight:700;">[PRIVACIDAD INTEGRAL]</span>
+                    <h2 style="font-size: 32px; text-transform: uppercase; letter-spacing: 2px; margin-top: 8px;">Soberanía Absoluta</h2>
+                </div>
+                <div class="slide-body" style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                    <div style="font-size: 48px; margin-bottom: 24px; color: var(--text-pure); text-align: center;">🛡️</div>
+                    <p style="font-size: 18px; color: var(--text-pure); line-height: 1.8; margin-bottom: 16px; text-align: center;">
+                        Toda la información y los datos que registre se quedan guardados exclusivamente dentro de este teléfono o computadora. 
+                    </p>
+                    <p style="font-size: 16px; color: var(--text-muted); line-height: 1.8; text-align: center;">
+                        Este sistema no utiliza internet para enviar sus registros a servidores externos ni a otras empresas. Nadie más que usted puede ver sus datos, asegurando un control íntimo, confidencial y sumamente protegido.
+                    </p>
+                </div>
+                <div class="slide-footer" style="width: 100%; margin-bottom: 64px;">
+                    <button class="btn-action" style="width: 100%; background-color: #27272a; color: var(--text-pure); border-color: #27272a;" onclick="advanceWelcomeSlide(2)">
+                        [Siguiente]
+                    </button>
+                </div>
             </div>
 
-            <!-- Slide 2: Almacenamiento Local -->
             <div id="welcome-slide-2" class="welcome-slide" style="display: none;">
-                <span style="font-size: 11px; color: var(--text-muted); letter-spacing: 1.5px; font-weight:700;">[MEMORIA DEL EQUIPO]</span>
-                <h2 style="font-size: 15px; text-transform: uppercase; letter-spacing: 2px; margin: 8px 0 14px 0;">Resguardo Local</h2>
-                <p style="font-size: 13.5px; color: var(--text-pure); line-height: 1.6; margin-bottom: 14px; text-align: left;">
-                    Al no existir contraseñas ni servidores en la nube, los datos dependen enteramente de la memoria interna de su navegador web.
-                </p>
-                <div style="text-align: left; font-size: 12.5px; line-height: 1.5; margin-bottom: 24px; display: flex; flex-direction: column; gap: 12px; border-top: 1px dashed var(--border-subtle); padding-top: 14px;">
-                    <div><strong style="color: var(--scale-c);">▲ ADVERTENCIA IMPORTANTE:</strong> Si usted borra el historial o la cache del navegador, o si decide cambiar de dispositivo, toda la información guardada se perderá permanentemente. Se aconseja utilizar la opción de respaldo en archivo JSON para prevenir pérdidas.</div>
+                <div class="slide-header" style="margin-top: 56px; text-align: center;">
+                    <span style="font-size: 16px; color: var(--text-muted); letter-spacing: 1.5px; font-weight:700;">[MEMORIA DEL EQUIPO]</span>
+                    <h2 style="font-size: 32px; text-transform: uppercase; letter-spacing: 2px; margin-top: 8px;">Resguardo Local</h2>
                 </div>
-                <div style="display: flex; gap: 8px;">
+                <div class="slide-body" style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                    <div style="font-size: 48px; margin-bottom: 24px; color: var(--text-pure); text-align: center;">⚠️</div>
+                    <p style="font-size: 18px; color: var(--text-pure); line-height: 1.8; margin-bottom: 16px; text-align: center;">
+                        Al no existir contraseñas ni servidores en la nube, los datos dependen enteramente de la memoria interna de su navegador web.
+                    </p>
+                    <div style="text-align: center; font-size: 16px; line-height: 1.8; display: flex; flex-direction: column; gap: 12px; border-top: 1px dashed var(--border-subtle); padding-top: 16px;">
+                        <div><strong style="color: var(--scale-c);">▲ ADVERTENCIA IMPORTANTE:</strong> Si usted borra el historial o la cache del navegador, o si decide cambiar de dispositivo, toda la información guardada se perderá permanentemente. Se aconseja utilizar la opción de respaldo en archivo JSON para prevenir pérdidas.</div>
+                    </div>
+                </div>
+                <div class="slide-footer" style="width: 100%; margin-bottom: 64px; display: flex; gap: 8px;">
                     <button class="btn-action btn-secondary" style="flex: 1;" onclick="advanceWelcomeSlide(1)">[Atrás]</button>
-                    <button class="btn-action" style="flex: 2;" onclick="advanceWelcomeSlide(3)">[Siguiente]</button>
+                    <button class="btn-action" style="flex: 2; background-color: #27272a; color: var(--text-pure); border-color: #27272a;" onclick="advanceWelcomeSlide(3)">[Siguiente]</button>
                 </div>
             </div>
 
-            <!-- Slide 3: Calificación Inmobiliaria -->
             <div id="welcome-slide-3" class="welcome-slide" style="display: none;">
-                <span style="font-size: 11px; color: var(--text-muted); letter-spacing: 1.5px; font-weight:700;">[EVALUACIÓN DIGNA]</span>
-                <h2 style="font-size: 15px; text-transform: uppercase; letter-spacing: 2px; margin: 8px 0 14px 0;">Prioridad de Clientes</h2>
-                <p style="font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 14px; text-align: left;">
-                    El sistema clasifica de forma automática el interés y viabilidad de los prospectos mediante un orden claro y ad-hoc al contexto de corretaje:
-                </p>
-                <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; text-align: left;">
-                    <div style="border: 1px solid rgba(255,255,255,0.03); padding: 8px; border-radius: 4px; background: rgba(0,0,0,0.2); display: flex; align-items: center; gap: 10px;">
-                        <span class="score-badge A">A</span>
-                        <span style="font-size:11.5px; color:var(--text-pure);">Cliente con fondos listos o crédito aprobado para comprar ya.</span>
-                    </div>
-                    <div style="border: 1px solid rgba(255,255,255,0.03); padding: 8px; border-radius: 4px; background: rgba(0,0,0,0.2); display: flex; align-items: center; gap: 10px;">
-                        <span class="score-badge B1">B</span>
-                        <span style="font-size:11.5px; color:var(--text-pure);">Cliente sumamente interesado en plazos estándar de búsqueda.</span>
-                    </div>
-                    <div style="border: 1px solid rgba(255,255,255,0.03); padding: 8px; border-radius: 4px; background: rgba(0,0,0,0.2); display: flex; align-items: center; gap: 10px;">
-                        <span class="score-badge B2">C</span>
-                        <span style="font-size:11.5px; color:var(--text-pure);">Cliente evaluando opciones comerciales o aprobación bancaria.</span>
-                    </div>
-                    <div style="border: 1px solid rgba(255,255,255,0.03); padding: 8px; border-radius: 4px; background: rgba(0,0,0,0.2); display: flex; align-items: center; gap: 10px;">
-                        <span class="score-badge C">D</span>
-                        <span style="font-size:11.5px; color:var(--text-pure);">Interés inicial muy temprano, o posee dificultades comerciales.</span>
+                <div class="slide-header" style="margin-top: 56px; text-align: center;">
+                    <span style="font-size: 16px; color: var(--text-muted); letter-spacing: 1.5px; font-weight:700;">[EVALUACIÓN DIGNA]</span>
+                    <h2 style="font-size: 32px; text-transform: uppercase; letter-spacing: 2px; margin-top: 8px;">Prioridad de Clientes</h2>
+                </div>
+                <div class="slide-body" style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                    <div style="font-size: 48px; margin-bottom: 24px; color: var(--text-pure); text-align: center;">▲▼</div>
+                    <p style="font-size: 16px; color: var(--text-muted); line-height: 1.8; margin-bottom: 16px; text-align: center;">
+                        Clasificación automática del interés y viabilidad de los prospectos mediante un orden claro y ad-hoc al corretaje:
+                    </p>
+                    <div style="display: flex; flex-direction: column; gap: 8px; text-align: left; width: 100%;">
+                        <div style="border: 1px solid rgba(255,255,255,0.03); padding: 8px; border-radius: 4px; background: rgba(0,0,0,0.2); display: flex; align-items: center; gap: 12px;">
+                            <span class="score-badge A">A</span>
+                            <span style="font-size: 13px; color: var(--text-pure);">Fondos listos o crédito aprobado para comprar ya.</span>
+                        </div>
+                        <div style="border: 1px solid rgba(255,255,255,0.03); padding: 8px; border-radius: 4px; background: rgba(0,0,0,0.2); display: flex; align-items: center; gap: 12px;">
+                            <span class="score-badge B1">B</span>
+                            <span style="font-size: 13px; color: var(--text-pure);">Sumamente interesado en plazos estándar de búsqueda.</span>
+                        </div>
+                        <div style="border: 1px solid rgba(255,255,255,0.03); padding: 8px; border-radius: 4px; background: rgba(0,0,0,0.2); display: flex; align-items: center; gap: 12px;">
+                            <span class="score-badge B2">C</span>
+                            <span style="font-size: 13px; color: var(--text-pure);">Evaluando opciones comerciales o aprobación bancaria.</span>
+                        </div>
+                        <div style="border: 1px solid rgba(255,255,255,0.03); padding: 8px; border-radius: 4px; background: rgba(0,0,0,0.2); display: flex; align-items: center; gap: 12px;">
+                            <span class="score-badge C">D</span>
+                            <span style="font-size: 13px; color: var(--text-pure);">Interés inicial muy temprano, o posee dificultades.</span>
+                        </div>
                     </div>
                 </div>
-                <div style="display: flex; gap: 8px;">
+                <div class="slide-footer" style="width: 100%; margin-bottom: 64px; display: flex; gap: 8px;">
                     <button class="btn-action btn-secondary" style="flex: 1;" onclick="advanceWelcomeSlide(2)">[Atrás]</button>
-                    <button class="btn-action" style="flex: 2;" onclick="advanceWelcomeSlide(4)">[Siguiente]</button>
+                    <button class="btn-action" style="flex: 2; background-color: #27272a; color: var(--text-pure); border-color: #27272a;" onclick="advanceWelcomeSlide(4)">[Siguiente]</button>
                 </div>
             </div>
 
-            <!-- Slide 4: Capacidad Máxima -->
             <div id="welcome-slide-4" class="welcome-slide" style="display: none;">
-                <span style="font-size: 11px; color: var(--text-muted); letter-spacing: 1.5px; font-weight:700;">[LÍMITES DEL PILOTO]</span>
-                <h2 style="font-size: 15px; text-transform: uppercase; letter-spacing: 2px; margin: 8px 0 14px 0;">Control de Carga</h2>
-                <p style="font-size: 13.5px; color: var(--text-pure); line-height: 1.6; margin-bottom: 16px; text-align: left;">
-                    Para conservar un enfoque nítido y asegurar un rendimiento óptimo y liviano, el piloto impone dos límites físicos:
-                </p>
-                <div style="text-align: left; font-size: 12.5px; line-height: 1.5; margin-bottom: 24px; display: flex; flex-direction: column; gap: 10px; border-top: 1px dashed var(--border-subtle); padding-top: 14px;">
-                    <div><strong style="color: var(--text-pure);">■ PROPIEDADES ACTIVAS:</strong> Un máximo estricto de hasta 4 propiedades en gestión paralela. Se pueden archivar para dar espacio a otras.</div>
-                    <div><strong style="color: var(--text-pure);">■ MÁXIMO DE CLIENTES:</strong> Cada propiedad puede almacenar un tope máximo de hasta 10 clientes calificados de forma simultánea.</div>
+                <div class="slide-header" style="margin-top: 56px; text-align: center;">
+                    <span style="font-size: 16px; color: var(--text-muted); letter-spacing: 1.5px; font-weight:700;">[LÍMITES DEL PILOTO]</span>
+                    <h2 style="font-size: 32px; text-transform: uppercase; letter-spacing: 2px; margin-top: 8px;">Capacidad Máxima</h2>
                 </div>
-                <div style="display: flex; gap: 8px; width: 100%;">
+                <div class="slide-body" style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                    <div style="font-size: 48px; margin-bottom: 24px; color: var(--scale-c); text-align: center;">🛑</div>
+                    <p style="font-size: 16px; color: var(--text-muted); line-height: 1.8; margin-bottom: 16px; text-align: center;">
+                        Para garantizar una fluidez impecable en esta fase beta, el sistema opera con umbrales máximos fijos integrados en su núcleo local:
+                    </p>
+                    <div style="text-align: center; font-size: 14px; line-height: 1.8; display: flex; flex-direction: column; gap: 16px; border-top: 1px dashed var(--border-subtle); padding-top: 16px; width: 100%;">
+                        <div>
+                            <strong style="color: var(--scale-c);">■ INVENTARIO DE ACTIVOS:</strong>
+                            <div style="color: var(--text-pure); margin-top: 4px;">Puede gestionar un máximo simultáneo de 4 propiedades activas. Si desea incorporar una nueva, deberá archivar otra.</div>
+                            <div style="font-size: 18px; margin-top: 6px; color: var(--scale-c);">📦 [ ▫ ▫ ▫ ▫ ]</div>
+                        </div>
+                        <div>
+                            <strong style="color: var(--scale-c);">■ MÁXIMO DE CLIENTES:</strong>
+                            <div style="color: var(--text-pure); margin-top: 4px;">Cada propiedad puede almacenar un tope máximo de hasta 10 clientes calificados de forma simultánea.</div>
+                            <div style="font-size: 18px; margin-top: 6px; color: var(--scale-c);">👥 👥 👥 👥 👥</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="slide-footer" style="width: 100%; margin-bottom: 64px; display: flex; gap: 8px;">
                     <button class="btn-action btn-secondary" style="flex: 1;" onclick="advanceWelcomeSlide(3)">[Atrás]</button>
-                    <button class="btn-action" style="flex: 2;" onclick="initializeInterfaceMapOnboarding()">[Entrar]</button>
+                    <button class="btn-action" style="flex: 2; background-color: #27272a; color: var(--text-pure); border-color: #27272a;" onclick="initializeInterfaceMapOnboarding()">[Ingresar al CRM]</button>
                 </div>
             </div>
-
+            
         </div>
     </div>
 
-    <!-- Panel de Guiado Centralizado (Con Botones de Navegación Estrictos de Avance y Retroceso) -->
-    <div id="onboarding-guide-widget" style="position: fixed; width: calc(100% - 24px); max-width: 400px; background-color: #09090b; border: 1px solid var(--border-subtle); border-radius: 8px; padding: 18px; z-index: 2000; display: none; flex-direction: column; gap: 12px; box-shadow: 0 16px 36px rgba(0,0,0,0.95); left: 50%; transform: translateX(-50%); transition: top 0.25s ease, bottom 0.25s ease;">
+    <div id="onboarding-guide-widget" style="position: fixed; width: calc(100% - 24px); max-width: 400px; background-color: #09090b; border: 1px solid var(--border-subtle); border-radius: 8px; padding: 18px; z-index: 2000; display: none; flex-direction: column; gap: 12px; box-shadow: 0 16px 36px rgba(0,0,0,0.95); left: 50%; transform: translateX(-50%); transition: bottom 0.3s cubic-bezier(0.4, 0, 0.2, 1); contain: layout; will-change: bottom;">
         <div style="display: flex; justify-content: space-between; align-items: center;">
             <span id="onboarding-widget-title" style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--scale-a);">Fase Guía</span>
+            <button class="btn-row-action" style="padding: 2px 6px; min-height:24px; font-size:10px; border-color:transparent; color:var(--text-muted);" onclick="bypassOnboardingCompletely()">[Omitir Guía]</button>
         </div>
         <p id="onboarding-widget-body" style="font-size: 13px; line-height: 1.5; color: var(--text-pure);"></p>
-        <div id="onboarding-widget-actions" style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 4px;"></div>
+        <div id="onboarding-widget-actions" style="display: flex; justify-content: flex-end; gap: 8px; border-top: 1px dashed var(--border-subtle); padding-top: 10px; margin-top: 4px;"></div>
     </div>
 
-    <!-- Ajustes / Perfil -->
-    <div id="view-profile" class="modal-overlay">
-        <!-- Sub-Tour Guiado exclusivo dentro de la sección de ajustes -->
-        <div id="settings-guide-widget" style="max-width: 400px; width:100%; margin: 0 auto 12px auto; background-color: #0d0d11; border: 1px solid var(--scale-a); border-radius: 6px; padding: 14px; display: none; flex-direction: column; gap: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.8);">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <span style="font-size:10px; font-weight:700; text-transform:uppercase; color:var(--scale-a);">Guía Interna de Ajustes</span>
-                <span id="settings-guide-step" style="font-size:10px; font-family:monospace; color:var(--text-muted);">Paso 1 de 2</span>
-            </div>
-            <p id="settings-guide-text" style="font-size:12px; line-height:1.4; color:var(--text-pure);"></p>
-            <div style="display:flex; gap:6px; justify-content:flex-end; margin-top:4px;">
-                <button id="btn-settings-prev" class="btn-row-action" style="padding:2px 8px; font-size:10px;" onclick="navigateSettingsTour(-1)">[Atrás]</button>
-                <button id="btn-settings-next" class="btn-row-action" style="padding:2px 8px; font-size:10px; border-color:var(--text-pure);" onclick="navigateSettingsTour(1)">[Siguiente]</button>
-            </div>
+    <div id="settings-guide-widget" style="position: absolute; width: calc(100% - 32px); max-width: 360px; background-color: #0d0d11; border: 1px solid var(--scale-a); border-radius: 6px; padding: 14px; z-index: 2100; display: none; flex-direction: column; gap: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.9); left: 50%; transform: translateX(-50%);">
+        <h5 id="settings-guide-title" style="font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--scale-a);">Ajustes Guía</h5>
+        <p id="settings-guide-body" style="font-size: 12px; color: var(--text-pure); line-height: 1.4;"></p>
+        <div style="display: flex; justify-content: flex-end; gap: 6px; margin-top: 4px;">
+            <button id="settings-guide-btn-prev" class="btn-row-action" style="font-size:10px; padding:4px 8px; min-height:28px;" onclick="navigateSettingsTour(-1)">[Atrás]</button>
+            <button id="settings-guide-btn-next" class="btn-row-action" style="font-size:10px; padding:4px 8px; min-height:28px; border-color:var(--scale-a);" onclick="navigateSettingsTour(1)">[Entendido]</button>
         </div>
+    </div>
 
+    <div id="toast-root" class="toast-container"></div>
+
+    <div id="view-profile" class="modal-overlay">
         <div class="modal-content-wrapper">
             <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-subtle); padding-bottom: 12px;">
-                <h2 style="font-size: 14px; text-transform: uppercase; letter-spacing: 2px;">Configuración</h2>
+                <h3 style="font-size: 13px; text-transform: uppercase; letter-spacing: 1.5px;">Ajustes de Plataforma</h3>
                 <button class="btn-row-action" onclick="toggleProfileModal(false)">[Cerrar]</button>
             </div>
-
+            
             <div class="panel-card" id="settings-card-profile">
-                <div class="panel-title">Perfil Comercial</div>
+                <div class="panel-title">Identidad del Asesor</div>
                 <div class="form-group">
-                    <label for="input-broker-name">Nombre de la Oficina</label>
-                    <input type="text" id="input-broker-name" placeholder="Ej: Altura Propiedades">
+                    <label for="input-broker-name">Nombre de Organización / Fantasía</label>
+                    <input type="text" id="input-broker-name" placeholder="Ej: Boutique Assets">
                 </div>
                 <button class="btn-action" onclick="saveProfileConfiguration()">
-                    [Guardar Cambios]
+                    [Guardar Configuración]
                 </button>
             </div>
 
             <div class="panel-card" id="settings-card-templates">
-                <div class="panel-title">Mensajes para WhatsApp</div>
-                <p style="font-size:11px; color:var(--text-muted); line-height:1.4;">Personalice los textos según la prioridad del cliente. Use: <code>{name}</code> para el cliente, <code>{slug}</code> para la propiedad y <code>{broker}</code> para su oficina.</p>
+                <div class="panel-title">Plantillas Dinámicas WhatsApp</div>
+                <p style="font-size: 11px; color: var(--text-muted); line-height: 1.4; margin-top:-6px;"> Use <code>{name}</code>, <code>{slug}</code> y <code>{broker}</code> para variables.</p>
                 
                 <div class="form-group">
-                    <label style="color: var(--scale-a);">Prioridad Alta [A-Cierre]</label>
+                    <label style="color: var(--scale-a);">Prioridad Inmediata [A-Cierre]</label>
                     <input type="text" id="wats-template-A">
                 </div>
                 <div class="form-group">
-                    <label style="color: var(--scale-b1);">Prioridad Media Alta [B1-Calificado]</label>
+                    <label style="color: var(--scale-b1);">Prioridad Avanzada [B1-Calificado]</label>
                     <input type="text" id="wats-template-B1">
                 </div>
                 <div class="form-group">
-                    <label style="color: var(--scale-b2);">Prioridad Media Baja [B2-Evaluación]</label>
+                    <label style="color: var(--scale-b2);">Prioridad Baja [B2-Evaluación]</label>
                     <input type="text" id="wats-template-B2">
                 </div>
                 <div class="form-group">
                     <label style="color: var(--scale-c);">Prioridad Baja [C-Fricción]</label>
                     <input type="text" id="wats-template-C">
                 </div>
-                
                 <button class="btn-action" onclick="saveProfileConfiguration()">
                     [Actualizar Mensajes]
                 </button>
@@ -789,56 +201,45 @@
         </div>
     </div>
 
-    <!-- Viewport Principal -->
     <div class="crm-viewport">
-        
         <header id="ui-main-header">
             <div class="header-meta">
                 <h1 id="ui-brand-name">Boutique Assets</h1>
                 <p id="ui-agent-badge">Agente: Psicoandino</p>
             </div>
             <button id="ui-settings-trigger" class="btn-row-action" onclick="toggleProfileModal(true)" style="border-radius: 50%; width: 40px; height: 40px; padding: 0; display: flex; align-items: center; justify-content: center;" title="Ajustes">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 0 2.83 0 2 2 0 0 0 0-2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V15zM10 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 0 0 2.83 2 2 0 0 0 2.83 0l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H10zM14 4.6a1.65 1.65 0 0 0-1.82-.33l-.06-.06a2 2 0 0 0-2.83 0 2 2 0 0 0 0 2.83l.06.06a1.65 1.65 0 0 0 1.82.33 1.65 1.65 0 0 0 1-1.51V4.6zM4.6 10a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 0-2.83 0 2 2 0 0 0 0 2.83l.06.06a1.65 1.65 0 0 0 1.82.33 1.65 1.65 0 0 0 1-1.51V10z"></path></svg>
             </button>
         </header>
 
-        <!-- Vista: Inventario / Propiedades -->
-        <main id="view-inventory" class="crm-view active">
-            <div class="panel-card" id="inventory-form-card" style="display: none;">
-                <div class="panel-title">
-                    <span>Agregar Nueva Propiedad</span>
-                    <span id="inventory-counter" style="font-family: monospace;">0 / 4</span>
-                </div>
-                <form id="form-property" class="form-group" style="gap:16px;" onsubmit="createNewAsset(event)">
-                    <div class="form-group">
-                        <label for="prop-slug">Código o Nombre Corto</label>
-                        <input type="text" id="prop-slug" placeholder="Ej: vitacura-205, depto-isabel" required>
-                        <p class="input-hint">* Este nombre abreviado no se podrá modificar posteriormente.</p>
-                    </div>
-                    <div class="form-group">
-                        <label for="prop-commune">Comuna</label>
-                        <select id="prop-commune" required>
-                            <option value="Vitacura">Vitacura</option>
-                            <option value="Lo Barnechea">Lo Barnechea</option>
-                            <option value="Las Condes">Las Condes</option>
-                            <option value="Otros">Otros</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="prop-price">Precio Sugerido (UF)</label>
-                        <input type="number" id="prop-price" placeholder="Ej: 24000" min="1" required>
-                    </div>
-                    <div style="display:flex; gap:10px; margin-top:4px;">
-                        <button type="submit" class="btn-action" style="flex:2;">[Guardar Propiedad]</button>
-                        <button type="button" class="btn-action btn-secondary" style="flex:1;" onclick="toggleAssetForm(false)">[Cancelar]</button>
-                    </div>
-                </form>
+        <section id="asset-creation-drawer" class="panel-card" style="display: none; animation: viewFadeIn 0.2s ease;">
+            <div class="panel-title">
+                <span>Nueva Propiedad Inmobiliaria</span>
+                <button class="btn-row-action" onclick="toggleAssetForm(false)">[Cancelar]</button>
             </div>
+            <div class="form-group">
+                <label for="asset-slug">Identificador Corto (Código / Referencia Única)</label>
+                <input type="text" id="asset-slug" placeholder="Ej: PENTHOUSE-ELOLF">
+                <span class="input-hint">Un nombre mnemotécnico para identificar el activo rápidamente.</span>
+            </div>
+            <div class="form-group">
+                <label for="asset-commune">Comuna</label>
+                <input type="text" id="asset-commune" placeholder="Ej: Las Condes">
+            </div>
+            <div class="form-group">
+                <label for="asset-price">Valor de Venta Neto (UF)</label>
+                <input type="number" id="asset-price" placeholder="Ej: 14500">
+            </div>
+            <button class="btn-action" onclick="saveNewAsset()">
+                [Inscribir Activo en LocalStorage]
+            </button>
+        </section>
 
+        <main id="view-inventory" class="crm-view active">
             <div class="panel-card" id="active-assets-card">
                 <div class="panel-title">
                     <span>Propiedades Activas</span>
-                    <button id="btn-trigger-add" class="btn-row-action" onclick="toggleAssetForm(true)">[Añadir]</button>
+                    <button class="btn-row-action" style="border-color: var(--text-pure);" onclick="toggleAssetForm(true)">[Añadir]</button>
                 </div>
                 <div id="active-inventory-list" class="data-list"></div>
             </div>
@@ -849,22 +250,18 @@
             </div>
         </main>
 
-        <!-- Vista: Clientes -->
         <main id="view-leads" class="crm-view">
             <div class="panel-card" id="leads-main-panel">
                 <div class="panel-title">Panel de Clientes</div>
-                
                 <div class="filter-stack">
                     <button class="filter-chip active" id="filter-all" onclick="setLeadFilter('ALL')">[Todos]</button>
                     <button class="filter-chip" id="filter-premium" onclick="setLeadFilter('HIGH')">[Destacados (A-Cierre)]</button>
                     <button class="filter-chip" id="filter-rev" onclick="toggleLeadSortOrder()">[Invertir Lista]</button>
                 </div>
-
                 <div id="leads-list" class="data-list"></div>
             </div>
         </main>
 
-        <!-- Vista: Simulador -->
         <main id="view-sandbox" class="crm-view">
             <div class="panel-card" id="sandbox-setup">
                 <div class="panel-title">Evaluador de Clientes</div>
@@ -879,998 +276,75 @@
                     <input type="text" id="sandbox-lead-name" placeholder="Ej: Constanza Riesco">
                 </div>
                 <div class="form-group">
-                    <label for="sandbox-lead-phone">Teléfono de WhatsApp</label>
-                    <input type="text" id="sandbox-lead-phone" placeholder="Ej: +56912345678">
+                    <label for="sandbox-lead-phone">Teléfono de Contacto (WhatsApp Internacional)</label>
+                    <input type="text" id="sandbox-lead-phone" placeholder="Ej: 56912345678">
                 </div>
-                <button class="btn-action" id="btn-start-wizard" onclick="initiateWizardExecution()">
-                    [Comenzar Cuestionario]
+                <button id="btn-start-wizard" class="btn-action" onclick="initiateSandboxWizardExecution()">
+                    [Iniciar Cuestionario de Calificación]
                 </button>
             </div>
 
-            <div class="panel-card" id="sandbox-wizard" style="display: none;">
+            <div class="panel-card" id="sandbox-wizard-panel" style="display: none;">
                 <div class="panel-title">
-                    <span>Preguntas de Calificación</span>
-                    <span id="wizard-progress" style="font-family: monospace;">Pregunta 1 de 4</span>
+                    <span id="wizard-progress">Pregunta 1 de 4</span>
+                    <button class="btn-row-action" style="color: var(--scale-c); border-color: transparent;" onclick="abortSandboxWizardContext()">[Abortar]</button>
                 </div>
-
-                <div class="wizard-step active" id="step-1">
-                    <label>1. ¿En cuánto tiempo estima realizar la compra de la propiedad?</label>
+                
+                <div id="step-1" class="wizard-step active">
+                    <label>¿Cuál es la situación financiera o método de pago del prospecto?</label>
                     <div class="options-stack">
-                        <button class="option-btn" onclick="registerWizardStepScore(1, 3, '&lt; 90 días')">Menos de 90 días (Prioridad Inmediata)</button>
-                        <button class="option-btn" onclick="registerWizardStepScore(1, 2, '3-6 meses')">De 3 a 6 meses (Plazo Estándar)</button>
-                        <button class="option-btn" onclick="registerWizardStepScore(1, 1, '+6 meses')">Mayor a 6 meses / Etapa Inicial</button>
+                        <button class="option-btn" onclick="advanceWizardStep(4, 'Capital disponible inmediato / Fondos propios acreditados')">[4 pts] Capital Propio / Fondos Listos</button>
+                        <button class="option-btn" onclick="advanceWizardStep(3, 'Crédito hipotecario aprobado formalmente por banco')">[3 pts] Hipotecario Aprobado</button>
+                        <button class="option-btn" onclick="advanceWizardStep(2, 'Pre-aprobación bancaria en trámite o evaluación')">[2 pts] Crédito en Pre-evaluación</button>
+                        <button class="option-btn" onclick="advanceWizardStep(0, 'Sin financiamiento estructurado o sujeto a venta de otro bien')">[0 pts] Sin Definición Fuerte</button>
                     </div>
                 </div>
 
-                <div class="wizard-step" id="step-2">
-                    <label>2. ¿Con qué respaldo financiero cuenta el interesado?</label>
+                <div id="step-2" class="wizard-step">
+                    <label>¿Cuál es la ventana temporal declarada para concretar la operación?</label>
                     <div class="options-stack">
-                        <button class="option-btn" onclick="registerWizardStepScore(2, 3, 'Fondos propios')">Fondos Propios (Compra al contado)</button>
-                        <button class="option-btn" onclick="registerWizardStepScore(2, 2, 'Pre-aprobado')">Crédito Hipotecario Pre-aprobado</button>
-                        <button class="option-btn" onclick="registerWizardStepScore(2, 1, 'En evaluación')">En Fase Inicial de Evaluación Bancaria</button>
+                        <button class="option-btn" onclick="advanceWizardStep(3, 'Cierre inmediato (Menos de 30 días)')">[3 pts] Cierre Inmediato (&lt; 30 días)</button>
+                        <button class="option-btn" onclick="advanceWizardStep(2, 'Corto plazo estándar (1 a 3 meses)')">[2 pts] Corto Plazo (1-3 meses)</button>
+                        <button class="option-btn" onclick="advanceWizardStep(1, 'Mediano plazo (Prospección temprana o mudanza a futuro)')">[1 pt] Mediano Plazo (&gt; 3 meses)</button>
                     </div>
                 </div>
 
-                <div class="wizard-step" id="step-3">
-                    <label>3. ¿Tiene exclusividad comercial de asesoría con usted?</label>
+                <div id="step-3" class="wizard-step">
+                    <label>Nivel de respuesta e interacción demostrado con el asesor:</label>
                     <div class="options-stack">
-                        <button class="option-btn" onclick="registerWizardStepScore(3, 2, 'Sí')">Sí, busca asesoría dedicada y exclusiva</button>
-                        <button class="option-btn" onclick="registerWizardStepScore(3, 1, 'No')">No, está evaluando opciones con múltiples agencias</button>
+                        <button class="option-btn" onclick="advanceWizardStep(2, 'Proactivo, envía documentación solicitada rápidamente')">[2 pts] Alta Respuesta / Entrega Documentos</button>
+                        <button class="option-btn" onclick="advanceWizardStep(1, 'Fluido, responde llamadas y mensajes con interés regular')">[1 pt] Respuesta Fluida Estándar</button>
+                        <button class="option-btn" onclick="advanceWizardStep(0, 'Esquivo o requiere insistencia reiterada del equipo')">[0 pts] Fricción / Interacción Difícil</button>
                     </div>
                 </div>
 
-                <div class="wizard-step" id="step-4">
-                    <label>4. ¿Cuál será el uso de la propiedad?</label>
+                <div id="step-4" class="wizard-step">
+                    <label>¿Cumple el activo seleccionado con sus expectativas críticas declaradas?</label>
                     <div class="options-stack">
-                        <button class="option-btn" onclick="registerWizardStepScore(4, 2, 'Residencia')">Vivienda Principal o Familiar</button>
-                        <button class="option-btn" onclick="registerWizardStepScore(4, 2, 'Inversión')">Inversión Patrimonial o Renta Urbana</button>
+                        <button class="option-btn" onclick="advanceWizardStep(2, 'Encaje absoluto en presupuesto, metraje y ubicación')">[2 pts] Match Total de Criterios</button>
+                        <button class="option-btn" onclick="advanceWizardStep(1, 'Parcial, requiere evaluar alguna concesión de diseño')">[1 pt] Match Parcial / Evaluando</button>
+                        <button class="option-btn" onclick="advanceWizardStep(0, 'Bajo encaje, manifiesta disconformidad explícita')">[0 pts] Disconformidad / Dudas Críticas</button>
                     </div>
                 </div>
             </div>
         </main>
 
-        <!-- Barra Fija Inferior con Dinámica Interactiva de Brackets -->
-        <nav class="nav-tabs" id="ui-bottom-tabs">
-            <button class="tab-btn active" id="tab-nav-inventory" onclick="executeViewMutation('inventory')">{Propiedades}</button>
-            <button class="tab-btn" id="tab-nav-leads" onclick="executeViewMutation('leads')">[Clientes]</button>
-            <button class="tab-btn" id="tab-nav-sandbox" onclick="executeViewMutation('sandbox')">[Simulador]</button>
+        <nav class="nav-tabs" id="ui-tabs-bar">
+            <button id="tab-inventory" class="tab-btn active" onclick="executeViewMutation('inventory')">
+                <span style="font-size: 14px; margin-bottom: 2px;">■</span>
+                <span id="lbl-tab-inventory">Activos [0]</span>
+            </button>
+            <button id="tab-leads" class="tab-btn" onclick="executeViewMutation('leads')">
+                <span style="font-size: 14px; margin-bottom: 2px;">▲</span>
+                <span id="lbl-tab-leads">Clientes</span>
+            </button>
+            <button id="tab-sandbox" class="tab-btn" onclick="executeViewMutation('sandbox')">
+                <span style="font-size: 14px; margin-bottom: 2px;">◆</span>
+                <span>Calificar</span>
+            </button>
         </nav>
-
     </div>
 
-    <script>
-        // Máquina de Estado Centralizada de Arquitectura SOBERANA
-        let state = {
-            profile: { 
-                name: 'Boutique Assets', 
-                welcomeSeen: false,
-                onboardingState: 'WELCOME', // Rango: 'WELCOME' | 'MAP' | 'CHOICE' | 'SIMULATION' | 'COMPLETED'
-                mapStep: 1,
-                tutorialStep: 1,
-                settingsTourSeen: false,
-                settingsStep: 1,
-                whatsappTemplates: {
-                    'A': 'Hola {name}, soy parte del equipo de {broker}. Analicé sus requerimientos de alta prioridad para la propiedad {slug}. Coordinemos una llamada de inmediato.',
-                    'B1': 'Hola {name}, coordinemos una llamada para revisar los detalles sobre la propiedad {slug} en {broker}.',
-                    'B2': 'Hola {name}, recibimos su solicitud de información para la propiedad {slug} en {broker}. Le comparto los datos.',
-                    'C': 'Hola {name}, confirmamos la recepción de sus datos para la propiedad {slug} en {broker}. Saludos.'
-                }
-            },
-            properties: [],
-            leads: [],
-            sandboxWizard: { currentStep: 1, totalScore: 0, currentLead: {} },
-            runtimeFilters: { leadFilter: 'ALL', reverseLeads: false }
-        };
-
-        const UF_CONVERSION_FACTOR = 38560; 
-
-        // Glosario de Capas de Prioridad Inmobiliaria
-        const TIER_NAMES = {
-            'A': 'A-Cierre',
-            'B1': 'B1-Calificado',
-            'B2': 'B2-Evaluación',
-            'C': 'C-Fricción'
-        };
-
-        document.addEventListener('DOMContentLoaded', () => {
-            loadStateFromStorage();
-            
-            const welcomeModal = document.getElementById('view-welcome');
-            if (!state.profile.welcomeSeen) {
-                welcomeModal.classList.add('active');
-                welcomeModal.style.display = 'flex';
-                advanceWelcomeSlide(1);
-            } else {
-                welcomeModal.classList.remove('active');
-                welcomeModal.style.display = 'none';
-                evaluateOnboardingStateExecution();
-            }
-
-            syncFormElements();
-            renderIntegratedInventory();
-            renderLeadsConsole();
-            refreshSandboxPropertyAllocation();
-            updateTabDynamicBrackets('inventory');
-        });
-
-        function triggerHapticFeedback() {
-            if (navigator.vibrate) {
-                navigator.vibrate(10);
-            }
-        }
-
-        function showToast(message) {
-            let container = document.getElementById('toast-container');
-            if (!container) {
-                container = document.createElement('div');
-                container.id = 'toast-container';
-                container.className = 'toast-container';
-                document.body.appendChild(container);
-            }
-            const toast = document.createElement('div');
-            toast.className = 'toast-notification';
-            toast.innerHTML = `<span>${message}</span>`;
-            container.appendChild(toast);
-            
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                toast.style.transition = 'opacity 0.22s ease';
-                setTimeout(() => toast.remove(), 220);
-            }, 3000);
-        }
-
-        function saveStateToStorage() {
-            localStorage.setItem('sovereign_crm_state_v8', JSON.stringify(state));
-        }
-
-        function loadStateFromStorage() {
-            let storedItem = localStorage.getItem('sovereign_crm_state_v8');
-            if (storedItem) {
-                try {
-                    const parsed = JSON.parse(storedItem);
-                    if (parsed && typeof parsed === 'object') {
-                        state = parsed;
-                        if (!state.properties) state.properties = [];
-                        if (!state.leads) state.leads = [];
-                        if (!state.profile) state.profile = { name: 'Boutique Assets', welcomeSeen: false, onboardingState: 'WELCOME' };
-                        if (state.profile.onboardingState === undefined) state.profile.onboardingState = 'WELCOME';
-                        if (state.profile.mapStep === undefined) state.profile.mapStep = 1;
-                        if (state.profile.tutorialStep === undefined) state.profile.tutorialStep = 1;
-                        if (state.profile.settingsTourSeen === undefined) state.profile.settingsTourSeen = false;
-                        if (state.profile.settingsStep === undefined) state.profile.settingsStep = 1;
-                    }
-                } catch (e) {
-                    console.error("Error al leer la base de datos local.");
-                }
-            }
-        }
-
-        /* --- MOTOR DE ONBOARDING REESTRUCTURADO --- */
-
-        function advanceWelcomeSlide(slideNum) {
-            triggerHapticFeedback();
-            document.querySelectorAll('.welcome-slide').forEach(s => s.style.display = 'none');
-            document.getElementById(`welcome-slide-${slideNum}`).style.display = 'block';
-        }
-        
-        function initializeInterfaceMapOnboarding() {
-            triggerHapticFeedback();
-            state.profile.welcomeSeen = true;
-            state.profile.onboardingState = 'MAP';
-            state.profile.mapStep = 1;
-            saveStateToStorage();
-            
-            document.getElementById('view-welcome').style.display = 'none';
-            document.getElementById('view-welcome').classList.remove('active');
-            executeViewMutation('inventory');
-            evaluateOnboardingStateExecution();
-        }
-
-        function bypassOnboardingCompletely() {
-            triggerHapticFeedback();
-            state.profile.welcomeSeen = true;
-            state.profile.onboardingState = 'COMPLETED';
-            state.profile.mapStep = 0;
-            state.profile.tutorialStep = 0;
-            saveStateToStorage();
-            
-            document.getElementById('view-welcome').style.display = 'none';
-            document.getElementById('view-welcome').classList.remove('active');
-            document.getElementById('onboarding-guide-widget').style.display = 'none';
-            document.getElementById('tour-blocker').style.display = 'none';
-            
-            document.querySelectorAll('.ux-spotlight-active').forEach(el => el.classList.remove('ux-spotlight-active'));
-        }
-
-        function setWidgetPosition(verticalAlignment) {
-            const widget = document.getElementById('onboarding-guide-widget');
-            if (!widget) return;
-            if (verticalAlignment === 'top') {
-                widget.style.bottom = 'auto';
-                widget.style.top = '20px';
-            } else if (verticalAlignment === 'safe-top') {
-                widget.style.bottom = 'auto';
-                widget.style.top = '500px'; // Posición estética que previene oclusiones en el paso 3 de 3
-            } else {
-                widget.style.top = 'auto';
-                widget.style.bottom = 'calc(16px + env(safe-area-inset-bottom, 0px) + 75px)';
-            }
-        }
-
-        function updateTabDynamicBrackets(activeViewId) {
-            const tabData = {
-                'inventory': 'Propiedades',
-                'leads': 'Clientes',
-                'sandbox': 'Simulador'
-            };
-            for (const [key, label] of Object.entries(tabData)) {
-                const button = document.getElementById(`tab-nav-${key}`);
-                if (button) {
-                    button.innerText = (key === activeViewId) ? `{${label}}` : `[${label}]`;
-                }
-            }
-        }
-
-        function evaluateOnboardingStateExecution() {
-            const widget = document.getElementById('onboarding-guide-widget');
-            const title = document.getElementById('onboarding-widget-title');
-            const body = document.getElementById('onboarding-widget-body');
-            const actions = document.getElementById('onboarding-widget-actions');
-            const blocker = document.getElementById('tour-blocker');
-
-            // Limpieza de estados spotlight previos
-            document.querySelectorAll('.ux-spotlight-active').forEach(el => el.classList.remove('ux-spotlight-active'));
-
-            if (state.profile.onboardingState === 'COMPLETED' || state.profile.onboardingState === 'WELCOME') {
-                widget.style.display = 'none';
-                blocker.style.display = 'none';
-                return;
-            }
-
-            widget.style.display = 'flex';
-            blocker.style.display = 'block'; // Forzar interacción exclusiva mediante el widget de guía
-
-            // FASE 1: Mapa Estricto de la Interfaz
-            if (state.profile.onboardingState === 'MAP') {
-                switch(state.profile.mapStep) {
-                    case 1:
-                        setWidgetPosition('bottom');
-                        const headerEl = document.getElementById('ui-main-header');
-                        if (headerEl) headerEl.classList.add('ux-spotlight-active');
-                        title.innerText = "Mapa: Paso 1 de 3";
-                        body.innerHTML = "Este es el <strong>Encabezado de Identidad</strong>. Aquí visualiza el nombre de su firma de corretaje y el agente a cargo en tiempo real.";
-                        actions.innerHTML = `
-                            <button class="btn-row-action" style="border-color: var(--text-pure);" onclick="navigateMapOnboarding(1)">[Siguiente]</button>
-                        `;
-                        break;
-                    case 2:
-                        setWidgetPosition('top'); // Barra abajo, guía arriba sin alterar flujos fijos
-                        const tabsEl = document.getElementById('ui-bottom-tabs');
-                        if (tabsEl) tabsEl.classList.add('ux-spotlight-active');
-                        title.innerText = "Mapa: Paso 2 de 3";
-                        body.innerHTML = "Esta es la <strong>Barra de Navegación por Pestañas</strong>. Se sitúa abajo para facilitar el uso táctil y le permite cambiar entre Propiedades, Clientes y el Evaluador.";
-                        actions.innerHTML = `
-                            <button class="btn-row-action" onclick="navigateMapOnboarding(-1)">[Atrás]</button>
-                            <button class="btn-row-action" style="border-color: var(--text-pure);" onclick="navigateMapOnboarding(1)">[Siguiente]</button>
-                        `;
-                        break;
-                    case 3:
-                        setWidgetPosition('safe-top'); // Previene la superposición en el cuadro estético inferior
-                        const inventoryCard = document.getElementById('active-assets-card');
-                        if (inventoryCard) inventoryCard.classList.add('ux-spotlight-active');
-                        title.innerText = "Mapa: Paso 3 de 3";
-                        body.innerHTML = "Este panel lista sus <strong>Propiedades Activas</strong>. Dispone de un límite estricto de 4 espacios paralelos para mantener el foco en sus cierres comerciales más rentables.";
-                        actions.innerHTML = `
-                            <button class="btn-row-action" onclick="navigateMapOnboarding(-1)">[Atrás]</button>
-                            <button class="btn-row-action" style="border-color: var(--scale-a); color: var(--scale-a);" onclick="concludeMapAndOfferSimulation()">[Concluir]</button>
-                        `;
-                        break;
-                }
-            }
-            
-            // FASE 2: Decisión de Simulación Operativa
-            else if (state.profile.onboardingState === 'CHOICE') {
-                setWidgetPosition('bottom');
-                title.innerText = "Mapa Concluido";
-                body.innerHTML = "¿Desea iniciar una <strong>Simulación Práctica</strong> guiada imitando un caso real de atención, o prefiere comenzar a operar el sistema de inmediato?";
-                actions.innerHTML = `
-                    <button class="btn-row-action" style="border-color: var(--scale-b1); color: var(--scale-b1);" onclick="activateSimulationStage()">[Ver Simulación]</button>
-                    <button class="btn-row-action" onclick="bypassOnboardingCompletely()">[Entrar Directo]</button>
-                `;
-            }
-
-            // FASE 3: Caso de Uso Comercial Guiado paso a paso
-            else if (state.profile.onboardingState === 'SIMULATION') {
-                switch(state.profile.tutorialStep) {
-                    case 1:
-                        setWidgetPosition('bottom');
-                        const addBtn = document.getElementById('btn-trigger-add');
-                        if (addBtn) addBtn.classList.add('ux-spotlight-active');
-                        title.innerText = "Simulación: Caso Real (1/5)";
-                        body.innerHTML = "Paso 1: Simularemos ingresar una propiedad de alta gama. Presione el botón de acceso rápido <strong>[Añadir]</strong>.";
-                        actions.innerHTML = `
-                            <button class="btn-row-action" onclick="navigateSimulationStep(-1)">[Atrás]</button>
-                        `;
-                        break;
-                    case 2:
-                        setWidgetPosition('top');
-                        const sandboxTab = document.getElementById('tab-nav-sandbox');
-                        if (sandboxTab) sandboxTab.classList.add('ux-spotlight-active');
-                        title.innerText = "Simulación: Caso Real (2/5)";
-                        body.innerHTML = "¡Propiedad registrada exitosamente! Ahora simularemos que ingresa un interesado. Diríjase a la pestaña inferior del <strong>Simulador</strong>.";
-                        actions.innerHTML = `
-                            <button class="btn-row-action" onclick="navigateSimulationStep(-1)">[Atrás]</button>
-                        `;
-                        break;
-                    case 3:
-                        setWidgetPosition('bottom');
-                        const sandboxSetup = document.getElementById('sandbox-setup');
-                        if (sandboxSetup) sandboxSetup.classList.add('ux-spotlight-active');
-                        title.innerText = "Simulación: Caso Real (3/5)";
-                        body.innerHTML = "Paso 3: Complete los campos con un nombre y teléfono simulado, y luego presione <strong>[Comenzar Cuestionario]</strong>.";
-                        actions.innerHTML = `
-                            <button class="btn-row-action" onclick="navigateSimulationStep(-1)">[Atrás]</button>
-                        `;
-                        break;
-                    case 4:
-                        setWidgetPosition('top');
-                        const firstInfoBtn = document.querySelector('#active-inventory-list .btn-row-action');
-                        if (firstInfoBtn) firstInfoBtn.classList.add('ux-spotlight-active');
-                        title.innerText = "Simulación: Caso Real (4/5)";
-                        body.innerHTML = "¡Cliente clasificado por el algoritmo! El sistema lo redirigió automáticamente. Presione <strong>[+Info]</strong> sobre la propiedad para ver la ficha.";
-                        actions.innerHTML = `
-                            <button class="btn-row-action" onclick="navigateSimulationStep(-1)">[Atrás]</button>
-                        `;
-                        break;
-                    case 5:
-                        setWidgetPosition('top');
-                        const archiveBtn = document.querySelector('#active-inventory-list .item-actions-wrapper .btn-row-action[style*="scale-c"]');
-                        if (archiveBtn) archiveBtn.classList.add('ux-spotlight-active');
-                        title.innerText = "Simulación: Caso Real (5/5)";
-                        body.innerHTML = "¡Ficha técnica desplegada! Aquí visualiza al prospecto, su nivel de prioridad y el enlace a WhatsApp. Para concluir definitivamente el tour, presione <strong>[Archivar]</strong>.";
-                        actions.innerHTML = `
-                            <button class="btn-row-action" onclick="navigateSimulationStep(-1)">[Atrás]</button>
-                        `;
-                        break;
-                }
-            }
-        }
-
-        function navigateMapOnboarding(direction) {
-            triggerHapticFeedback();
-            state.profile.mapStep += direction;
-            if (state.profile.mapStep < 1) state.profile.mapStep = 1;
-            saveStateToStorage();
-            evaluateOnboardingStateExecution();
-        }
-
-        function navigateSimulationStep(direction) {
-            triggerHapticFeedback();
-            state.profile.tutorialStep += direction;
-            
-            if (state.profile.tutorialStep < 1) {
-                state.profile.onboardingState = 'CHOICE';
-                saveStateToStorage();
-                evaluateOnboardingStateExecution();
-                return;
-            }
-            
-            // Revertir estados visuales físicos según el paso al retroceder
-            if (state.profile.tutorialStep === 1) {
-                executeViewMutation('inventory');
-                toggleAssetForm(false);
-            } else if (state.profile.tutorialStep === 2) {
-                executeViewMutation('inventory');
-                // Eliminar propiedad de prueba si existiese para reiniciar limpio
-                if (state.properties.length > 0 && direction < 0) {
-                    state.properties.pop();
-                    renderIntegratedInventory();
-                }
-            } else if (state.profile.tutorialStep === 3) {
-                executeViewMutation('sandbox');
-                resetSandboxWizardState();
-            } else if (state.profile.tutorialStep === 4) {
-                executeViewMutation('inventory');
-                if (state.leads.length > 0 && direction < 0) {
-                    state.leads.shift();
-                    renderLeadsConsole();
-                    renderIntegratedInventory();
-                }
-            }
-            
-            saveStateToStorage();
-            evaluateOnboardingStateExecution();
-        }
-
-        function concludeMapAndOfferSimulation() {
-            triggerHapticFeedback();
-            state.profile.onboardingState = 'CHOICE';
-            saveStateToStorage();
-            evaluateOnboardingStateExecution();
-        }
-
-        function activateSimulationStage() {
-            triggerHapticFeedback();
-            state.profile.onboardingState = 'SIMULATION';
-            state.profile.tutorialStep = 1;
-            saveStateToStorage();
-            executeViewMutation('inventory');
-            evaluateOnboardingStateExecution();
-        }
-
-        function restartInteractiveTutorial() {
-            triggerHapticFeedback();
-            state.profile.welcomeSeen = true;
-            state.profile.onboardingState = 'MAP';
-            state.profile.mapStep = 1;
-            state.profile.tutorialStep = 1;
-            state.profile.settingsTourSeen = false;
-            state.profile.settingsStep = 1;
-            saveStateToStorage();
-            toggleProfileModal(false);
-            executeViewMutation('inventory');
-            evaluateOnboardingStateExecution();
-        }
-
-        /* --- MOTOR DE SUB-TOUR: PANTALLA DE AJUSTES --- */
-        function triggerSettingsSubTourLogic() {
-            const guideWidget = document.getElementById('settings-guide-widget');
-            if (state.profile.settingsTourSeen) {
-                guideWidget.style.display = 'none';
-                return;
-            }
-            guideWidget.style.display = 'flex';
-            renderSettingsTourStep();
-        }
-
-        function renderSettingsTourStep() {
-            const textEl = document.getElementById('settings-guide-text');
-            const stepEl = document.getElementById('settings-guide-step');
-            const btnPrev = document.getElementById('btn-settings-prev');
-            
-            document.getElementById('settings-card-profile').style.outline = 'none';
-            document.getElementById('settings-card-templates').style.outline = 'none';
-
-            if (state.profile.settingsStep === 1) {
-                stepEl.innerText = "Paso 1 de 2";
-                textEl.innerHTML = "En el bloque de <strong>Perfil Comercial</strong>, usted define el nombre público de su marca u oficina inmobiliaria para personalizar el sistema.";
-                document.getElementById('settings-card-profile').style.outline = "2px solid var(--scale-a)";
-                btnPrev.style.visibility = 'hidden';
-            } else {
-                stepEl.innerText = "Paso 2 de 2";
-                textEl.innerHTML = "En <strong>Mensajes para WhatsApp</strong>, puede dictar las plantillas exactas que recibirá cada cliente de acuerdo a su rango de prioridad calculado.";
-                document.getElementById('settings-card-templates').style.outline = "2px solid var(--scale-a)";
-                btnPrev.style.visibility = 'visible';
-            }
-        }
-
-        function navigateSettingsTour(direction) {
-            triggerHapticFeedback();
-            state.profile.settingsStep += direction;
-            if (state.profile.settingsStep > 2) {
-                state.profile.settingsTourSeen = true;
-                state.profile.settingsStep = 1;
-                document.getElementById('settings-guide-widget').style.display = 'none';
-                document.getElementById('settings-card-profile').style.outline = 'none';
-                document.getElementById('settings-card-templates').style.outline = 'none';
-                saveStateToStorage();
-                showToast("Guía de ajustes completada");
-                return;
-            }
-            if (state.profile.settingsStep < 1) state.profile.settingsStep = 1;
-            saveStateToStorage();
-            renderSettingsTourStep();
-        }
-
-
-        /* --- CONTROL DE VISTAS Y CONFIGURACIÓN --- */
-
-        function toggleProfileModal(shouldOpen) {
-            triggerHapticFeedback();
-            const modal = document.getElementById('view-profile');
-            if (shouldOpen) {
-                syncFormElements();
-                modal.classList.add('active');
-                // Disparar sub-mapa guiado si está completado el onboarding macro y es la primera vez
-                if (state.profile.onboardingState === 'COMPLETED') {
-                    triggerSettingsSubTourLogic();
-                }
-            } else {
-                modal.classList.remove('active');
-                // Limpiar contornos por seguridad visual
-                document.getElementById('settings-card-profile').style.outline = 'none';
-                document.getElementById('settings-card-templates').style.outline = 'none';
-            }
-        }
-
-        function syncFormElements() {
-            document.getElementById('input-broker-name').value = state.profile.name || 'Boutique Assets';
-            document.getElementById('ui-brand-name').innerText = state.profile.name || 'Boutique Assets';
-            
-            if (state.profile.whatsappTemplates) {
-                document.getElementById('wats-template-A').value = state.profile.whatsappTemplates['A'] || '';
-                document.getElementById('wats-template-B1').value = state.profile.whatsappTemplates['B1'] || '';
-                document.getElementById('wats-template-B2').value = state.profile.whatsappTemplates['B2'] || '';
-                document.getElementById('wats-template-C').value = state.profile.whatsappTemplates['C'] || '';
-            }
-        }
-
-        function saveProfileConfiguration() {
-            triggerHapticFeedback();
-            const nameValue = document.getElementById('input-broker-name').value.trim();
-            state.profile.name = nameValue || 'Boutique Assets';
-            document.getElementById('ui-brand-name').innerText = state.profile.name;
-            
-            if (!state.profile.whatsappTemplates) state.profile.whatsappTemplates = {};
-            state.profile.whatsappTemplates['A'] = document.getElementById('wats-template-A').value.trim();
-            state.profile.whatsappTemplates['B1'] = document.getElementById('wats-template-B1').value.trim();
-            state.profile.whatsappTemplates['B2'] = document.getElementById('wats-template-B2').value.trim();
-            state.profile.whatsappTemplates['C'] = document.getElementById('wats-template-C').value.trim();
-            
-            saveStateToStorage();
-            renderLeadsConsole();
-            renderIntegratedInventory();
-            showToast("Configuración guardada");
-        }
-
-        function executeViewMutation(viewTargetId) {
-            triggerHapticFeedback();
-            document.querySelectorAll('.crm-view').forEach(view => view.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            
-            document.getElementById(`view-${viewTargetId}`).classList.add('active');
-            document.getElementById(`tab-nav-${viewTargetId}`).classList.add('active');
-
-            updateTabDynamicBrackets(viewTargetId);
-
-            if (viewTargetId === 'sandbox') {
-                resetSandboxWizardState();
-                if (state.profile.onboardingState === 'SIMULATION' && state.profile.tutorialStep === 2) {
-                    state.profile.tutorialStep = 3;
-                    saveStateToStorage();
-                }
-            }
-            if (viewTargetId === 'inventory') {
-                toggleAssetForm(false);
-            }
-            evaluateOnboardingStateExecution();
-        }
-
-        function toggleAssetForm(shouldOpen) {
-            triggerHapticFeedback();
-            const formCard = document.getElementById('inventory-form-card');
-            const activeCard = document.getElementById('active-assets-card');
-            
-            if (shouldOpen && state.properties.filter(p => !p.archived).length >= 4) {
-                showToast("Máximo 4 propiedades activas permitidas");
-                return;
-            }
-
-            formCard.style.display = shouldOpen ? 'flex' : 'none';
-            activeCard.style.display = shouldOpen ? 'none' : 'flex';
-
-            if (shouldOpen && state.profile.onboardingState === 'SIMULATION' && state.profile.tutorialStep === 1) {
-                document.querySelectorAll('.ux-spotlight-active').forEach(el => el.classList.remove('ux-spotlight-active'));
-                const formTarget = document.getElementById('inventory-form-card');
-                if (formTarget) formTarget.classList.add('ux-spotlight-active');
-            }
-        }
-
-        function generateGeometricGlyph(propertyId, priceUf) {
-            let seed = 0;
-            for (let i = 0; i < propertyId.length; i++) {
-                seed += propertyId.charCodeAt(i);
-            }
-            const linesCount = Math.min(14, Math.max(4, Math.floor(priceUf / 4500)));
-            const radius = 14;
-            const center = 18;
-            
-            let svgString = `<svg width="36" height="36" viewBox="0 0 36 36" style="background:#000000; border:1px solid var(--border-subtle); border-radius:4px;">`;
-            svgString += `<circle cx="${center}" cy="${center}" r="${Math.min(16, 4 + linesCount)}" fill="none" stroke="#27272a" stroke-width="0.5"/>`;
-            
-            for (let i = 0; i < linesCount; i++) {
-                const rotationAngle = (i * 2 * Math.PI) / linesCount + (seed % 50) / 50;
-                const forwardAngle = ((i + 2) * 2 * Math.PI) / linesCount + (seed % 50) / 50;
-                
-                const x1 = center + radius * Math.cos(rotationAngle);
-                const y1 = center + radius * Math.sin(rotationAngle);
-                const x2 = center + radius * Math.cos(forwardAngle);
-                const y2 = center + radius * Math.sin(forwardAngle);
-                
-                svgString += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#a1a1aa" stroke-width="0.75" opacity="0.65"/>`;
-            }
-            svgString += `</svg>`;
-            return svgString;
-        }
-
-        function toggleMetadataDrawer(propertyId) {
-            triggerHapticFeedback();
-            const drawer = document.getElementById(`drawer-${propertyId}`);
-            if (drawer) {
-                const isCurrentlyActive = drawer.classList.contains('active');
-                drawer.classList.toggle('active', !isCurrentlyActive);
-                document.getElementById(`btn-info-${propertyId}`).innerText = isCurrentlyActive ? '[+Info]' : '[-Info]';
-                
-                if (!isCurrentlyActive && state.profile.onboardingState === 'SIMULATION' && state.profile.tutorialStep === 4) {
-                    state.profile.tutorialStep = 5;
-                    saveStateToStorage();
-                    evaluateOnboardingStateExecution();
-                }
-            }
-        }
-
-        function executeExportJsonPayload(propertyId) {
-            triggerHapticFeedback();
-            const targetedAsset = state.properties.find(p => p.property_id === propertyId);
-            if (!targetedAsset) return;
-
-            const structuredData = {
-                key: "CRM_EXPORT_RECORD",
-                property: targetedAsset,
-                associated_leads: state.leads.filter(l => l.property_id === propertyId)
-            };
-
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(structuredData, null, 4));
-            const downloadAnchor = document.createElement('a');
-            downloadAnchor.setAttribute("href", dataStr);
-            downloadAnchor.setAttribute("download", `ficha_${targetedAsset.slug}.json`);
-            document.body.appendChild(downloadAnchor);
-            downloadAnchor.click();
-            downloadAnchor.remove();
-            showToast("Archivo JSON exportado");
-        }
-
-        function renderIntegratedInventory() {
-            const activeContainer = document.getElementById('active-inventory-list');
-            const crystallizedContainer = document.getElementById('crystallized-inventory-list');
-            const counterLabel = document.getElementById('inventory-counter');
-            const triggerAddButton = document.getElementById('btn-trigger-add');
-
-            activeContainer.innerHTML = '';
-            crystallizedContainer.innerHTML = '';
-
-            const activeSubset = state.properties.filter(p => !p.archived);
-            const crystallizedSubset = state.properties.filter(p => p.archived);
-
-            counterLabel.innerText = `${activeSubset.length} / 4 Propiedades`;
-            triggerAddButton.style.display = activeSubset.length >= 4 ? 'none' : 'inline-block';
-
-            if (activeSubset.length === 0) {
-                activeContainer.innerHTML = `
-                    <div class="empty-canvas">
-                        <div class="empty-icon-btn" onclick="toggleAssetForm(true)">+</div>
-                        <h3>Sin Propiedades Activas</h3>
-                        <p>No registra propiedades bajo gestión de venta actual.</p>
-                    </div>
-                `;
-            } else {
-                activeSubset.forEach((prop) => {
-                    const propertyLeads = state.leads.filter(l => l.property_id === prop.property_id);
-                    const estimatedClp = prop.price_uf * UF_CONVERSION_FACTOR;
-
-                    let embeddedLeadsHtml = '';
-                    if (propertyLeads.length === 0) {
-                        embeddedLeadsHtml = `<p style="font-size:11px; color:var(--text-muted); margin-top:4px;">No hay prospectos asignados a esta propiedad.</p>`;
-                    } else {
-                        embeddedLeadsHtml = `<div class="embedded-leads-container">`;
-                        propertyLeads.forEach(lead => {
-                            const scoreKey = lead.score || 'C';
-                            const baseText = state.profile.whatsappTemplates[scoreKey] || '';
-                            const finalMessage = baseText
-                                .replace(/{name}/g, lead.name)
-                                .replace(/{broker}/g, state.profile.name)
-                                .replace(/{slug}/g, prop.slug);
-                            const waUrl = `https://wa.me/${lead.phone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(finalMessage)}`;
-
-                            embeddedLeadsHtml += `
-                                <div class="embedded-lead-row">
-                                    <div class="embedded-lead-info">
-                                        <span class="score-badge ${lead.score}">${TIER_NAMES[lead.score] || lead.score}</span>
-                                        <span style="font-size:12px; font-weight:500;">${lead.name}</span>
-                                    </div>
-                                    <a href="${waUrl}" target="_blank" class="btn-row-action" style="border-color: var(--scale-a); font-size:10px; min-height:30px; padding:2px 8px;">[WhatsApp]</a>
-                                </div>
-                            `;
-                        });
-                        embeddedLeadsHtml += `</div>`;
-                    }
-
-                    const el = document.createElement('div');
-                    el.className = 'list-item';
-                    el.innerHTML = `
-                        <div class="item-main-row">
-                            <div class="glyph-container">${generateGeometricGlyph(prop.property_id, prop.price_uf)}</div>
-                            <div class="item-meta">
-                                <h4>${prop.slug}</h4>
-                                <p>${prop.location_commune} • <strong>${Number(prop.price_uf).toLocaleString('es-CL')} UF</strong></p>
-                                <div class="telemetry-row">
-                                    <span>Clientes: <strong class="telemetry-badge">${propertyLeads.length} / 10</strong></span>
-                                </div>
-                            </div>
-                            <div style="display:flex; flex-direction:column; gap:4px;">
-                                <button id="btn-info-${prop.property_id}" class="btn-row-action" onclick="toggleMetadataDrawer('${prop.property_id}')">[+Info]</button>
-                            </div>
-                        </div>
-                        
-                        <div id="drawer-${prop.property_id}" class="metadata-drawer">
-                            <div class="metadata-line"><span>ID INTERNO:</span> <strong>${prop.property_id}</strong></div>
-                            <div class="metadata-line"><span>FECHA REGISTRO:</span> <strong>${prop.timestamp || 'Base'}</strong></div>
-                            <div class="metadata-line"><span>VALOR ESTIMADO EN PESOS:</span> <strong>$${estimatedClp.toLocaleString('es-CL')}</strong></div>
-                            <div style="margin-top:8px; margin-bottom:4px;">
-                                <p style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); font-weight: 700; margin-bottom: 6px;">Clientes Vinculados:</p>
-                                ${embeddedLeadsHtml}
-                            </div>
-                        </div>
-
-                        <div class="item-actions-wrapper">
-                            <button class="btn-row-action" onclick="executeExportJsonPayload('${prop.property_id}')">[Copia JSON]</button>
-                            <button class="btn-row-action" style="border-color: var(--scale-c); color: var(--scale-c);" onclick="modifyAssetCrystallization('${prop.property_id}', true)">[Archivar]</button>
-                        </div>
-                    `;
-                    activeContainer.appendChild(el);
-                });
-            }
-
-            if (crystallizedSubset.length === 0) {
-                crystallizedContainer.innerHTML = '<p style="font-size:12px; color:var(--text-muted); padding:4px;">No existen propiedades en el archivo histórico.</p>';
-            } else {
-                crystallizedSubset.forEach((prop) => {
-                    const el = document.createElement('div');
-                    el.className = 'list-item crystallized-card';
-                    el.innerHTML = `
-                        <div class="item-main-row">
-                            <div class="glyph-container">${generateGeometricGlyph(prop.property_id, prop.price_uf)}</div>
-                            <div class="item-meta">
-                                <h4>${prop.slug}</h4>
-                                <p style="font-size:11px;">Propiedad guardada en el archivo histórico inmutable</p>
-                            </div>
-                            <button id="btn-info-${prop.property_id}" class="btn-row-action" onclick="toggleMetadataDrawer('${prop.property_id}')">[+Info]</button>
-                        </div>
-
-                        <div id="drawer-${prop.property_id}" class="metadata-drawer">
-                            <div class="metadata-line"><span>ESTADO:</span> <strong>Archivado Inalterable</strong></div>
-                            <div class="metadata-line"><span>VALOR HISTÓRICO:</span> <strong>${Number(prop.price_uf).toLocaleString('es-CL')} UF</strong></div>
-                        </div>
-
-                        <div class="item-actions-wrapper">
-                            <button class="btn-action btn-secondary" style="width:100%; min-height:34px; font-size:11px;" onclick="executeExportJsonPayload('${prop.property_id}')">[Exportar Respaldo]</button>
-                        </div>
-                    `;
-                    crystallizedContainer.appendChild(el);
-                });
-            }
-
-            refreshSandboxPropertyAllocation();
-        }
-
-        function createNewAsset(e) {
-            e.preventDefault();
-            const activeSubset = state.properties.filter(p => !p.archived);
-            if (activeSubset.length >= 4) return;
-
-            const rawSlug = document.getElementById('prop-slug').value.trim().toLowerCase()
-                .normalize("NFD").replace(/[\u0300-\u036f]/g, "") 
-                .replace(/[^a-z0-9_-]/g, ''); 
-            
-            const communeInput = document.getElementById('prop-commune').value;
-            const priceInput = document.getElementById('prop-price').value;
-
-            if (!rawSlug) {
-                showToast("Identificador no válido");
-                return;
-            }
-
-            const dateObj = new Date();
-            const timestampStr = `${dateObj.getDate().toString().padStart(2, '0')}/${(dateObj.getMonth() + 1).toString().padStart(2, '0')}/${dateObj.getFullYear()} ${dateObj.getHours().toString().padStart(2, '0')}:${dateObj.getMinutes().toString().padStart(2, '0')}`;
-            const uniqueId = `${rawSlug}_${Date.now()}`;
-
-            state.properties.push({
-                property_id: uniqueId,
-                slug: rawSlug,
-                location_commune: communeInput,
-                price_uf: parseInt(priceInput),
-                archived: false,
-                timestamp: timestampStr
-            });
-
-            saveStateToStorage();
-            renderIntegratedInventory();
-            document.getElementById('form-property').reset();
-            toggleAssetForm(false);
-
-            if (state.profile.onboardingState === 'SIMULATION' && state.profile.tutorialStep === 1) {
-                state.profile.tutorialStep = 2;
-                saveStateToStorage();
-            }
-            executeViewMutation('inventory');
-            showToast("Propiedad indexada");
-        }
-
-        function modifyAssetCrystallization(propertyId, shouldArchive) {
-            triggerHapticFeedback();
-            const item = state.properties.find(p => p.property_id === propertyId);
-            if (item) {
-                item.archived = shouldArchive;
-                saveStateToStorage();
-                renderIntegratedInventory();
-                renderLeadsConsole();
-                
-                if (shouldArchive && state.profile.onboardingState === 'SIMULATION' && state.profile.tutorialStep === 5) {
-                    bypassOnboardingCompletely();
-                    showToast("Ciclo operativo guiado completado");
-                } else {
-                    showToast("Propiedad archivada");
-                }
-            }
-        }
-
-        function setLeadFilter(filterType) {
-            triggerHapticFeedback();
-            state.runtimeFilters.leadFilter = filterType;
-            document.getElementById('filter-all').classList.remove('active');
-            document.getElementById('filter-premium').classList.remove('active');
-            
-            if (filterType === 'ALL') document.getElementById('filter-all').classList.add('active');
-            if (filterType === 'HIGH') document.getElementById('filter-premium').classList.add('active');
-            
-            renderLeadsConsole();
-        }
-
-        function toggleLeadSortOrder() {
-            triggerHapticFeedback();
-            state.runtimeFilters.reverseLeads = !state.runtimeFilters.reverseLeads;
-            document.getElementById('filter-rev').classList.toggle('active', state.runtimeFilters.reverseLeads);
-            renderLeadsConsole();
-        }
-
-        function renderLeadsConsole() {
-            const container = document.getElementById('leads-list');
-            container.innerHTML = '';
-
-            let subset = [...state.leads];
-
-            if (state.runtimeFilters.leadFilter === 'HIGH') {
-                subset = subset.filter(l => l.score === 'A');
-            }
-
-            if (state.runtimeFilters.reverseLeads) {
-                subset.reverse();
-            }
-
-            if (subset.length === 0) {
-                container.innerHTML = '<p style="font-size:12px; color:var(--text-muted); text-align:center; padding:24px 10px;">No se registran clientes bajo este criterio.</p>';
-                return;
-            }
-
-            subset.forEach(lead => {
-                const itemBox = document.createElement('div');
-                itemBox.className = 'list-item';
-                
-                const parentProp = state.properties.find(p => p.property_id === lead.property_id);
-                const displaySlug = parentProp ? parentProp.slug : 'Sin propiedad asignada';
-                const isArchived = parentProp ? parentProp.archived : false;
-
-                const scoreKey = lead.score || 'C';
-                const defaultTemplate = state.profile.whatsappTemplates[scoreKey] || '';
-
-                const whatsappMessage = defaultTemplate
-                    .replace(/{name}/g, lead.name)
-                    .replace(/{broker}/g, state.profile.name)
-                    .replace(/{slug}/g, displaySlug);
-
-                const whatsappUrl = `https://wa.me/${lead.phone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(whatsappMessage)}`;
-
-                itemBox.innerHTML = `
-                    <div class="item-main-row">
-                        <div class="item-meta">
-                            <h4 style="display:flex; align-items:center; gap:10px;">
-                                ${lead.name} <span class="score-badge ${lead.score}">${TIER_NAMES[lead.score] || lead.score}</span>
-                            </h4>
-                            <p>Propiedad Asociada: <strong>${displaySlug}</strong>${isArchived ? ' [Archivada]' : ''}</p>
-                            <p style="font-size:11px; color: var(--text-muted);">Evaluado a las: ${lead.timestamp}</p>
-                        </div>
-                        <a href="${whatsappUrl}" target="_blank" class="btn-row-action" style="border-color: var(--accent-color);">[Contactar]</a>
-                    </div>
-                `;
-                container.appendChild(itemBox);
-            });
-        }
-
-        function refreshSandboxPropertyAllocation() {
-            const selectEl = document.getElementById('sandbox-prop-select');
-            if (!selectEl) return;
-            selectEl.innerHTML = '';
-            
-            const visibleSubset = state.properties.filter(p => !p.archived);
-            visibleSubset.forEach(p => {
-                const optionItem = document.createElement('option');
-                optionItem.value = p.property_id;
-                optionItem.innerText = `${p.slug.toUpperCase()} (${p.location_commune})`;
-                selectEl.appendChild(optionItem);
-            });
-        }
-
-        function resetSandboxWizardState() {
-            document.getElementById('sandbox-setup').style.display = 'flex';
-            document.getElementById('sandbox-wizard').style.display = 'none';
-            state.sandboxWizard = { currentStep: 1, totalScore: 0, currentLead: {} };
-            
-            document.querySelectorAll('.wizard-step').forEach(stepPane => stepPane.classList.remove('active'));
-            document.getElementById('step-1').classList.add('active');
-            document.getElementById('wizard-progress').innerText = "Pregunta 1 de 4";
-        }
-
-        function initiateWizardExecution() {
-            triggerHapticFeedback();
-            const selectedPropertyId = document.getElementById('sandbox-prop-select').value;
-            const targetLeadName = document.getElementById('sandbox-lead-name').value.trim();
-            const targetLeadPhone = document.getElementById('sandbox-lead-phone').value.trim();
-
-            if (!selectedPropertyId || !targetLeadName || !targetLeadPhone) {
-                showToast("Completa los campos obligatorios");
-                return;
-            }
-
-            // Validación estricta del tope máximo de 10 clientes por propiedad piloto
-            const activeLeadsCount = state.leads.filter(l => l.property_id === selectedPropertyId).length;
-            if (activeLeadsCount >= 10) {
-                showToast("Tope alcanzado: Máximo 10 clientes por propiedad");
-                return;
-            }
-
-            state.sandboxWizard.currentLead = { property_id: selectedPropertyId, name: targetLeadName, phone: targetLeadPhone };
-            document.getElementById('sandbox-setup').style.display = 'none';
-            document.getElementById('sandbox-wizard').style.display = 'flex';
-
-            if (state.profile.onboardingState === 'SIMULATION' && state.profile.tutorialStep === 3) {
-                document.querySelectorAll('.ux-spotlight-active').forEach(el => el.classList.remove('ux-spotlight-active'));
-                const wizardTarget = document.getElementById('sandbox-wizard');
-                if (wizardTarget) wizardTarget.classList.add('ux-spotlight-active');
-            }
-        }
-
-        function registerWizardStepScore(currentStepIndex, valueGained) {
-            triggerHapticFeedback();
-            state.sandboxWizard.totalScore += valueGained;
-            
-            if (currentStepIndex < 4) {
-                document.getElementById(`step-${currentStepIndex}`).classList.remove('active');
-                const nextStep = currentStepIndex + 1;
-                state.sandboxWizard.currentStep = nextStep;
-                document.getElementById(`step-${nextStep}`).classList.add('active');
-                document.getElementById('wizard-progress').innerText = `Pregunta ${nextStep} de 4`;
-            } else {
-                let totalScoreTier = 'C';
-                const finalAggregatePoints = state.sandboxWizard.totalScore;
-                
-                if (finalAggregatePoints >= 9) totalScoreTier = 'A';
-                else if (finalAggregatePoints >= 7) totalScoreTier = 'B1';
-                else if (finalAggregatePoints >= 5) totalScoreTier = 'B2';
-
-                const timestampClock = new Date();
-                const displayClockFormatted = `${timestampClock.getHours().toString().padStart(2, '0')}:${timestampClock.getMinutes().toString().padStart(2, '0')}`;
-
-                const constructedLeadObject = {
-                    ...state.sandboxWizard.currentLead,
-                    score: totalScoreTier,
-                    timestamp: displayClockFormatted
-                };
-
-                state.leads.unshift(constructedLeadObject);
-                saveStateToStorage();
-                renderLeadsConsole();
-                renderIntegratedInventory(); 
-                
-                showToast(`Evaluación: Clasificado en [${TIER_NAMES[totalScoreTier]}]`);
-                
-                if (state.profile.onboardingState === 'SIMULATION' && state.profile.tutorialStep === 3) {
-                    state.profile.tutorialStep = 4;
-                    saveStateToStorage();
-                }
-
-                executeViewMutation('inventory');
-            }
-        }
-    </script>
+    <script src="app.js"></script>
 </body>
 </html>
