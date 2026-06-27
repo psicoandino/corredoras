@@ -399,6 +399,15 @@ function evaluateOnboardingStateExecution() {
                 break;
         }
     }
+
+    if (state.profile.onboardingState === 'MAP' || state.profile.onboardingState === 'SIMULATION') {
+        const escapeBtn = document.createElement('button');
+        escapeBtn.className = 'btn-row-action';
+        escapeBtn.style.color = 'var(--text-muted)';
+        escapeBtn.innerText = '[Saltar]';
+        escapeBtn.onclick = bypassOnboardingCompletely;
+        actions.appendChild(escapeBtn);
+    }
 }
 
 function navigateMapOnboarding(direction) {
@@ -586,25 +595,27 @@ function executeViewMutation(targetViewId) {
     
     if (state.profile.onboardingState === 'MAP' || state.profile.onboardingState === 'SIMULATION') {
         if (state.profile.onboardingState === 'SIMULATION' && state.profile.tutorialStep === 3 && targetViewId === 'sandbox') {
-            // Permitir
+            // Permitir navegación requerida en la simulación
         } else if (state.profile.onboardingState === 'SIMULATION' && state.profile.tutorialStep === 4 && targetViewId === 'inventory') {
-            // Permitir
+            // Permitir navegación requerida en la simulación
         } else {
-            return; 
+            showToast("Navegación bloqueada durante el recorrido instructivo");
+            return;
         }
     }
-
+    
     document.querySelectorAll('.crm-view').forEach(v => v.classList.remove('active'));
     document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
-
-    document.getElementById(`view-${targetViewId}`).classList.add('active');
-    document.getElementById(`tab-${targetViewId}`).classList.add('active');
-
-    if (targetViewId === 'sandbox') {
-        refreshSandboxPropertyAllocation();
-    }
-
-    updateTabDynamicBrackets(targetViewId);
+    
+    const targetView = document.getElementById(`view-${targetViewId}`);
+    const targetTab = document.getElementById(`tab-${targetViewId}`);
+    
+    if (targetView) targetView.classList.add('active');
+    if (targetTab) targetTab.classList.add('active');
+    
+    if (targetViewId === 'inventory') renderIntegratedInventory();
+    if (targetViewId === 'leads') renderLeadsConsole();
+    if (targetViewId === 'sandbox') refreshSandboxPropertyAllocation();
 }
 
 /* --- ARQUEOLOGÍA DE SISTEMAS: COMPONENTE GEOMÉTRICO GLYPH --- */
@@ -677,8 +688,8 @@ function toggleAssetForm(shouldShow) {
     const drawerForm = document.getElementById('asset-creation-drawer');
     if (shouldShow) {
         const activeCount = state.properties.filter(p => !p.is_crystallized).length;
-        if (activeCount >= 4) {
-            showToast("Límite Operativo Excedido: Máximo 4 activos en paralelo.");
+        if (activeCount >= 5) {
+            showToast("Límite Operativo Excedido: Máximo 5 activos en paralelo.");
             return;
         }
         drawerForm.style.display = 'flex';
@@ -704,7 +715,7 @@ function saveNewAsset() {
     }
 
     const activeCount = state.properties.filter(p => !p.is_crystallized).length;
-    if (activeCount >= 4) {
+    if (activeCount >= 5) {
         showToast("Saturación de Memoria Local: archive propiedades previas.");
         return;
     }
@@ -813,7 +824,7 @@ function renderIntegratedInventory() {
                         .replace(/{slug}/g, prop.slug)
                         .replace(/{broker}/g, state.profile.name || "Boutique Assets");
 
-                    const waUrl = `https://api.whatsapp.com/send?phone=${lead.phone}&text=${encodeURIComponent(customizedText)}`;
+                    const waUrl = `https://api.whatsapp.com/send?phone=${lead.phone.replace(/\D/g, '')}&text=${encodeURIComponent(customizedText)}`;
                     
                     embeddedLeadsHtml += `
                         <div class="embedded-lead-row">
@@ -1056,7 +1067,7 @@ function renderLeadsConsole() {
             .replace(/{slug}/g, assetName)
             .replace(/{broker}/g, state.profile.name || "Boutique Assets");
 
-        const targetWaLink = `https://api.whatsapp.com/send?phone=${lead.phone}&text=${encodeURIComponent(customizedText)}`;
+        const targetWaLink = `https://api.whatsapp.com/send?phone=${lead.phone.replace(/\D/g, '')}&text=${encodeURIComponent(customizedText)}`;
 
         let historyHtml = '';
         if (lead.answers_log && lead.answers_log.length > 0) {
@@ -1084,3 +1095,48 @@ function renderLeadsConsole() {
         container.appendChild(itemBox);
     });
 }
+
+// Robustecimiento de la navegación por gestos táctiles (Swipe)
+(function() {
+    let touchStartX = 0;
+    let touchStartY = 0;
+    const tabsOrder = ['inventory', 'leads', 'sandbox'];
+
+    window.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+        touchStartY = e.changedTouches[0].screenY;
+    }, { passive: true });
+
+    window.addEventListener('touchend', (e) => {
+        // Bloquear navegación táctil si el onboarding está activo e impide la libre navegación
+        if (state.profile.onboardingState !== 'COMPLETED') {
+            return;
+        }
+
+        const touchEndX = e.changedTouches[0].screenX;
+        const touchEndY = e.changedTouches[0].screenY;
+
+        const diffX = touchEndX - touchStartX;
+        const diffY = touchEndY - touchStartY;
+
+        // Validar que el gesto sea predominantemente horizontal y supere un umbral mínimo (swipe)
+        if (Math.abs(diffX) > 60 && Math.abs(diffY) < 40) {
+            // Determinar la pestaña activa actual inspeccionando el DOM o las clases
+            const activeBtn = document.querySelector('.tab-btn.active');
+            if (!activeBtn) return;
+            
+            const currentTabId = activeBtn.id.replace('tab-', '');
+            const currentIndex = tabsOrder.indexOf(currentTabId);
+            
+            if (currentIndex !== -1) {
+                if (diffX < 0 && currentIndex < tabsOrder.length - 1) {
+                    // Swipe a la izquierda: avanza a la siguiente pestaña
+                    executeViewMutation(tabsOrder[currentIndex + 1]);
+                } else if (diffX > 0 && currentIndex > 0) {
+                    // Swipe a la derecha: vuelve a la pestaña anterior
+                    executeViewMutation(tabsOrder[currentIndex - 1]);
+                }
+            }
+        }
+    }, { passive: true });
+})();

@@ -124,7 +124,6 @@ header {
 .tab-btn.active {
     color: var(--text-pure);
     font-weight: 700;
-    letter-spacing: 1.8px;
     position: relative;
 }
 
@@ -501,13 +500,16 @@ input[type="text"]:focus, input[type="number"]:focus, select:focus {
     background-color: var(--bg-oled);
     border: 1px solid var(--border-subtle);
     color: var(--text-pure);
-    padding: 16px;
+    padding: 12px 14px;
     text-align: left;
-    font-size: 14px;
+    font-size: 13px;
     border-radius: 6px;
     cursor: pointer;
     min-height: var(--touch-target-min);
     transition: border-color 0.2s ease, background-color 0.2s ease;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
 }
 .option-btn:active { 
     border-color: var(--accent-color);
@@ -634,11 +636,10 @@ header.ux-spotlight-active.ux-spotlight-locked.map-step-settings .header-meta {
     flex: 1;
 }
 .slide-header {
-    height: 75px;
+    min-height: 50px;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-
     align-items: center;
     text-align: center;
 }
