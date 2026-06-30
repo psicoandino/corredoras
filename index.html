@@ -28,11 +28,19 @@
             background-color: var(--bg-pure);
             color: var(--text-pure);
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            letter-spacing: 0.01em;
             height: 100vh;
             width: 100vw;
             overflow: hidden;
             display: flex;
             flex-direction: column;
+        }
+
+        h1, h2, h3, .premium-title {
+            font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+            font-weight: 400;
+            letter-spacing: -0.01em;
+            color: #ffffff;
         }
 
         .hidden { display: none !important; }
@@ -48,7 +56,7 @@
             z-index: 10;
         }
 
-        h1 { font-size: 16px; font-weight: 600; letter-spacing: -0.02em; }
+        h1 { font-size: 18px; }
 
         /* OVERLAYS & PANELS */
         #capture-panel, #lock-overlay {
@@ -77,12 +85,27 @@
             font-size: 16px;
             resize: none;
             outline: none;
+            font-family: inherit;
+        }
+
+        .field-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            width: 100%;
+        }
+
+        .field-group label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
         .manual-fields {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 12px;
         }
 
         .manual-fields input, .manual-fields select {
@@ -92,14 +115,15 @@
             border-radius: 8px;
             padding: 0 12px;
             color: var(--text-pure);
-            font-size: 14px;
+            font-size: 16px;
             outline: none;
             width: 100%;
+            font-family: inherit;
         }
 
         .pin-display {
-            font-size: 32px;
-            letter-spacing: 12px;
+            font-size: 24px;
+            letter-spacing: 8px;
             text-align: center;
             border: none;
             background: transparent;
@@ -119,15 +143,17 @@
             height: var(--touch-target);
             border-radius: 8px;
             border: none;
-            font-weight: 600;
-            font-size: 13px;
+            font-weight: 500;
+            font-size: 12px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             text-transform: uppercase;
+            letter-spacing: 0.08em;
             flex: 1;
-            padding: 0 10px;
+            padding: 0 16px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
 
         .btn-primary { background: var(--scale-a); color: #fff; }
@@ -164,9 +190,10 @@
             justify-content: space-between;
             margin-bottom: 8px;
             align-items: flex-start;
+            gap: 12px;
         }
 
-        .card-info h3 { font-size: 16px; margin-bottom: 2px; }
+        .card-info h3 { font-size: 18px; margin-bottom: 4px; }
         .card-info p { font-size: 12px; color: var(--text-muted); }
         
         .survey-summary {
@@ -180,6 +207,7 @@
         }
 
         .tier-badge {
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
             font-size: 10px;
             padding: 2px 8px;
             border-radius: 4px;
@@ -188,6 +216,9 @@
             display: flex;
             align-items: center;
             font-weight: bold;
+            letter-spacing: 0.02em;
+            white-space: nowrap;
+            flex-shrink: 0;
         }
 
         .archive-btn {
@@ -240,6 +271,8 @@
             color: var(--text-muted);
             gap: 4px;
             cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
         .nav-item.active { color: var(--scale-a); }
@@ -247,22 +280,23 @@
 
         /* CLIENT FORM */
         #client-form-view {
-            padding: 24px;
+            padding: 16px;
             overflow-y: auto;
         }
 
         .q-block { margin-bottom: 24px; }
-        .q-title { font-size: 15px; font-weight: 500; margin-bottom: 12px; }
+        .q-title { font-family: Georgia, serif; font-size: 18px; margin-bottom: 16px; text-align: center; color: #fff; }
         .q-option {
             display: flex;
             align-items: center;
             padding: 16px;
             border: 1px solid var(--border-subtle);
             border-radius: 10px;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             background: var(--card-bg);
+            font-size: 14px;
         }
-        .q-option input { margin-right: 12px; width: 20px; height: 20px; }
+        .q-option input { margin-right: 12px; width: 22px; height: 22px; accent-color: var(--scale-a); }
 
         .empty-state {
             text-align: center;
@@ -283,24 +317,47 @@
 <body>
 
     <div id="lock-overlay" class="hidden">
-        <h2 style="font-size:18px; margin-bottom:4px; letter-spacing:-0.02em;">Oficina SOBERANA</h2>
-        <p style="color:var(--text-muted); font-size:12px; margin-bottom:20px;">Ingrese PIN de Seguridad</p>
+        <h2 style="font-size:22px; margin-bottom:6px;">Oficina Soberana</h2>
+        <p style="color:var(--text-muted); font-size:11px; margin-bottom:20px; text-transform:uppercase; letter-spacing:0.05em;">Ingrese PIN de Seguridad</p>
         <input type="password" id="pin-input" class="pin-display" maxlength="4" placeholder="••••" inputmode="numeric">
         <div id="lock-error" class="error-toast"></div>
     </div>
 
-    <div id="welcome-overlay" class="hidden" style="position:fixed; inset:0; background:#000; z-index:9999; display:flex; flex-direction:column; justify-content:center; padding:40px;">
-        <h2 style="font-size:24px; margin-bottom:10px; letter-spacing: -0.03em;">Oficina de Bolsillo</h2>
-        <p style="color:var(--text-muted); margin-bottom:30px; font-size:14px;">Configure su identidad de marca soberana.</p>
-        <input type="text" id="setup-broker-name" placeholder="Su Nombre (Ej: Elena Silva)" style="height:48px; background:#111; border:1px solid #27272a; color:#fff; padding:0 12px; border-radius:8px; margin-bottom:12px; outline:none;">
-        <input type="text" id="setup-agency-name" placeholder="Nombre de Agencia (Opcional)" style="height:48px; background:#111; border:1px solid #27272a; color:#fff; padding:0 12px; border-radius:8px; margin-bottom:12px; outline:none;">
-        <input type="password" id="setup-pin" placeholder="Establecer PIN Seguridades (4 dígitos)" maxlength="4" inputmode="numeric" style="height:48px; background:#111; border:1px solid #27272a; color:#fff; padding:0 12px; border-radius:8px; margin-bottom:30px; outline:none;">
-        <button id="btn-save-setup" class="btn btn-primary">Inicializar Sistema</button>
+    <div id="welcome-overlay" class="hidden" style="position:fixed; inset:0; background:#000; z-index:9999; display:flex; flex-direction:column; justify-content:center; padding:32px; overflow-y:auto;">
+        <h2 style="font-size:28px; margin-bottom:6px; text-align:center;">Oficina de Bolsillo</h2>
+        <p style="color:var(--text-muted); margin-bottom:32px; font-size:11px; text-align:center; letter-spacing: 0.08em; text-transform: uppercase;">Configuración de Arquitectura de Marca</p>
+        
+        <div style="display:flex; flex-direction:column; gap:16px; margin-bottom:32px;">
+            <div class="field-group">
+                <label>Nombre Profesional (Visible para sus contactos)</label>
+                <input type="text" id="setup-broker-name" placeholder="Ej: Elena Silva" style="height:48px; background:#09090b; border:1px solid #27272a; color:#fff; padding:0 12px; border-radius:8px; font-size:16px; outline:none; font-family:inherit;">
+            </div>
+
+            <div class="field-group">
+                <label>Nombre de la Agencia (Opcional)</label>
+                <input type="text" id="setup-agency-name" placeholder="Ej: Silva & Asociados Propiedades" style="height:48px; background:#09090b; border:1px solid #27272a; color:#fff; padding:0 12px; border-radius:8px; font-size:16px; outline:none; font-family:inherit;">
+            </div>
+
+            <div class="field-group">
+                <label>WhatsApp Receptor (8 dígitos móviles restantes)</label>
+                <div style="display:flex; align-items:center; background:#09090b; border:1px solid #27272a; border-radius:8px; padding-left:14px; height:48px;">
+                    <span style="color:var(--text-muted); font-size:16px; user-select:none; font-family:-apple-system,BlinkMacSystemFont,sans-serif; margin-right:4px;">+56 9</span>
+                    <input type="tel" id="setup-broker-phone" placeholder="12345678" maxlength="8" style="height:100%; background:transparent; border:none; color:#fff; padding:0; font-size:16px; outline:none; flex:1; font-family:inherit;">
+                </div>
+            </div>
+
+            <div class="field-group">
+                <label>PIN de Seguridad Personal (4 dígitos)</label>
+                <input type="password" id="setup-pin" placeholder="Ej: 1234" maxlength="4" inputmode="numeric" style="height:48px; background:#09090b; border:1px solid #27272a; color:#fff; padding:0 12px; border-radius:8px; font-size:16px; outline:none; font-family:inherit;">
+            </div>
+        </div>
+        
+        <button id="btn-save-setup" class="btn btn-primary" style="height:48px;">Inicializar Sistema</button>
     </div>
 
     <div id="admin-app-shell" class="hidden">
         <header>
-            <h1 id="app-title">Cargando identidad...</h1>
+            <h1 id="app-title">Cargando...</h1>
             <button id="btn-lock-system" class="archive-btn" style="width:36px; height:36px; font-size:14px;">🔒</button>
         </header>
 
@@ -330,7 +387,7 @@
             
             <div id="view-inventory" class="stack hidden">
                 <div class="card" style="border-style: dashed;">
-                    <h3 style="font-size:14px; margin-bottom:10px;">Nuevo Activo</h3>
+                    <h3 style="font-size:16px; margin-bottom:12px;">Nuevo Activo</h3>
                     <div class="manual-fields">
                         <input type="text" id="p-slug" placeholder="Slug (ej: depto-providencia)">
                         <input type="text" id="p-price" placeholder="Precio (ej: UF 4.500)">
@@ -353,56 +410,67 @@
     </div>
 
     <div id="client-form-view" class="hidden">
-        <header>
-            <h1 id="client-prop-title">Calificación de Interés</h1>
+        <header style="border-bottom:none; display:flex; flex-direction:column; align-items:center; text-align:center; padding:32px 16px 16px 16px;">
+            <div id="client-header-main" class="premium-title" style="font-size:24px; line-height:1.2; margin-bottom:4px;"></div>
+            <div id="client-header-sub" style="font-size:12px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:14px; font-weight:400;"></div>
+            <div id="client-prop-title" style="font-size:11px; background:#111; border:1px solid var(--border-subtle); padding:4px 12px; border-radius:4px; color:var(--scale-b2); font-weight:600; letter-spacing:0.04em;"></div>
         </header>
         
-        <div class="q-block" id="client-info-block" style="margin-top: 20px;">
-            <input type="text" id="c-name" placeholder="Su Nombre" style="width:100%; height:48px; background:#000; border:1px solid #27272a; color:#fff; padding:0 12px; border-radius:8px; margin-bottom:10px;">
-            <input type="tel" id="c-phone" placeholder="Su WhatsApp" style="width:100%; height:48px; background:#000; border:1px solid #27272a; color:#fff; padding:0 12px; border-radius:8px;">
+        <div class="q-block" id="client-info-block" style="margin-top: 10px; padding: 0 8px;">
+            <div class="field-group" style="margin-bottom:14px;">
+                <label>Su Nombre Completo</label>
+                <input type="text" id="c-name" placeholder="Ej: Juan Pérez" style="width:100%; height:48px; background:#09090b; border:1px solid #27272a; color:#fff; padding:0 12px; border-radius:8px; font-size:16px; outline:none; font-family:inherit;">
+            </div>
+            <div class="field-group" style="margin-bottom:14px;">
+                <label>Su WhatsApp (8 dígitos restantes)</label>
+                <div style="display:flex; align-items:center; background:#09090b; border:1px solid #27272a; border-radius:8px; padding-left:14px; height:48px;">
+                    <span style="color:var(--text-muted); font-size:16px; user-select:none; font-family:-apple-system,BlinkMacSystemFont,sans-serif; margin-right:4px;">+56 9</span>
+                    <input type="tel" id="c-phone" placeholder="12345678" maxlength="8" style="height:100%; background:transparent; border:none; color:#fff; padding:0; font-size:16px; outline:none; flex:1; font-family:inherit;">
+                </div>
+            </div>
         </div>
 
-        <form id="q-form">
-            <div style="width:100%; height:2px; background:#111; margin-bottom:30px;">
+        <form id="q-form" style="padding: 0 8px;">
+            <div style="width:100%; height:2px; background:#111; margin-bottom:32px;">
                 <div id="progress-bar" style="width:0%; height:100%; background:var(--scale-a); transition:0.3s;"></div>
             </div>
 
             <div class="q-slide" data-step="1">
-                <p class="q-title">1. ¿Cuenta con el pie disponible?</p>
+                <p class="q-title">¿Cuenta con el pie disponible?</p>
                 <label class="q-option"><input type="radio" name="q1" value="25" required> Sí, disponible ahora</label>
                 <label class="q-option"><input type="radio" name="q1" value="15"> En proceso de ahorro</label>
                 <label class="q-option"><input type="radio" name="q1" value="0"> No por ahora</label>
             </div>
 
             <div class="q-slide hidden" data-step="2">
-                <p class="q-title">2. ¿Tiene crédito pre-aprobado?</p>
+                <p class="q-title">¿Tiene crédito pre-aprobado?</p>
                 <label class="q-option"><input type="radio" name="q2" value="15" required> Sí, vigente</label>
                 <label class="q-option"><input type="radio" name="q2" value="5"> En evaluación</label>
                 <label class="q-option"><input type="radio" name="q2" value="0"> No aún</label>
             </div>
 
             <div class="q-slide hidden" data-step="3">
-                <p class="q-title">3. ¿Cuál es su plazo estimado de adquisición?</p>
+                <p class="q-title">¿Cuál es su plazo estimado de adquisición?</p>
                 <label class="q-option"><input type="radio" name="q3" value="15" required> Inmediato (menos de 3 meses)</label>
                 <label class="q-option"><input type="radio" name="q3" value="10"> Corto plazo (3 a 6 meses)</label>
                 <label class="q-option"><input type="radio" name="q3" value="5"> Solo evaluando opciones</label>
             </div>
 
             <div class="q-slide hidden" data-step="4">
-                <p class="q-title">4. ¿Cuál es el propósito principal del activo?</p>
+                <p class="q-title">¿Cuál es el propósito principal del activo?</p>
                 <label class="q-option"><input type="radio" name="q4" value="15" required> Inversión inmobiliaria</label>
                 <label class="q-option"><input type="radio" name="q4" value="15"> Uso residencial propio</label>
                 <label class="q-option"><input type="radio" name="q4" value="5"> Segunda vivienda</label>
             </div>
 
-            <div class="q-slide hidden" id="final-slide">
-                <h3 style="margin-bottom:10px;">Requerimiento Listo</h3>
-                <p style="font-size:13px; color:var(--text-muted); margin-bottom:20px;">Resumen: Se ha generado su Llave de Prioridad para asegurar este activo.</p>
-                <button type="button" id="btn-copy-ref" class="btn btn-secondary" style="margin-bottom:10px;">Copiar Llave REF-</button>
-                <button type="submit" class="btn btn-primary">Enviar por WhatsApp</button>
+            <div class="q-slide hidden" id="final-slide" style="text-align: center;">
+                <h3 style="font-size:22px; margin-bottom:8px;">Requerimiento Listo</h3>
+                <p style="font-size:13px; color:var(--text-muted); margin-bottom:24px; font-family:-apple-system,sans-serif;">Se ha generado su Llave de Prioridad para asegurar este activo.</p>
+                <button type="button" id="btn-copy-ref" class="btn btn-secondary" style="margin-bottom:10px; width:100%;">Copiar Llave REF-</button>
+                <button type="submit" class="btn btn-primary" style="width:100%;">Enviar por WhatsApp</button>
             </div>
 
-            <div class="btn-row" id="q-nav-btns" style="margin-top:20px;">
+            <div class="btn-row" id="q-nav-btns" style="margin-top:24px;">
                 <button type="button" class="btn btn-secondary" id="btn-prev-q" style="display:none;">Atrás</button>
                 <button type="button" class="btn btn-primary" id="btn-next-q">Siguiente</button>
             </div>
@@ -413,9 +481,7 @@
         (function() {
             'use strict';
 
-            const BROKER_PHONE = "+56934545677"; 
-            
-            // --- CRIPTOGRAFÍA URL-SAFE COMPACTA ---
+            // --- CRIPTOGRAFÍA COMPACTA ---
             function encodeToken(str) {
                 if (!str) return '';
                 return btoa(unescape(encodeURIComponent(str))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
@@ -428,9 +494,21 @@
                 try { return decodeURIComponent(escape(atob(base64))); } catch(e) { return ''; }
             }
 
+            // --- GENERADOR DE FIRMAS DE INTEGRIDAD CRIPTOGRÁFICA ---
+            function calcSig(payload, pin) {
+                let str = payload + pin;
+                let hash = 0;
+                for (let i = 0; i < str.length; i++) {
+                    hash = (hash << 5) - hash + str.charCodeAt(i);
+                    hash |= 0;
+                }
+                return Math.abs(hash).toString(36);
+            }
+
             let state = JSON.parse(localStorage.getItem('psicoandino_state')) || {
                 brokerName: "Corredora",
                 agencyName: "",
+                brokerPhone: "",
                 pin: "",
                 leads: [],
                 properties: []
@@ -467,7 +545,6 @@
                 selectEl.innerHTML = optionsHTML;
             }
 
-            // --- ENGINE CAPTURE CON VERIFICACIÓN DE FIRMA ---
             function processCapture(text) {
                 if (text.startsWith('REF-')) {
                     return decodeKey(text);
@@ -496,16 +573,29 @@
                 }
             }
 
+            // --- DECODIFICACIÓN ROBUSTA CON VALIDACIÓN DE FIRMA ---
             function decodeKey(key) {
                 try {
                     const raw = decodeToken(key.replace('REF-', ''));
                     const parts = raw.split('|');
                     
-                    // Maneja retrocompatibilidad o firmas externas sin romper el script
-                    const [bName, aName, pin, name, phone, slug, score, tier] = parts.length === 8 ? parts : ['', '', '', ...parts];
+                    if (parts.length !== 9) {
+                        document.getElementById('capture-error').innerText = "Llave Corrupta o No Autorizada";
+                        return;
+                    }
                     
+                    const [bName, aName, bPhone, tokenSig, name, phone, slug, score, tier] = parts;
+                    
+                    // Verificación matemática cruzada usando el PIN secreto local del administrador
+                    const expectedSig = calcSig(`${slug}|${bPhone}`, state.pin);
+                    
+                    if (tokenSig !== expectedSig || bPhone !== state.brokerPhone) {
+                        document.getElementById('capture-error').innerText = "Firma Inválida: Enlace alterado o de otra corredora";
+                        return;
+                    }
+
                     const existing = state.leads.find(l => l.phone === phone);
-                    const isVerified = pin === state.pin ? '✅' : '⚠️'; // Marcador de firma interna verídica
+                    const isVerified = '✅'; 
 
                     if (existing) {
                         existing.status = 'qualified';
@@ -563,7 +653,7 @@
                     <div class="card">
                         <div class="card-header">
                             <div class="card-info">
-                                <h3>${p.slug}</h3>
+                                <h3 style="font-family:-apple-system,sans-serif; font-size:16px; font-weight:600;">${p.slug}</h3>
                                 <p>${p.price}</p>
                             </div>
                             <button class="archive-btn" data-action="archive-prop" data-slug="${p.slug}">🗑️</button>
@@ -599,7 +689,6 @@
                 UI.trash.innerHTML = html;
             }
 
-            // --- INTERFACES NATIVAS DE URL CAMUFLADAS ---
             UI.leads.addEventListener('click', e => {
                 const trigger = e.target.closest('[data-action]');
                 if (!trigger) return;
@@ -616,13 +705,15 @@
                     if (lead.status === 'qualified') {
                         msg = `Hola ${lead.name}, te contacto de ${brand} sobre la propiedad ${lead.slug}. Analizamos tu solicitud y cuentas con una calificación de Prioridad ${lead.tier}. ¡Coordinemos pasos!`;
                     } else {
-                        const link = `${window.location.origin}${window.location.pathname}?p=${lead.slug}&u=${encodeToken(lead.name)}&t=${encodeToken(lead.phone)}`;
+                        const sig = calcSig(`${lead.slug}|${state.brokerPhone}`, state.pin);
+                        const link = `${window.location.origin}${window.location.pathname}?p=${lead.slug}&u=${encodeToken(lead.name)}&t=${encodeToken(lead.phone)}&b=${encodeToken(state.brokerPhone)}&an=${encodeToken(state.agencyName)}&bn=${encodeToken(state.brokerName)}&s=${sig}`;
                         msg = `Hola ${lead.name}, para acelerar la gestión de la propiedad ${lead.slug}, te generé un acceso directo a nuestro cuestionario prioritario: ${link}`;
                     }
                     window.open(`https://wa.me/${lead.phone}?text=${encodeURIComponent(msg)}`);
                 } 
                 else if (trigger.dataset.action === 'share-link') {
-                    const link = `${window.location.origin}${window.location.pathname}?p=${lead.slug}&u=${encodeToken(lead.name)}&t=${encodeToken(lead.phone)}`;
+                    const sig = calcSig(`${lead.slug}|${state.brokerPhone}`, state.pin);
+                    const link = `${window.location.origin}${window.location.pathname}?p=${lead.slug}&u=${encodeToken(lead.name)}&t=${encodeToken(lead.phone)}&b=${encodeToken(state.brokerPhone)}&an=${encodeToken(state.agencyName)}&bn=${encodeToken(state.brokerName)}&s=${sig}`;
                     navigator.clipboard.writeText(link);
                     trigger.innerText = "¡Copiado!";
                     setTimeout(() => trigger.innerText = "🔗 Link Camuflado", 2000);
@@ -647,7 +738,8 @@
                     if (prop) prop.archived = true;
                     save(); renderInventory();
                 } else if (trigger.dataset.action === 'copy-raw-link') {
-                    const link = `${window.location.origin}${window.location.pathname}?p=${trigger.dataset.slug}`;
+                    const sig = calcSig(`${trigger.dataset.slug}|${state.brokerPhone}`, state.pin);
+                    const link = `${window.location.origin}${window.location.pathname}?p=${trigger.dataset.slug}&b=${encodeToken(state.brokerPhone)}&an=${encodeToken(state.agencyName)}&bn=${encodeToken(state.brokerName)}&s=${sig}`;
                     navigator.clipboard.writeText(link);
                     trigger.innerText = "¡Copiado!";
                     setTimeout(() => trigger.innerText = "Copiar Link General", 2000);
@@ -667,7 +759,6 @@
                 save(); renderTrash();
             });
 
-            // --- MANEJO DE PESTAÑAS ---
             document.querySelectorAll('.nav-item').forEach(item => {
                 item.addEventListener('click', () => {
                     document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
@@ -704,7 +795,6 @@
                 }
             });
 
-            // --- SISTEMA DE BLOQUEO POR PIN (PRIVACIDAD ADM) ---
             function checkLockStatus() {
                 if (!state.pin || state.pin === "") {
                     document.getElementById('welcome-overlay').classList.remove('hidden');
@@ -733,28 +823,49 @@
             });
 
             document.getElementById('btn-save-setup').addEventListener('click', () => {
+                const rawDigits = document.getElementById('setup-broker-phone').value.replace(/\s+/g, '');
+                const targetPin = document.getElementById('setup-pin').value;
+                
+                if(!rawDigits || rawDigits.length !== 8 || isNaN(rawDigits)) { alert("Por favor, ingrese exactamente los 8 dígitos móviles de su WhatsApp."); return; }
+                if(targetPin.length !== 4 || isNaN(targetPin)) { alert("El PIN debe tener exactamente 4 números."); return; }
+                
                 state.brokerName = document.getElementById('setup-broker-name').value || "Corredora";
                 state.agencyName = document.getElementById('setup-agency-name').value || "";
-                const targetPin = document.getElementById('setup-pin').value;
-                if(targetPin.length !== 4 || isNaN(targetPin)) { alert("El PIN debe tener 4 números exactos."); return; }
+                state.brokerPhone = `+569${rawDigits}`;
                 state.pin = targetPin;
+                
                 save(); location.reload(); 
             });
 
-            // --- PARSEO DE URL CAMUFLADA PARA EL CLIENTE ---
+            // --- DECODE INTERFAZ PREMIUM CLIENTE ---
             const params = new URLSearchParams(window.location.search);
-            const clientSlug = params.get('p'); // 'p' sustituye a 'form'
+            const clientSlug = params.get('p'); 
 
             if (clientSlug) {
                 document.getElementById('welcome-overlay').classList.add('hidden');
                 UI.lockOverlay.classList.add('hidden');
                 UI.shell.classList.add('hidden');
                 document.getElementById('client-form-view').classList.remove('hidden');
+
+                const clientAgency = decodeToken(params.get('an'));
+                const clientBroker = decodeToken(params.get('bn'));
+                const mainTitleEl = document.getElementById('client-header-main');
+                const subTitleEl = document.getElementById('client-header-sub');
+
                 document.getElementById('client-prop-title').innerText = clientSlug.toUpperCase();
 
-                // Decodificación silenciosa de variables camufladas
+                if (clientAgency && clientAgency.trim() !== "") {
+                    mainTitleEl.innerText = clientAgency;
+                    subTitleEl.innerText = clientBroker;
+                } else {
+                    mainTitleEl.innerText = clientBroker || "Corretaje Premium";
+                    subTitleEl.style.display = 'none';
+                }
+
                 const urlName = decodeToken(params.get('u'));
                 const urlPhone = decodeToken(params.get('t'));
+                const targetBrokerPhone = decodeToken(params.get('b')) || "+56934545677"; 
+
                 if (urlName && urlPhone) {
                     document.getElementById('c-name').value = urlName;
                     document.getElementById('c-phone').value = urlPhone;
@@ -770,13 +881,33 @@
                     if (bar) bar.style.width = `${progress}%`;
                 }
 
+                function getClientPhone() {
+                    const inputVal = document.getElementById('c-phone').value.trim();
+                    if (inputVal.startsWith('+') || inputVal.length > 8) {
+                        return inputVal; // Teléfono inyectado completo
+                    }
+                    return `+569${inputVal}`; // Teléfono digitado manualmente
+                }
+
                 document.addEventListener('click', (e) => {
                     if (e.target.id === 'btn-next-q' || e.target.id === 'btn-prev-q') {
                         const isNext = e.target.id === 'btn-next-q';
-                        const activeSlide = document.querySelector(`.q-slide[data-step="${currentStep}"]`);
                         
+                        // Validación estricta y transparente del Onboarding del Cliente
+                        if (isNext && currentStep === 1) {
+                            const infoBlock = document.getElementById('client-info-block');
+                            if (infoBlock && !infoBlock.classList.contains('hidden')) {
+                                const cName = document.getElementById('c-name').value.trim();
+                                const cPhoneRaw = document.getElementById('c-phone').value.trim();
+                                
+                                if (!cName) { alert("Por favor, ingrese su nombre completo."); return; }
+                                if (cPhoneRaw.length !== 8 || isNaN(cPhoneRaw)) { alert("Por favor, ingrese exactamente los 8 dígitos móviles de su WhatsApp."); return; }
+                            }
+                        }
+
+                        const activeSlide = document.querySelector(`.q-slide[data-step="${currentStep}"]`);
                         if (isNext && !activeSlide.querySelector('input:checked')) {
-                            alert("Seleccione una opción."); return;
+                            alert("Por favor, seleccione una opción."); return;
                         }
 
                         activeSlide.classList.add('hidden');
@@ -805,11 +936,12 @@
                     if (score >= 40) tier = 'A';
                     else if (score >= 20) tier = 'B1';
 
-                    const cName = document.getElementById('c-name').value || "Interesado";
-                    const cPhone = document.getElementById('c-phone').value || "S/N";
-                    
-                    // Firmado soberano completo del payload
-                    const payload = `${state.brokerName}|${state.agencyName}|${state.pin}|${cName}|${cPhone}|${clientSlug}|${score}|${tier}`;
+                    const cName = document.getElementById('c-name').value.trim() || "Interesado";
+                    const cPhone = getClientPhone();
+                    const incomingSignature = params.get('s') || '';
+
+                    // Inyectamos la firma entrante dentro de la estructura de la llave para validación del admin
+                    const payload = `${clientBroker}|${clientAgency}|${targetBrokerPhone}|${incomingSignature}|${cName}|${cPhone}|${clientSlug}|${score}|${tier}`;
                     const key = `REF-${encodeToken(payload)}`;
 
                     const copyBtn = document.getElementById('btn-copy-ref');
@@ -821,11 +953,10 @@
                     document.getElementById('q-form').onsubmit = (e) => {
                         e.preventDefault();
                         const msg = `CAPTURA_PSICO | ${cName} | Prop: ${clientSlug} | Prioridad: ${tier}\n\nCódigo: ${key}`;
-                        window.location.href = `https://wa.me/${BROKER_PHONE}?text=${encodeURIComponent(msg)}`;
+                        window.location.href = `https://wa.me/${targetBrokerPhone.replace('+', '')}?text=${encodeURIComponent(msg)}`;
                     };
                 }
             } else {
-                // Si no hay parámetros de cliente, arranca el flujo seguro de administrador
                 checkLockStatus();
             }
 
