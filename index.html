@@ -312,9 +312,40 @@
             text-align: center;
             margin-top: 8px;
         }
+
+        /* PANTALLA DE ESTADO CRÍTICO (BLINDAJE URL) */
+        #critical-error-overlay {
+            position: fixed;
+            inset: 0;
+            background: #000000;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 24px;
+            text-align: center;
+        }
+        #critical-error-overlay h2 {
+            font-family: Georgia, serif;
+            font-size: 22px;
+            color: #ef4444;
+            margin-bottom: 12px;
+        }
+        #critical-error-overlay p {
+            color: var(--text-muted);
+            font-size: 13px;
+            line-height: 1.6;
+            max-width: 290px;
+        }
     </style>
 </head>
 <body>
+
+    <div id="critical-error-overlay" class="hidden">
+        <h2>Acceso Denegado</h2>
+        <p>El enlace de este activo ha sido modificado, revocado o no pertenece a esta oficina de corretaje.</p>
+    </div>
 
     <div id="lock-overlay" class="hidden">
         <h2 style="font-size:22px; margin-bottom:6px;">Oficina Soberana</h2>
@@ -495,8 +526,8 @@
             }
 
             // --- GENERADOR DE FIRMAS DE INTEGRIDAD CRIPTOGRÁFICA ---
-            function calcSig(payload, pin) {
-                let str = payload + pin;
+            function calcSig(payload, salt) {
+                let str = payload + salt;
                 let hash = 0;
                 for (let i = 0; i < str.length; i++) {
                     hash = (hash << 5) - hash + str.charCodeAt(i);
@@ -573,7 +604,7 @@
                 }
             }
 
-            // --- DECODIFICACIÓN ROBUSTA CON VALIDACIÓN DE FIRMA ---
+            // --- DECODIFICACIÓN Y VALIDACIÓN EN PANEL DEL ADMINISTRADOR ---
             function decodeKey(key) {
                 try {
                     const raw = decodeToken(key.replace('REF-', ''));
@@ -585,8 +616,6 @@
                     }
                     
                     const [bName, aName, bPhone, tokenSig, name, phone, slug, score, tier] = parts;
-                    
-                    // Verificación matemática cruzada usando el PIN secreto local del administrador
                     const expectedSig = calcSig(`${slug}|${bPhone}`, state.pin);
                     
                     if (tokenSig !== expectedSig || bPhone !== state.brokerPhone) {
@@ -700,23 +729,26 @@
                 if (trigger.dataset.action === 'archive-lead') {
                     lead.archived = true; save(); renderLeads();
                 } 
-                else if (trigger.dataset.action === 'smart-contact') {
-                    let msg = "";
-                    if (lead.status === 'qualified') {
-                        msg = `Hola ${lead.name}, te contacto de ${brand} sobre la propiedad ${lead.slug}. Analizamos tu solicitud y cuentas con una calificación de Prioridad ${lead.tier}. ¡Coordinemos pasos!`;
+                else if (trigger.dataset.action === 'smart-contact' || trigger.dataset.action === 'share-link') {
+                    // COMPRESIÓN SOBERANA A CAJA NEGRA (Link Camuflado)
+                    const adminPinSig = calcSig(`${lead.slug}|${state.brokerPhone}`, state.pin);
+                    const payload = `c|${lead.slug}|${state.brokerPhone}|${state.brokerName}|${state.agencyName}|${lead.name}|${lead.phone}|${adminPinSig}`;
+                    const token = encodeToken(payload + "|" + calcSig(payload, "PSICO"));
+                    const link = `${window.location.origin}${window.location.pathname}?a=${token}`;
+
+                    if (trigger.dataset.action === 'share-link') {
+                        navigator.clipboard.writeText(link);
+                        trigger.innerText = "¡Copiado!";
+                        setTimeout(() => trigger.innerText = "🔗 Link Camuflado", 2000);
                     } else {
-                        const sig = calcSig(`${lead.slug}|${state.brokerPhone}`, state.pin);
-                        const link = `${window.location.origin}${window.location.pathname}?p=${lead.slug}&u=${encodeToken(lead.name)}&t=${encodeToken(lead.phone)}&b=${encodeToken(state.brokerPhone)}&an=${encodeToken(state.agencyName)}&bn=${encodeToken(state.brokerName)}&s=${sig}`;
-                        msg = `Hola ${lead.name}, para acelerar la gestión de la propiedad ${lead.slug}, te generé un acceso directo a nuestro cuestionario prioritario: ${link}`;
+                        let msg = "";
+                        if (lead.status === 'qualified') {
+                            msg = `Hola ${lead.name}, te contacto de ${brand} sobre la propiedad ${lead.slug}. Analizamos tu solicitud y cuentas con una calificación de Prioridad ${lead.tier}. ¡Coordinemos pasos!`;
+                        } else {
+                            msg = `Hola ${lead.name}, para acelerar la gestión de la propiedad ${lead.slug}, te generé un acceso directo a nuestro cuestionario prioritario: ${link}`;
+                        }
+                        window.open(`https://wa.me/${lead.phone}?text=${encodeURIComponent(msg)}`);
                     }
-                    window.open(`https://wa.me/${lead.phone}?text=${encodeURIComponent(msg)}`);
-                } 
-                else if (trigger.dataset.action === 'share-link') {
-                    const sig = calcSig(`${lead.slug}|${state.brokerPhone}`, state.pin);
-                    const link = `${window.location.origin}${window.location.pathname}?p=${lead.slug}&u=${encodeToken(lead.name)}&t=${encodeToken(lead.phone)}&b=${encodeToken(state.brokerPhone)}&an=${encodeToken(state.agencyName)}&bn=${encodeToken(state.brokerName)}&s=${sig}`;
-                    navigator.clipboard.writeText(link);
-                    trigger.innerText = "¡Copiado!";
-                    setTimeout(() => trigger.innerText = "🔗 Link Camuflado", 2000);
                 }
             });
 
@@ -738,8 +770,12 @@
                     if (prop) prop.archived = true;
                     save(); renderInventory();
                 } else if (trigger.dataset.action === 'copy-raw-link') {
-                    const sig = calcSig(`${trigger.dataset.slug}|${state.brokerPhone}`, state.pin);
-                    const link = `${window.location.origin}${window.location.pathname}?p=${trigger.dataset.slug}&b=${encodeToken(state.brokerPhone)}&an=${encodeToken(state.agencyName)}&bn=${encodeToken(state.brokerName)}&s=${sig}`;
+                    // COMPRESIÓN SOBERANA A CAJA NEGRA (Link General)
+                    const adminPinSig = calcSig(`${trigger.dataset.slug}|${state.brokerPhone}`, state.pin);
+                    const payload = `g|${trigger.dataset.slug}|${state.brokerPhone}|${state.brokerName}|${state.agencyName}|${adminPinSig}`;
+                    const token = encodeToken(payload + "|" + calcSig(payload, "PSICO"));
+                    const link = `${window.location.origin}${window.location.pathname}?a=${token}`;
+                    
                     navigator.clipboard.writeText(link);
                     trigger.innerText = "¡Copiado!";
                     setTimeout(() => trigger.innerText = "Copiar Link General", 2000);
@@ -837,18 +873,59 @@
                 save(); location.reload(); 
             });
 
-            // --- DECODE INTERFAZ PREMIUM CLIENTE ---
+            // --- DECODIFICACIÓN EN TIEMPO REAL VISTA CLIENTE (BLINDAJE CONTRA ALTERACIÓN) ---
             const params = new URLSearchParams(window.location.search);
-            const clientSlug = params.get('p'); 
+            const accessToken = params.get('a');
 
-            if (clientSlug) {
+            if (accessToken) {
                 document.getElementById('welcome-overlay').classList.add('hidden');
                 UI.lockOverlay.classList.add('hidden');
                 UI.shell.classList.add('hidden');
+
+                let integrityPassed = false;
+                let type, clientSlug, targetBrokerPhone, clientBroker, clientAgency, urlName, urlPhone, adminPinSig;
+
+                try {
+                    const raw = decodeToken(accessToken);
+                    const parts = raw.split('|');
+                    
+                    // CORRECCIÓN: Validamos el tamaño inicial del paquete (7 para general, 9 para camuflado)
+                    if (parts.length === 7 || parts.length === 9) {
+                        const outerSig = parts.pop(); // Removemos la firma externa, el arreglo ahora baja a 6 u 8
+                        const rebuildPayload = parts.join('|');
+                        
+                        // Verificamos que el contenido no haya sido manipulado
+                        if (outerSig === calcSig(rebuildPayload, "PSICO")) {
+                            integrityPassed = true;
+                            type = parts[0];
+                            clientSlug = parts[1];
+                            targetBrokerPhone = parts[2];
+                            clientBroker = parts[3];
+                            clientAgency = parts[4];
+                            
+                            if (type === 'c') {
+                                urlName = parts[5];
+                                urlPhone = parts[6];
+                                adminPinSig = parts[7];
+                            } else {
+                                adminPinSig = parts[5];
+                            }
+                        }
+                    }
+                } catch (e) {
+                    integrityPassed = false;
+                }
+
+                // SI EL ENLACE FUE ALTERADO O NO PASÓ EL CONTEO: SE ACTIVA EL BLOQUEO INMEDIATO
+                if (!integrityPassed) {
+                    document.getElementById('client-form-view').classList.add('hidden');
+                    document.getElementById('critical-error-overlay').classList.remove('hidden');
+                    return; // Detiene completamente el flujo
+                }
+
+                // CONTINUAR SINO CON LA RENDERIZACIÓN SEGURO DEL FORMULARIO
                 document.getElementById('client-form-view').classList.remove('hidden');
 
-                const clientAgency = decodeToken(params.get('an'));
-                const clientBroker = decodeToken(params.get('bn'));
                 const mainTitleEl = document.getElementById('client-header-main');
                 const subTitleEl = document.getElementById('client-header-sub');
 
@@ -861,10 +938,6 @@
                     mainTitleEl.innerText = clientBroker || "Corretaje Premium";
                     subTitleEl.style.display = 'none';
                 }
-
-                const urlName = decodeToken(params.get('u'));
-                const urlPhone = decodeToken(params.get('t'));
-                const targetBrokerPhone = decodeToken(params.get('b')) || "+56934545677"; 
 
                 if (urlName && urlPhone) {
                     document.getElementById('c-name').value = urlName;
@@ -884,16 +957,15 @@
                 function getClientPhone() {
                     const inputVal = document.getElementById('c-phone').value.trim();
                     if (inputVal.startsWith('+') || inputVal.length > 8) {
-                        return inputVal; // Teléfono inyectado completo
+                        return inputVal;
                     }
-                    return `+569${inputVal}`; // Teléfono digitado manualmente
+                    return `+569${inputVal}`;
                 }
 
                 document.addEventListener('click', (e) => {
                     if (e.target.id === 'btn-next-q' || e.target.id === 'btn-prev-q') {
                         const isNext = e.target.id === 'btn-next-q';
                         
-                        // Validación estricta y transparente del Onboarding del Cliente
                         if (isNext && currentStep === 1) {
                             const infoBlock = document.getElementById('client-info-block');
                             if (infoBlock && !infoBlock.classList.contains('hidden')) {
@@ -938,11 +1010,10 @@
 
                     const cName = document.getElementById('c-name').value.trim() || "Interesado";
                     const cPhone = getClientPhone();
-                    const incomingSignature = params.get('s') || '';
 
-                    // Inyectamos la firma entrante dentro de la estructura de la llave para validación del admin
-                    const payload = `${clientBroker}|${clientAgency}|${targetBrokerPhone}|${incomingSignature}|${cName}|${cPhone}|${clientSlug}|${score}|${tier}`;
-                    const key = `REF-${encodeToken(payload)}`;
+                    // Encapsulamos el token arrastrando transparentemente la firma calculada con tu PIN
+                    const finalPayload = `${clientBroker}|${clientAgency}|${targetBrokerPhone}|${adminPinSig}|${cName}|${cPhone}|${clientSlug}|${score}|${tier}`;
+                    const key = `REF-${encodeToken(finalPayload)}`;
 
                     const copyBtn = document.getElementById('btn-copy-ref');
                     if (copyBtn) {
