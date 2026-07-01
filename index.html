@@ -591,36 +591,40 @@
                 <div id="progress-bar" style="width:0%; height:100%; background:var(--scale-a); transition:0.3s;"></div>
             </div>
 
-            <!-- Slide 1: Pie (Filtro de Liquidez) -->
+            <!-- Slide 1: Liquidez (Pie) -->
             <div class="q-slide" data-step="1">
-                <p class="q-title">¿Cómo planea cubrir el pie de la propiedad?</p>
-                <label class="q-option"><input type="radio" name="q1" value="25" required> Tengo el 20% o más disponible</label>
-                <label class="q-option"><input type="radio" name="q1" value="15"> Tengo el 10% y busco financiamiento</label>
-                <label class="q-option"><input type="radio" name="q1" value="0"> Estoy en proceso de ahorro / Prefiero no decir</label>
+                <p class="q-title">¿Cómo tiene planificado cubrir el pie de la propiedad?</p>
+                <label class="q-option"><input type="radio" name="q1" value="25" required> Tengo el 20% o más disponible ahora</label>
+                <label class="q-option"><input type="radio" name="q1" value="15"> Tengo el 10% y estoy ahorrando el resto</label>
+                <label class="q-option"><input type="radio" name="q1" value="5"> Estoy evaluando opciones de financiamiento</label>
+                <label class="q-option"><input type="radio" name="q1" value="0"> Prefiero no responder / En definición</label>
             </div>
 
-            <!-- Slide 2: Crédito (Filtro Bancario) -->
+            <!-- Slide 2: Solvencia (Crédito) -->
             <div class="q-slide hidden" data-step="2">
-                <p class="q-title">¿Cuál es su situación bancaria actual?</p>
-                <label class="q-option"><input type="radio" name="q2" value="25" required> Crédito Pre-aprobado / Compra al contado</label>
-                <label class="q-option"><input type="radio" name="q2" value="10"> En evaluación con el banco</label>
-                <label class="q-option"><input type="radio" name="q2" value="0"> Aún no consulto al banco / Prefiero no decir</label>
+                <p class="q-title">¿Cuál es su situación con el sistema bancario?</p>
+                <label class="q-option"><input type="radio" name="q2" value="25" required> Tengo crédito aprobado o compro al contado</label>
+                <label class="q-option"><input type="radio" name="q2" value="15"> Estoy en proceso de evaluación bancaria</label>
+                <label class="q-option"><input type="radio" name="q2" value="5"> Aún no he consultado con instituciones</label>
+                <label class="q-option"><input type="radio" name="q2" value="0"> Prefiero no responder / Solo explorando</label>
             </div>
 
-            <!-- Slide 3: Comportamiento (Inteligencia de Cierre) -->
+            <!-- Slide 3: Acción (Conducta de Búsqueda) -->
             <div class="q-slide hidden" data-step="3">
-                <p class="q-title">¿Ha visitado otras propiedades en los últimos 30 días?</p>
-                <label class="q-option"><input type="radio" name="q3" value="25" required> Sí, estoy visitando activamente</label>
-                <label class="q-option"><input type="radio" name="q3" value="10"> He visto algunas fotos y videos</label>
-                <label class="q-option"><input type="radio" name="q3" value="0"> Es mi primera consulta / Prefiero no decir</label>
+                <p class="q-title">¿Ha visitado otras propiedades en los últimos 15 días?</p>
+                <label class="q-option"><input type="radio" name="q3" value="25" required> Sí, he visitado físicamente propiedades</label>
+                <label class="q-option"><input type="radio" name="q3" value="15"> He visto tours virtuales y solicitado fichas</label>
+                <label class="q-option"><input type="radio" name="q3" value="5"> Estoy recién comenzando mi búsqueda</label>
+                <label class="q-option"><input type="radio" name="q3" value="0"> Prefiero no responder / Búsqueda pasiva</label>
             </div>
 
-            <!-- Slide 4: Plazo (Urgencia) -->
+            <!-- Slide 4: Urgencia (Plazo de Cierre) -->
             <div class="q-slide hidden" data-step="4">
-                <p class="q-title">¿En cuánto tiempo necesita habitar o invertir?</p>
-                <label class="q-option"><input type="radio" name="q4" value="25" required> Inmediato (Menos de 2 meses)</label>
-                <label class="q-option"><input type="radio" name="q4" value="10"> Plazo medio (3 a 6 meses)</label>
-                <label class="q-option"><input type="radio" name="q4" value="0"> Sin prisa / Solo evaluando</label>
+                <p class="q-title">¿Cuál es su ventana de tiempo para concretar?</p>
+                <label class="q-option"><input type="radio" name="q4" value="25" required> Necesito concretar en menos de 60 días</label>
+                <label class="q-option"><input type="radio" name="q4" value="15"> Mi plazo es de 3 a 6 meses</label>
+                <label class="q-option"><input type="radio" name="q4" value="5"> No tengo prisa, busco la oportunidad ideal</label>
+                <label class="q-option"><input type="radio" name="q4" value="0"> Prefiero no responder / Sin plazo fijo</label>
             </div>
 
             <div class="q-slide hidden" id="final-slide" style="text-align: center;">
@@ -898,10 +902,21 @@
                         setTimeout(() => trigger.classList.remove('copied'), 2000);
                     } else {
                         let msg = "";
+                        // SUSTITUCIÓN SUGERIDA (Línea 359)
                         if (lead.status === 'qualified') {
-                            msg = `Hola ${lead.name}, te contacto de ${brand} sobre la propiedad ${lead.slug}. Analizamos tu solicitud y cuentas con una calificación de Prioridad ${lead.tier}. ¡Coordinemos pasos!`;
+                            if (lead.tier.includes('A')) {
+                                // TIER A: El Inversionista VIP / Cierre Inmediato
+                                msg = `Hola ${lead.name}, analicé tu perfil para ${lead.slug}. Tu calificación es de ALTA PRIORIDAD. Mi agenda está abierta para que coordinemos la visita de cierre de inmediato. ¿Hablamos?`;
+                            } else if (lead.tier.includes('B1')) {
+                                // TIER B1: El Lead Calificado en proceso
+                                msg = `Hola ${lead.name}, recibí tu llave de prioridad para ${lead.slug}. Veo que estás avanzando con los pasos bancarios. Me gustaría asesorarte personalmente para asegurar este activo. ¿Tienes 5 minutos?`;
+                            } else {
+                                // TIER B2: El Curioso / Opaco
+                                msg = `Hola ${lead.name}, recibí tu requerimiento por ${lead.slug}. Te adjunto la ficha técnica solicitada y quedo atento a cuando definas tus condiciones comerciales para avanzar.`;
+                            }
                         } else {
-                            msg = `Hola ${lead.name}, para acelerar la gestión de la propiedad ${lead.slug}, te generé un acceso directo a nuestro cuestionario prioritario: ${link}`;
+                            // INVITACIÓN: Captura de Micro-compromiso
+                            msg = `Hola ${lead.name}, recibí tu interés por ${lead.slug}. Para darte prioridad en la agenda de visitas y validar tu perfil ante la administración, por favor completa este breve enlace: ${link}`;
                         }
                         window.open(`https://wa.me/${lead.phone}?text=${encodeURIComponent(msg)}`);
                     }
@@ -1228,17 +1243,18 @@
                     fd.forEach(v => score += parseInt(v));
 
                     let tier = 'B2';
-                    // TIERS REFINADOS:
-                    if (score >= 75) tier = 'A';        // CLIENTE VIP (Pie + Crédito + Urgencia)
-                    else if (score >= 40) tier = 'B1';  // CLIENTE CALIFICADO (Interés real)
-                    else tier = 'B2';                   // CURIOSO / OPACO (Baja prioridad)
+                    // TIERS BASADOS EN BENCHMARK DE INTENCIÓN REAL
+                    if (score >= 75) tier = 'A';        // ALTA INTENCIÓN: Pie + Crédito + Acción
+                    else if (score >= 40) tier = 'B1';  // CALIFICADO: Tiene interés pero falta maduración
+                    else tier = 'B2';                   // OPACO/CURIOSO: Baja transparencia o solo explorando
 
                     const cName = document.getElementById('c-name').value.trim() || "Interesado";
                     const cPhone = getClientPhone();
 
-                    const finalPayload = `${clientBroker}|${clientAgency}|${targetBrokerPhone}|${adminPinSig}|${cName}|${cPhone}|${clientSlug}|${score}|${tier}`;
+                    // El score se mantiene oculto para el cliente pero viaja en tu REF- [20, 21]
+                    const finalPayload = `${state.brokerName}|${state.agencyName}|${state.brokerPhone}|${calcSig(clientSlug + '|' + state.brokerPhone, state.pin)}|${cName}|${cPhone}|${clientSlug}|${score}|${tier}`;
                     const key = `REF-${encodeToken(finalPayload)}`;
-
+                    
                     const copyBtn = document.getElementById('btn-copy-ref');
                     if (copyBtn) {
                         copyBtn.style.display = 'block';
@@ -1248,7 +1264,7 @@
                     document.getElementById('q-form').onsubmit = (e) => {
                         e.preventDefault();
                         const msg = `CAPTURA_PSICO | ${cName} | Prop: ${clientSlug} | Prioridad: ${tier}\n\nCódigo: ${key}`;
-                        window.location.href = `https://wa.me/${targetBrokerPhone.replace('+', '')}?text=${encodeURIComponent(msg)}`;
+                        window.location.href = `https://wa.me/${state.brokerPhone.replace('+', '')}?text=${encodeURIComponent(msg)}`;
                     };
                 }
             } else {
