@@ -11,10 +11,11 @@
             --border-subtle: #27272a;
             --text-pure: #e4e4e7;
             --text-muted: #a1a1aa;
+            --primary-button: #ceced3;
             --scale-a: #248692;
             --scale-b1: #6d7c50;
             --scale-b2: #b78627;
-            --touch-target: 48px;
+            --touch-target: 56px;
         }
 
         * {
@@ -29,7 +30,7 @@
             color: var(--text-pure);
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             letter-spacing: 0.01em;
-            height: 100vh;
+            height: 100dvh;
             width: 100vw;
             overflow: hidden;
             display: flex;
@@ -165,22 +166,23 @@
 
         .btn {
             height: var(--touch-target);
-            border-radius: 8px;
+            border-radius: 12px;
             border: none;
-            font-weight: 500;
-            font-size: 12px;
+            font-weight: 600;
+            font-size: 14px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             text-transform: uppercase;
             letter-spacing: 0.08em;
-            flex: 1;
-            padding: 0 16px;
+            width: 100%;
+            flex-shrink: 0;
+            padding: 0 24px;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
 
-        .btn-primary { background: var(--scale-a); color: #fff; }
+        .btn-primary {background: var(--scale-a); color: #fff; }
         .btn-secondary { background: var(--border-subtle); color: var(--text-pure); }
         .btn-danger { background: transparent; border: 1px solid #ef4444; color: #ef4444; }
 
@@ -356,12 +358,12 @@
 
         /* NAV */
         nav {
-            height: 64px;
+            height: 72px;
             border-top: 1px solid var(--border-subtle);
             display: flex;
             background: var(--bg-pure);
             flex-shrink: 0;
-            padding-bottom: env(safe-area-inset-bottom);
+            padding-bottom: env(safe-area-inset-bottom)+ 8px;
         }
 
         .nav-item {
@@ -487,7 +489,12 @@
             </div>
         </div>
         
-        <button id="btn-save-setup" class="btn btn-primary" style="height:48px; flex-shrink:0;">Inicializar Sistema</button>
+        <div style="margin-top: 10px; padding-top: 15px; border-top: 1px dashed #27272a;">
+            <p style="color:var(--text-muted); font-size:10px; margin-bottom:10px; text-align:center; text-transform:uppercase;">¿Ya tienes un respaldo .json?</p>
+            <button type="button" id="btn-setup-import" class="btn btn-secondary" style="height:40px; width:100%; font-size:11px;">Cargar Data de Respaldo</button>
+        </div>
+
+        <button id="btn-save-setup" class="btn btn-primary" style="height:48px; flex-shrink:0; margin-top: 12px;">Inicializar Sistema</button>
     </div>
 
     <div id="admin-app-shell" class="hidden">
@@ -584,32 +591,36 @@
                 <div id="progress-bar" style="width:0%; height:100%; background:var(--scale-a); transition:0.3s;"></div>
             </div>
 
+            <!-- Slide 1: Pie (Filtro de Liquidez) -->
             <div class="q-slide" data-step="1">
-                <p class="q-title">¿Cuenta con el pie disponible?</p>
-                <label class="q-option"><input type="radio" name="q1" value="25" required> Sí, disponible ahora</label>
-                <label class="q-option"><input type="radio" name="q1" value="15"> En proceso de ahorro</label>
-                <label class="q-option"><input type="radio" name="q1" value="0"> No por ahora</label>
+                <p class="q-title">¿Cómo planea cubrir el pie de la propiedad?</p>
+                <label class="q-option"><input type="radio" name="q1" value="25" required> Tengo el 20% o más disponible</label>
+                <label class="q-option"><input type="radio" name="q1" value="15"> Tengo el 10% y busco financiamiento</label>
+                <label class="q-option"><input type="radio" name="q1" value="0"> Estoy en proceso de ahorro / Prefiero no decir</label>
             </div>
 
+            <!-- Slide 2: Crédito (Filtro Bancario) -->
             <div class="q-slide hidden" data-step="2">
-                <p class="q-title">¿Tiene crédito pre-aprobado?</p>
-                <label class="q-option"><input type="radio" name="q2" value="15" required> Sí, vigente</label>
-                <label class="q-option"><input type="radio" name="q2" value="5"> En evaluación</label>
-                <label class="q-option"><input type="radio" name="q2" value="0"> No aún</label>
+                <p class="q-title">¿Cuál es su situación bancaria actual?</p>
+                <label class="q-option"><input type="radio" name="q2" value="25" required> Crédito Pre-aprobado / Compra al contado</label>
+                <label class="q-option"><input type="radio" name="q2" value="10"> En evaluación con el banco</label>
+                <label class="q-option"><input type="radio" name="q2" value="0"> Aún no consulto al banco / Prefiero no decir</label>
             </div>
 
+            <!-- Slide 3: Comportamiento (Inteligencia de Cierre) -->
             <div class="q-slide hidden" data-step="3">
-                <p class="q-title">¿Cuál es su plazo estimado de adquisición?</p>
-                <label class="q-option"><input type="radio" name="q3" value="15" required> Inmediato (menos de 3 meses)</label>
-                <label class="q-option"><input type="radio" name="q3" value="10"> Corto plazo (3 a 6 meses)</label>
-                <label class="q-option"><input type="radio" name="q3" value="5"> Solo evaluando opciones</label>
+                <p class="q-title">¿Ha visitado otras propiedades en los últimos 30 días?</p>
+                <label class="q-option"><input type="radio" name="q3" value="25" required> Sí, estoy visitando activamente</label>
+                <label class="q-option"><input type="radio" name="q3" value="10"> He visto algunas fotos y videos</label>
+                <label class="q-option"><input type="radio" name="q3" value="0"> Es mi primera consulta / Prefiero no decir</label>
             </div>
 
+            <!-- Slide 4: Plazo (Urgencia) -->
             <div class="q-slide hidden" data-step="4">
-                <p class="q-title">¿Cuál es el propósito principal del activo?</p>
-                <label class="q-option"><input type="radio" name="q4" value="15" required> Inversión inmobiliaria</label>
-                <label class="q-option"><input type="radio" name="q4" value="15"> Uso residencial propio</label>
-                <label class="q-option"><input type="radio" name="q4" value="5"> Segunda vivienda</label>
+                <p class="q-title">¿En cuánto tiempo necesita habitar o invertir?</p>
+                <label class="q-option"><input type="radio" name="q4" value="25" required> Inmediato (Menos de 2 meses)</label>
+                <label class="q-option"><input type="radio" name="q4" value="10"> Plazo medio (3 a 6 meses)</label>
+                <label class="q-option"><input type="radio" name="q4" value="0"> Sin prisa / Solo evaluando</label>
             </div>
 
             <div class="q-slide hidden" id="final-slide" style="text-align: center;">
@@ -1086,6 +1097,11 @@
                 save(); location.reload(); 
             });
 
+            // Activar carga de datos desde el Onboarding
+            document.getElementById('btn-setup-import')?.addEventListener('click', () => {
+                document.getElementById('import-file-input').click(); 
+            });
+
             // --- DECODIFICACIÓN EN TIEMPO REAL VISTA CLIENTE (ESTABILIZADA) ---
             const params = new URLSearchParams(window.location.search);
             const accessToken = params.get('a');
@@ -1212,8 +1228,10 @@
                     fd.forEach(v => score += parseInt(v));
 
                     let tier = 'B2';
-                    if (score >= 40) tier = 'A';
-                    else if (score >= 20) tier = 'B1';
+                    // TIERS REFINADOS:
+                    if (score >= 75) tier = 'A';        // CLIENTE VIP (Pie + Crédito + Urgencia)
+                    else if (score >= 40) tier = 'B1';  // CLIENTE CALIFICADO (Interés real)
+                    else tier = 'B2';                   // CURIOSO / OPACO (Baja prioridad)
 
                     const cName = document.getElementById('c-name').value.trim() || "Interesado";
                     const cPhone = getClientPhone();
