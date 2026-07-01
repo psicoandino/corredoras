@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Psicoandino | Oficina de Bolsillo</title>
+    <title>REF</title>
     <style>
         :root, [data-theme="oled"] {
             --bg-pure: #000000;
@@ -66,7 +66,7 @@
             font-family: Georgia, Cambria, "Times New Roman", Times, serif;
             font-weight: 400;
             letter-spacing: -0.01em;
-            color: #ffffff;
+            color: var(--text-pure);
         }
 
         .hidden { display: none !important; }
@@ -222,9 +222,23 @@
             width: auto; /* Anula el width 100% solo aquí */
         }
 
+        .btn-danger-solid { 
+            background: #ef4444 !important; 
+            color: #ffffff !important; 
+            border: none !important; 
+        }
+        .btn-danger-solid:active { 
+            filter: brightness(0.8); 
+        }
+
         /* Solo los botones que NO están en una fila ocupan el 100% por defecto */
         #admin-app-shell .btn, #welcome-overlay .btn {
             width: 100%;
+        }
+
+        #btn-save-broker-name {
+            flex: none !important;
+            width: 80px !important;
         }
 
         /* VIEWS & CARDS */
@@ -266,7 +280,7 @@
         
         .survey-summary {
             font-size: 12px;
-            background: #111;
+            background: var(--card-bg);
             padding: 8px;
             border-radius: 6px;
             margin: 8px 0;
@@ -295,10 +309,10 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: #18181b;
+            background: var(--card-bg);
             border-radius: 6px;
             border: none;
-            color: var(--text-muted);
+            color: var(--text-pure);
             cursor: pointer;
         }
 
@@ -308,7 +322,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: #18181b;
+            background: var(--card-bg);
             border-radius: 8px;
             border: 1px solid var(--border-subtle);
             color: var(--text-pure);
@@ -495,7 +509,7 @@
 
     <div id="critical-error-overlay" class="hidden">
         <h2>Acceso Denegado</h2>
-        <p>El enlace de este activo ha sido modificado, revocado o no pertenece a esta oficina de corretaje.</p>
+        <p>El enlace de este activo ha sido modificado, revocado o no pertenece a este corretaje.</p>
     </div>
 
     <div id="lock-overlay" class="hidden">
@@ -507,7 +521,7 @@
 
     <div id="welcome-overlay" class="hidden" style="position:fixed; inset:0; background:#000; z-index:9999; display:flex; flex-direction:column; justify-content:flex-start; padding:40px 24px 50vh 24px; overflow-y:auto; -webkit-overflow-scrolling:touch;">
         <h2 style="font-size:28px; margin-bottom:6px; text-align:center;">Oficina de Bolsillo</h2>
-        <p style="color:var(--text-muted); margin-bottom:32px; font-size:11px; text-align:center; letter-spacing: 0.08em; text-transform: uppercase;">Configuración de Arquitectura de Marca</p>
+        <p style="color:var(--text-muted); margin-bottom:32px; font-size:11px; text-align:center; letter-spacing: 0.08em; text-transform: uppercase;">Configuración de Arquitectura</p>
         
         <div style="display:flex; flex-direction:column; gap:16px; margin-bottom:32px;">
             <div class="field-group">
@@ -569,6 +583,7 @@
                     <button id="btn-import-backup" class="btn btn-secondary" type="button">⬆️ Importar respaldo</button>
                     <button id="btn-lock-system" class="btn btn-secondary" type="button">🔒 Bloquear sesión</button>
                     <button id="btn-close-settings" class="btn btn-danger" type="button">Cerrar</button>
+                    <button id="btn-hard-reset" class="btn btn-danger-solid" style="margin-top:20px;" type="button">REINICIAR</button>
                 </div>
             </div>
         </div>
@@ -764,7 +779,7 @@
             const TIPOS = ["Departamento", "Casa", "Oficina", "Local Comercial", "Terreno"];
             const COMUNAS = ["Providencia", "Las Condes", "Ñuñoa", "Santiago Centro", "Vitacura", "La Reina", "Macul", "San Miguel", "Otra"];
 
-            let state = JSON.parse(localStorage.getItem('psicoandino_state')) || {
+            let state = JSON.parse(localStorage.getItem('ps-ref_state')) || {
                 brokerName: "Corredora",
                 brokerPhone: "",
                 pin: "",
@@ -775,7 +790,7 @@
 
             document.documentElement.setAttribute('data-theme', state.theme || 'oled');
 
-            const save = () => localStorage.setItem('psicoandino_state', JSON.stringify(state));
+            const save = () => localStorage.setItem('ps-ref_state', JSON.stringify(state));
 
             const UI = {
                 leads: document.getElementById('view-leads'),
@@ -848,7 +863,7 @@
 
                     if (kind === 'c' && parts.length === 6) {
                         const [, leadId, slug, score, tier, sig] = parts;
-                        const expected = calcSig(`${leadId}|${slug}|${score}|${tier}`, "PSICO");
+                        const expected = calcSig(`${leadId}|${slug}|${score}|${tier}`, "PS-REF");
                         if (sig !== expected) {
                             errorTarget.innerText = "Firma Inválida: llave alterada";
                             return;
@@ -870,7 +885,7 @@
 
                     if (kind === 'g' && parts.length === 7) {
                         const [, name, phone, slug, score, tier, sig] = parts;
-                        const expected = calcSig(`${name}|${phone}|${slug}|${score}|${tier}`, "PSICO");
+                        const expected = calcSig(`${name}|${phone}|${slug}|${score}|${tier}`, "PS-REF");
                         if (sig !== expected) {
                             errorTarget.innerText = "Firma Inválida: llave alterada";
                             return;
@@ -1014,7 +1029,7 @@
                 if (trigger.dataset.action === 'smart-contact' || trigger.dataset.action === 'share-link') {
                     const linkedProp = state.properties.find(p => p.slug === lead.slug) || {};
                     const payload = `c|${lead.slug}|${linkedProp.tipoIdx || 0}|${linkedProp.comunaIdx || 0}|${state.brokerPhone}|${state.brokerName}|${lead.id}|${lead.name}|${lead.phone}`;
-                    const token = encodeToken(payload + "|" + calcSig(payload, "PSICO"));
+                    const token = encodeToken(payload + "|" + calcSig(payload, "PS-REF"));
                     const link = `${window.location.origin}${window.location.pathname}?a=${token}`;
 
                     if (trigger.dataset.action === 'share-link') {
@@ -1107,7 +1122,7 @@
                 } else if (trigger.dataset.action === 'copy-raw-link') {
                    const genProp = state.properties.find(p => p.slug === trigger.dataset.slug) || {};
                     const payload = `g|${trigger.dataset.slug}|${genProp.tipoIdx || 0}|${genProp.comunaIdx || 0}|${state.brokerPhone}|${state.brokerName}`;
-                    const token = encodeToken(payload + "|" + calcSig(payload, "PSICO"));
+                    const token = encodeToken(payload + "|" + calcSig(payload, "PS-REF"));
                     const link = `${window.location.origin}${window.location.pathname}?a=${token}`;
                     
                     navigator.clipboard.writeText(link);
@@ -1168,6 +1183,14 @@
                     if (n && p) processCapture(`Nombre: ${n}\nTeléfono: ${p}\nPropiedad: ${s}`);
                 } else {
                     processCapture(UI.pastebox.value);
+                }
+            });
+
+            document.getElementById('btn-hard-reset').addEventListener('click', () => {
+                const confirmacion = confirm("⚠️ ATENCIÓN: Esta acción BORRARÁ PERMANENTEMENTE TODO (sus leads, propiedades y configuración). ¿Desea proceder?");
+                if (confirmacion) {
+                    localStorage.removeItem('ps-ref_state');
+                    location.reload();
                 }
             });
 
@@ -1241,7 +1264,7 @@
                 const a = document.createElement('a');
                 const fecha = new Date().toISOString().slice(0,10);
                 a.href = url;
-                a.download = `psicoandino_respaldo_${fecha}.json`;
+                a.download = `ps-ref_respaldo_${fecha}.json`;
                 a.click();
                 URL.revokeObjectURL(url);
             });
@@ -1309,7 +1332,7 @@
                         const outerSig = parts.pop();
                         const rebuildPayload = parts.join('|');
                         
-                        if (outerSig === calcSig(rebuildPayload, "PSICO")) {
+                        if (outerSig === calcSig(rebuildPayload, "PS-REF")) {
                             integrityPassed = true;
                             type = parts[0];
                             clientSlug = parts[1];
@@ -1418,9 +1441,9 @@
 
                     let finalPayload;
                     if (type === 'c' && clientLeadId) {
-                        finalPayload = `c|${clientLeadId}|${clientSlug}|${score}|${tier}|${calcSig(`${clientLeadId}|${clientSlug}|${score}|${tier}`, "PSICO")}`;
+                        finalPayload = `c|${clientLeadId}|${clientSlug}|${score}|${tier}|${calcSig(`${clientLeadId}|${clientSlug}|${score}|${tier}`, "PS-REF")}`;
                     } else {
-                        finalPayload = `g|${cName}|${cPhone}|${clientSlug}|${score}|${tier}|${calcSig(`${cName}|${cPhone}|${clientSlug}|${score}|${tier}`, "PSICO")}`;
+                        finalPayload = `g|${cName}|${cPhone}|${clientSlug}|${score}|${tier}|${calcSig(`${cName}|${cPhone}|${clientSlug}|${score}|${tier}`, "PS-REF")}`;
                     }
                     const key = `REF-${encodeToken(finalPayload)}`;
                     
@@ -1432,7 +1455,7 @@
 
                     document.getElementById('q-form').onsubmit = (e) => {
                         e.preventDefault();
-                        const msg = `CAPTURA_PSICO | ${cName} | Prop: ${clientSlug} | Prioridad: ${tier}\n\nCódigo: ${key}`;
+                        const msg = `PS-REF | ${cName} | Prop: ${clientSlug} | Prioridad: ${tier}\n\nCódigo: ${key}`;
                         window.location.href = `https://wa.me/${state.brokerPhone.replace('+', '')}?text=${encodeURIComponent(msg)}`;
                     };
                 }
