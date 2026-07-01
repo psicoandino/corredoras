@@ -608,8 +608,9 @@
                             </div>
                         </div>
 
-                        <div style="display:flex; gap:10px;">
-                            <button id="btn-close-templates" class="btn btn-primary" style="flex:1;" type="button">Volver a Ajustes</button>
+                        <div style="display:flex; gap:10px; margin-top:12px;">
+                            <button id="btn-close-templates" class="btn btn-secondary" style="flex:1;" type="button">Cancelar</button>
+                            <button id="btn-save-templates" class="btn" style="flex:1; background:#25D366; color:#ffffff; font-weight:600; border:none;" type="button">Guardar</button>
                         </div>
                     </div>
                 </div>
@@ -655,7 +656,7 @@
         <main class="views-slider">
             <div style="display:flex; gap:8px; padding:10px 16px; border-bottom:1px solid var(--border-subtle);">
                 <input type="text" id="lead-search" placeholder="Buscar por nombre o teléfono..." class="key-input" style="flex:2;">
-                <select id="lead-sort" class="key-input" style="flex:1;">
+                <select id="lead-sort" class="key-input" style="flex: 1; min-width: 0; width: 0; text-overflow: ellipsis;">
                     <option value="recent">Recientes</option>
                     <option value="score">Mayor puntaje</option>
                     <option value="qualified">Calificados primero</option>
@@ -1273,19 +1274,38 @@
                 document.getElementById('pin-input').focus();
             });
 
-            // Control del Submenú de Plantillas
+            // Control del Submenú de Plantillas (Versión Corregida con Persistencia)
             document.getElementById('btn-open-templates').addEventListener('click', () => {
                 document.getElementById('templates-panel').classList.remove('hidden');
             });
 
+            // Acción: GUARDAR cambios específicos de las plantillas de WhatsApp
+            document.getElementById('btn-save-templates').addEventListener('click', () => {
+                // Sincronizar el DOM con el estado de la aplicación
+                state.msgTemplateInvite = document.getElementById('tpl-invite').value;
+                state.msgTemplateA = document.getElementById('tpl-a').value;
+                state.msgTemplateB1 = document.getElementById('tpl-b1').value;
+                state.msgTemplateB2 = document.getElementById('tpl-b2').value;
+
+                save(); // Persistir inmediatamente en LocalStorage el nuevo state
+                
+                document.getElementById('templates-panel').classList.add('hidden');
+            });
+
+            // Acción: CANCELAR cambios (Descarta lo escrito y restaura el estado original)
             document.getElementById('btn-close-templates').addEventListener('click', () => {
+                document.getElementById('tpl-invite').value = state.msgTemplateInvite || '';
+                document.getElementById('tpl-a').value = state.msgTemplateA || '';
+                document.getElementById('tpl-b1').value = state.msgTemplateB1 || '';
+                document.getElementById('tpl-b2').value = state.msgTemplateB2 || '';
+                
                 document.getElementById('templates-panel').classList.add('hidden');
             });
 
             document.getElementById('btn-open-settings').addEventListener('click', () => {
                 document.getElementById('settings-broker-name').value = state.brokerName || '';
                 
-                // Cargar valores actuales de las plantillas en la interfaz
+                // Cargar valores actuales de las plantillas en la interfaz al abrir
                 document.getElementById('tpl-invite').value = state.msgTemplateInvite || '';
                 document.getElementById('tpl-a').value = state.msgTemplateA || '';
                 document.getElementById('tpl-b1').value = state.msgTemplateB1 || '';
@@ -1298,24 +1318,16 @@
                 document.getElementById('settings-panel').classList.remove('hidden');
             });
 
-            // NUEVO: Guardado centralizado de Identidad y Plantillas encapsuladas
             document.getElementById('btn-save-broker-name').addEventListener('click', () => {
                 const val = document.getElementById('settings-broker-name').value.trim();
                 if (val) {
                     state.brokerName = val;
                     const titleEl = document.getElementById('app-title');
-                    if (titleEl) titleEl.innerText = val; // Sincroniza el header inmediatamente
+                    if (titleEl) titleEl.innerText = val;
                 }
+
+                save(); // Resguardo general de guardado para la configuración global
                 
-                // Persiste los valores desde el submenú de WhatsApp al estado global
-                state.msgTemplateInvite = document.getElementById('tpl-invite').value;
-                state.msgTemplateA = document.getElementById('tpl-a').value;
-                state.msgTemplateB1 = document.getElementById('tpl-b1').value;
-                state.msgTemplateB2 = document.getElementById('tpl-b2').value;
-
-                save(); // Guarda en LocalStorage
-
-                // Cierre y limpieza visual de ambos paneles overlay
                 document.getElementById('templates-panel').classList.add('hidden');
                 document.getElementById('settings-panel').classList.add('hidden');
             });
