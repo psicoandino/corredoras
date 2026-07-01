@@ -578,6 +578,42 @@
                     <button id="btn-save-broker-name" class="btn btn-primary btn-sm" type="button">Guardar</button>
                 </div>
 
+                <label style="font-size:11px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.06em; display:block; margin-bottom:6px;">Personalización de Salidas</label>
+                <button id="btn-open-templates" class="btn" style="background:#25D366; color:#ffffff; font-weight:600; margin: 4px 0 20px 0; display:flex; align-items:center; justify-content:center; gap:8px; width:100%; border:none;" type="button">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.4.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.713-1.457L0 24zm6.59-4.846c1.66.986 3.288 1.489 4.954 1.491 5.43.003 9.85-4.415 9.853-9.85.002-2.634-1.023-5.11-2.884-6.973C16.65 1.958 14.17 .934 11.536.933c-5.43 0-9.85 4.416-9.853 9.852-.001 1.777.466 3.511 1.353 5.04l-.94 3.433 3.551-.931zm13.115-6.2c-.322-.16-.1.1-.347-.453-.306-.74-.015-.415-.415-.55-.157-.052-.27-.08-.4-.08s-.25.05-.38.18c-.53.53-1.47 1.44-1.47 1.44s-.17.18-.38.08c-.2-.1-.87-.32-1.65-1.02-.61-.54-1.02-1.22-1.14-1.42s-.01-.3.09-.4c.09-.09.2-.24.3-.36.1-.12.14-.2.2-.33.07-.14.03-.26-.02-.36s-.4-.97-.55-1.34c-.15-.35-.3-.3-.4-.3h-.38c-.13 0-.34.05-.52.25-.53.53-.81 1.14-.81 2.34 0 1.34.97 2.63 1.1 2.8 1.15 1.55 2.5 2.37 3.9 2.52.4.04.75.03 1.04-.01.3-.04.9-.37 1.03-.72.13-.35.13-.66.09-.72s-.16-.12-.48-.28z"/></svg>
+                    Personalizar Textos de WhatsApp
+                </button>
+
+                <div id="templates-panel" class="hidden" style="position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:2100; display:flex; align-items:flex-end;">
+                    <div style="background:var(--bg-pure); width:100%; border-radius:16px 16px 0 0; padding:24px 20px 40px 20px; border-top:1px solid var(--border-subtle); max-height: 80vh; overflow-y: auto;">
+                        <h4 style="font-size:15px; margin-bottom:4px; color:var(--text-pure);">Textos de WhatsApp</h4>
+                        <p style="font-size:11px; color:var(--text-muted); margin-bottom:16px;">Placeholders válidos: <code style="color:var(--primary-button);">{name}</code>, <code style="color:var(--primary-button);">{slug}</code>, <code style="color:var(--primary-button);">{link}</code></p>
+
+                        <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:24px;">
+                            <div>
+                                <label style="font-size:10px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.04em;">Invitación / Sin Calificar</label>
+                                <textarea id="tpl-invite" style="width:100%; height:58px; background:var(--card-bg); color:var(--text-pure); border:1px solid var(--border-subtle); border-radius:8px; padding:8px; font-size:12px; resize:none; font-family:inherit; outline:none; margin-top:4px;"></textarea>
+                            </div>
+                            <div>
+                                <label style="font-size:10px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.04em;">Prioridad Alta (Tier A)</label>
+                                <textarea id="tpl-a" style="width:100%; height:58px; background:var(--card-bg); color:var(--text-pure); border:1px solid var(--border-subtle); border-radius:8px; padding:8px; font-size:12px; resize:none; font-family:inherit; outline:none; margin-top:4px;"></textarea>
+                            </div>
+                            <div>
+                                <label style="font-size:10px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.04em;">Prioridad Media (Tier B1)</label>
+                                <textarea id="tpl-b1" style="width:100%; height:58px; background:var(--card-bg); color:var(--text-pure); border:1px solid var(--border-subtle); border-radius:8px; padding:8px; font-size:12px; resize:none; font-family:inherit; outline:none; margin-top:4px;"></textarea>
+                            </div>
+                            <div>
+                                <label style="font-size:10px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.04em;">Prioridad Baja (Tier B2)</label>
+                                <textarea id="tpl-b2" style="width:100%; height:58px; background:var(--card-bg); color:var(--text-pure); border:1px solid var(--border-subtle); border-radius:8px; padding:8px; font-size:12px; resize:none; font-family:inherit; outline:none; margin-top:4px;"></textarea>
+                            </div>
+                        </div>
+
+                        <div style="display:flex; gap:10px;">
+                            <button id="btn-close-templates" class="btn btn-primary" style="flex:1;" type="button">Volver a Ajustes</button>
+                        </div>
+                    </div>
+                </div>
+
                 <div style="display:flex; flex-direction:column; gap:10px;">
                     <button id="btn-export-backup" class="btn btn-secondary" type="button">⬇️ Exportar respaldo</button>
                     <button id="btn-import-backup" class="btn btn-secondary" type="button">⬆️ Importar respaldo</button>
@@ -787,6 +823,12 @@
                 leads: [],
                 properties: []
             };
+
+            // Inyección de plantillas base de mensajería mutables
+            if (!state.msgTemplateInvite) state.msgTemplateInvite = "Hola {name}, recibí tu interés por {slug}. Para darte prioridad en la agenda de visitas y validar tu perfil ante la administración, por favor completa este breve enlace: {link}";
+            if (!state.msgTemplateA) state.msgTemplateA = "Hola {name}, analicé tu perfil para {slug}. Tu calificación es de ALTA PRIORIDAD. Mi agenda está abierta para que coordinemos la visita de cierre de inmediato. ¿Hablamos?";
+            if (!state.msgTemplateB1) state.msgTemplateB1 = "Hola {name}, recibí tu llave de prioridad para {slug}. Veo que estás avanzando con los pasos bancarios. Me gustaría asesorarte personalmente para asegurar este activo. ¿Tienes 5 minutos?";
+            if (!state.msgTemplateB2) state.msgTemplateB2 = "Hola {name}, recibí tu requerimiento por {slug}. Te adjunto la ficha técnica solicitada y quedo atento a cuando definas tus condiciones comerciales para avanzar.";
 
             document.documentElement.setAttribute('data-theme', state.theme || 'oled');
 
@@ -1038,21 +1080,25 @@
                         setTimeout(() => trigger.classList.remove('copied'), 2000);
                     } else {
                         let msg = "";
-                        // SUSTITUCIÓN SUGERIDA (Línea 359)
+                        
+                        // Función auxiliar de reemplazo sintáctico de variables
+                        const parseTemplate = (template, l, url) => {
+                            return template
+                                .replace(/{name}/g, l.name)
+                                .replace(/{slug}/g, l.slug)
+                                .replace(/{link}/g, url || '');
+                        };
+
                         if (lead.status === 'qualified') {
                             if (lead.tier.includes('A')) {
-                                // TIER A: El Inversionista VIP / Cierre Inmediato
-                                msg = `Hola ${lead.name}, analicé tu perfil para ${lead.slug}. Tu calificación es de ALTA PRIORIDAD. Mi agenda está abierta para que coordinemos la visita de cierre de inmediato. ¿Hablamos?`;
+                                msg = parseTemplate(state.msgTemplateA, lead, link);
                             } else if (lead.tier.includes('B1')) {
-                                // TIER B1: El Lead Calificado en proceso
-                                msg = `Hola ${lead.name}, recibí tu llave de prioridad para ${lead.slug}. Veo que estás avanzando con los pasos bancarios. Me gustaría asesorarte personalmente para asegurar este activo. ¿Tienes 5 minutos?`;
+                                msg = parseTemplate(state.msgTemplateB1, lead, link);
                             } else {
-                                // TIER B2: El Curioso / Opaco
-                                msg = `Hola ${lead.name}, recibí tu requerimiento por ${lead.slug}. Te adjunto la ficha técnica solicitada y quedo atento a cuando definas tus condiciones comerciales para avanzar.`;
+                                msg = parseTemplate(state.msgTemplateB2, lead, link);
                             }
                         } else {
-                            // INVITACIÓN: Captura de Micro-compromiso
-                            msg = `Hola ${lead.name}, recibí tu interés por ${lead.slug}. Para darte prioridad en la agenda de visitas y validar tu perfil ante la administración, por favor completa este breve enlace: ${link}`;
+                            msg = parseTemplate(state.msgTemplateInvite, lead, link);
                         }
                         window.open(`https://wa.me/${lead.phone}?text=${encodeURIComponent(msg)}`);
                     }
@@ -1227,15 +1273,55 @@
                 document.getElementById('pin-input').focus();
             });
 
+            // Control del Submenú de Plantillas
+            document.getElementById('btn-open-templates').addEventListener('click', () => {
+                document.getElementById('templates-panel').classList.remove('hidden');
+            });
+
+            document.getElementById('btn-close-templates').addEventListener('click', () => {
+                document.getElementById('templates-panel').classList.add('hidden');
+            });
+
             document.getElementById('btn-open-settings').addEventListener('click', () => {
-                document.getElementById('settings-broker-name').value = state.brokerName;
+                document.getElementById('settings-broker-name').value = state.brokerName || '';
+                
+                // Cargar valores actuales de las plantillas en la interfaz
+                document.getElementById('tpl-invite').value = state.msgTemplateInvite || '';
+                document.getElementById('tpl-a').value = state.msgTemplateA || '';
+                document.getElementById('tpl-b1').value = state.msgTemplateB1 || '';
+                document.getElementById('tpl-b2').value = state.msgTemplateB2 || '';
+
                 document.querySelectorAll('[data-theme-choice]').forEach(b => {
                     b.classList.toggle('active', b.dataset.themeChoice === (state.theme || 'oled'));
                 });
+                document.getElementById('templates-panel').classList.add('hidden');
                 document.getElementById('settings-panel').classList.remove('hidden');
             });
 
+            // NUEVO: Guardado centralizado de Identidad y Plantillas encapsuladas
+            document.getElementById('btn-save-broker-name').addEventListener('click', () => {
+                const val = document.getElementById('settings-broker-name').value.trim();
+                if (val) {
+                    state.brokerName = val;
+                    const titleEl = document.getElementById('app-title');
+                    if (titleEl) titleEl.innerText = val; // Sincroniza el header inmediatamente
+                }
+                
+                // Persiste los valores desde el submenú de WhatsApp al estado global
+                state.msgTemplateInvite = document.getElementById('tpl-invite').value;
+                state.msgTemplateA = document.getElementById('tpl-a').value;
+                state.msgTemplateB1 = document.getElementById('tpl-b1').value;
+                state.msgTemplateB2 = document.getElementById('tpl-b2').value;
+
+                save(); // Guarda en LocalStorage
+
+                // Cierre y limpieza visual de ambos paneles overlay
+                document.getElementById('templates-panel').classList.add('hidden');
+                document.getElementById('settings-panel').classList.add('hidden');
+            });
+
             document.getElementById('btn-close-settings').addEventListener('click', () => {
+                document.getElementById('templates-panel').classList.add('hidden');
                 document.getElementById('settings-panel').classList.add('hidden');
             });
 
@@ -1252,6 +1338,13 @@
                 const val = document.getElementById('settings-broker-name').value.trim();
                 if (val) {
                     state.brokerName = val;
+
+                    // Mapear el contenido editable de las áreas de texto al estado persistente
+                    state.msgTemplateInvite = document.getElementById('tpl-invite').value;
+                    state.msgTemplateA = document.getElementById('tpl-a').value;
+                    state.msgTemplateB1 = document.getElementById('tpl-b1').value;
+                    state.msgTemplateB2 = document.getElementById('tpl-b2').value;
+
                     save();
                     renderIdentityHeader();
                     document.getElementById('settings-panel').classList.add('hidden');
@@ -1458,7 +1551,7 @@
 
                     document.getElementById('q-form').onsubmit = (e) => {
                         e.preventDefault();
-                        const msg = `PS-REF | ${cName} | Prop: ${clientSlug} | Prioridad: ${tier}\n\nCódigo: ${key}`;
+                        const msg = `CAPTURA_PSICO | ${cName} | Prop: ${clientSlug} | Prioridad: ${tier}\n\nCódigo: ${key}`;
                         window.location.href = `https://wa.me/${targetBrokerPhone.replace('+', '')}?text=${encodeURIComponent(msg)}`;
                     };
                 }
