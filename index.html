@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Psicoandino | Oficina de Bolsillo</title>
     <style>
-        :root {
+        :root, [data-theme="oled"] {
             --bg-pure: #000000;
             --card-bg: #09090b;
             --border-subtle: #27272a;
@@ -16,6 +16,30 @@
             --scale-b1: #6d7c50;
             --scale-b2: #b78627;
             --touch-target: 56px;
+        }
+
+        [data-theme="dark"] {
+            --bg-pure: #17171a;
+            --card-bg: #202024;
+            --border-subtle: #33333a;
+            --text-pure: #e4e4e7;
+            --text-muted: #a1a1aa;
+        }
+
+        [data-theme="light"] {
+            --bg-pure: #f4f4f5;
+            --card-bg: #ffffff;
+            --border-subtle: #e4e4e7;
+            --text-pure: #18181b;
+            --text-muted: #52525b;
+        }
+
+        [data-theme="sepia"] {
+            --bg-pure: #f4ecd8;
+            --card-bg: #ece1c8;
+            --border-subtle: #d8c9a3;
+            --text-pure: #433422;
+            --text-muted: #7a6a4f;
         }
 
         * {
@@ -309,8 +333,12 @@
             outline: none;
         }
 
-        .btn-sm { height: 40px; padding: 0 14px; font-size: 11px; flex: none; }
+        .btn-sm { height: 40px; padding: 0 14px; font-size: 11px; flex: none; width: auto; }
 
+        #admin-app-shell .key-input-row .btn-sm {
+            width: auto;
+        }        
+        
         .key-error {
             font-size: 11px;
             color: #ef4444;
@@ -488,11 +516,6 @@
             </div>
 
             <div class="field-group">
-                <label>Nombre de la Agencia (Opcional)</label>
-                <input type="text" id="setup-agency-name" placeholder="Ej: Silva & Asociados Propiedades" style="height:48px; background:#09090b; border:1px solid #27272a; color:#fff; padding:0 12px; border-radius:8px; font-size:16px; outline:none; font-family:inherit;">
-            </div>
-
-            <div class="field-group">
                 <label>WhatsApp Receptor (8 dígitos móviles restantes)</label>
                 <div style="display:flex; align-items:center; background:#09090b; border:1px solid #27272a; border-radius:8px; padding-left:14px; height:48px;">
                     <span style="color:var(--text-muted); font-size:16px; user-select:none; font-family:-apple-system,BlinkMacSystemFont,sans-serif; margin-right:4px;">+56 9</span>
@@ -518,12 +541,37 @@
         <header>
             <h1 id="app-title">Cargando...</h1>
             <div style="display:flex; gap:8px;">
-                <button id="btn-export-backup" class="archive-btn" style="width:36px; height:36px; font-size:14px;" title="Exportar respaldo">⬇️</button>
-                <button id="btn-import-backup" class="archive-btn" style="width:36px; height:36px; font-size:14px;" title="Importar respaldo">⬆️</button>
                 <input type="file" id="import-file-input" accept="application/json" class="hidden">
-                <button id="btn-lock-system" class="archive-btn" style="width:36px; height:36px; font-size:14px;">🔒</button>
+                <button id="btn-open-settings" class="archive-btn" style="width:36px; height:36px; font-size:14px;" title="Ajustes">⚙️</button>
             </div>
         </header>
+
+        <div id="settings-panel" class="hidden" style="position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:2000; display:flex; align-items:flex-end;">
+            <div style="background:var(--bg-pure); width:100%; border-radius:16px 16px 0 0; padding:24px 20px 40px 20px; border-top:1px solid var(--border-subtle);">
+                <h3 style="font-size:16px; margin-bottom:16px;">Ajustes</h3>
+
+                <label style="font-size:11px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.06em;">Tema</label>
+                <div style="display:flex; gap:8px; margin:8px 0 20px 0;">
+                    <button class="mode-btn" data-theme-choice="oled" type="button">OLED</button>
+                    <button class="mode-btn" data-theme-choice="dark" type="button">Oscuro</button>
+                    <button class="mode-btn" data-theme-choice="light" type="button">Claro</button>
+                    <button class="mode-btn" data-theme-choice="sepia" type="button">Sepia</button>
+                </div>
+
+                <label style="font-size:11px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.06em;">Nombre Profesional</label>
+                <div style="display:flex; gap:8px; margin:8px 0 20px 0;">
+                    <input type="text" id="settings-broker-name" class="key-input" placeholder="Nombre visible para clientes">
+                    <button id="btn-save-broker-name" class="btn btn-primary btn-sm" type="button">Guardar</button>
+                </div>
+
+                <div style="display:flex; flex-direction:column; gap:10px;">
+                    <button id="btn-export-backup" class="btn btn-secondary" type="button">⬇️ Exportar respaldo</button>
+                    <button id="btn-import-backup" class="btn btn-secondary" type="button">⬆️ Importar respaldo</button>
+                    <button id="btn-lock-system" class="btn btn-secondary" type="button">🔒 Bloquear sesión</button>
+                    <button id="btn-close-settings" class="btn btn-danger" type="button">Cerrar</button>
+                </div>
+            </div>
+        </div>
 
         <section id="capture-panel" class="hidden">
             <div class="mode-switch">
@@ -539,7 +587,10 @@
             <div id="manual-mode" class="hidden">
                 <div class="manual-fields">
                     <input type="text" id="m-name" placeholder="Nombre Completo">
-                    <input type="tel" id="m-phone" placeholder="WhatsApp (Ej: 569...)">
+                    <div style="display:flex; align-items:center; background:#09090b; border:1px solid #27272a; border-radius:8px; padding-left:14px; height:48px;">
+                        <span style="color:var(--text-muted); font-size:16px; user-select:none; margin-right:4px;">+56 9</span>
+                        <input type="tel" id="m-phone" placeholder="12345678" maxlength="8" style="height:100%; background:transparent; border:none; color:var(--text-pure); padding:0; font-size:16px; outline:none; flex:1;">
+                    </div>
                     <select id="m-slug"></select>
                 </div>
             </div>
@@ -551,6 +602,14 @@
         </section>
 
         <main class="views-slider">
+            <div style="display:flex; gap:8px; padding:10px 16px; border-bottom:1px solid var(--border-subtle);">
+                <input type="text" id="lead-search" placeholder="Buscar por nombre o teléfono..." class="key-input" style="flex:2;">
+                <select id="lead-sort" class="key-input" style="flex:1;">
+                    <option value="recent">Recientes</option>
+                    <option value="score">Mayor puntaje</option>
+                    <option value="qualified">Calificados primero</option>
+                </select>
+            </div>
             <div id="view-leads" class="stack"></div>
             
             <div id="view-inventory" class="stack hidden">
@@ -559,6 +618,8 @@
                     <div class="manual-fields">
                         <input type="text" id="p-slug" placeholder="Slug (ej: depto-providencia)">
                         <input type="text" id="p-price" placeholder="Precio (ej: UF 4.500)">
+                        <select id="p-tipo"></select>
+                        <select id="p-comuna"></select>
                         <button class="btn btn-primary" id="btn-save-prop">Guardar Activo</button>
                     </div>
                 </div>
@@ -700,14 +761,19 @@
 
             const ICON_KEY = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="15.5" r="4.5"/><path d="M10.5 12.5L20 3"/><path d="M16 7l3 3"/><path d="M13 4l3 3"/></svg>`;
 
+            const TIPOS = ["Departamento", "Casa", "Oficina", "Local Comercial", "Terreno"];
+            const COMUNAS = ["Providencia", "Las Condes", "Ñuñoa", "Santiago Centro", "Vitacura", "La Reina", "Macul", "San Miguel", "Otra"];
+
             let state = JSON.parse(localStorage.getItem('psicoandino_state')) || {
                 brokerName: "Corredora",
-                agencyName: "",
                 brokerPhone: "",
                 pin: "",
+                theme: "oled",
                 leads: [],
                 properties: []
             };
+
+            document.documentElement.setAttribute('data-theme', state.theme || 'oled');
 
             const save = () => localStorage.setItem('psicoandino_state', JSON.stringify(state));
 
@@ -723,11 +789,14 @@
             };
 
             function renderIdentityHeader() {
-                if (state.agencyName && state.agencyName.trim() !== "") {
-                    UI.appTitle.innerText = `${state.agencyName} | ${state.brokerName}`;
-                } else {
-                    UI.appTitle.innerText = state.brokerName;
-                }
+                UI.appTitle.innerText = state.brokerName;
+            }
+
+            function populateTipoComunaSelects() {
+                const t = document.getElementById('p-tipo');
+                const c = document.getElementById('p-comuna');
+                if (t) t.innerHTML = TIPOS.map((v, i) => `<option value="${i}">${v}</option>`).join('');
+                if (c) c.innerHTML = COMUNAS.map((v, i) => `<option value="${i}">${v}</option>`).join('');
             }
 
             function populatePropertiesDropdown() {
@@ -774,46 +843,84 @@
                 try {
                     const raw = decodeToken(key.replace('REF-', ''));
                     const parts = raw.split('|');
-                    
-                    if (parts.length !== 9) {
-                        errorTarget.innerText = "Llave Corrupta o No Autorizada";
-                        return;
-                    }
-                    
-                    const [bName, aName, bPhone, tokenSig, name, phone, slug, score, tier] = parts;
-                    const expectedSig = calcSig(`${slug}|${bPhone}`, state.pin);
-                    
-                    if (tokenSig !== expectedSig || bPhone !== state.brokerPhone) {
-                        errorTarget.innerText = "Firma Inválida: Enlace alterado o de otra corredora";
-                        return;
-                    }
+                    const kind = parts[0];
+                    const isVerified = '✅';
 
-                    const normalizedPhone = normalizePhone(phone);
-                    const existing = state.leads.find(l => normalizePhone(l.phone) === normalizedPhone);
-                    const isVerified = '✅'; 
-
-                    if (existing) {
+                    if (kind === 'c' && parts.length === 6) {
+                        const [, leadId, slug, score, tier, sig] = parts;
+                        const expected = calcSig(`${leadId}|${slug}|${score}|${tier}`, "PSICO");
+                        if (sig !== expected) {
+                            errorTarget.innerText = "Firma Inválida: llave alterada";
+                            return;
+                        }
+                        const existing = state.leads.find(l => String(l.id) === String(leadId));
+                        if (!existing) {
+                            errorTarget.innerText = "Contacto no encontrado (¿fue eliminado o archivado?)";
+                            return;
+                        }
                         existing.status = 'qualified';
                         existing.tier = `${tier} ${isVerified}`;
-                        existing.slug = slug || 'General';
+                        existing.slug = slug || existing.slug;
                         existing.score = score || 0;
-                        existing.phone = normalizedPhone;
                         existing.archived = false;
-                    } else {
-                        state.leads.unshift({
-                            id: Date.now(),
-                            name, phone: normalizedPhone, slug: slug || 'General', status: 'qualified', tier: `${tier} ${isVerified}`, score: score || 0, archived: false
-                        });
+                        save(); renderLeads();
+                        if (opts.onSuccess) { opts.onSuccess(); } else { closeCapture(); }
+                        return;
                     }
-                    save(); renderLeads();
-                    if (opts.onSuccess) { opts.onSuccess(); } else { closeCapture(); }
+
+                    if (kind === 'g' && parts.length === 7) {
+                        const [, name, phone, slug, score, tier, sig] = parts;
+                        const expected = calcSig(`${name}|${phone}|${slug}|${score}|${tier}`, "PSICO");
+                        if (sig !== expected) {
+                            errorTarget.innerText = "Firma Inválida: llave alterada";
+                            return;
+                        }
+                        const normalizedPhone = normalizePhone(phone);
+                        const existing = state.leads.find(l => normalizePhone(l.phone) === normalizedPhone);
+                        if (existing) {
+                            existing.status = 'qualified';
+                            existing.tier = `${tier} ${isVerified}`;
+                            existing.slug = slug || 'General';
+                            existing.score = score || 0;
+                            existing.phone = normalizedPhone;
+                            existing.archived = false;
+                        } else {
+                            state.leads.unshift({
+                                id: Date.now(),
+                                name, phone: normalizedPhone, slug: slug || 'General', status: 'qualified', tier: `${tier} ${isVerified}`, score: score || 0, archived: false
+                            });
+                        }
+                        save(); renderLeads();
+                        if (opts.onSuccess) { opts.onSuccess(); } else { closeCapture(); }
+                        return;
+                    }
+
+                    errorTarget.innerText = "Llave Corrupta o No Autorizada";
                 } catch(e) {
                     errorTarget.innerText = "Código REF- Inválido";
                 }
             }
 
             function renderLeads() {
-                const active = state.leads.filter(l => !l.archived);
+                const searchEl = document.getElementById('lead-search');
+                const sortEl = document.getElementById('lead-sort');
+                const query = (searchEl ? searchEl.value : '').trim().toLowerCase();
+                const sortMode = sortEl ? sortEl.value : 'recent';
+
+                let active = state.leads.filter(l => !l.archived);
+
+                if (query) {
+                    active = active.filter(l =>
+                        l.name.toLowerCase().includes(query) || (l.phone || '').includes(query)
+                    );
+                }
+
+                if (sortMode === 'score') {
+                    active = active.slice().sort((a, b) => (parseInt(b.score) || 0) - (parseInt(a.score) || 0));
+                } else if (sortMode === 'qualified') {
+                    active = active.slice().sort((a, b) => (b.status === 'qualified') - (a.status === 'qualified'));
+                }
+
                 if (active.length === 0) {
                     UI.leads.innerHTML = `<div class="empty-state">Esperando leads...<br>(Use el botón ＋ para agregar)</div>`;
                     return;
@@ -839,7 +946,6 @@
                             <div class="key-input-row hidden">
                                 <div style="display:flex; gap:8px;">
                                     <input type="text" class="key-input" placeholder="Pegar REF-...">
-                                    <button class="btn btn-primary btn-sm" data-action="submit-key" type="button">Validar</button>
                                 </div>
                                 <div class="key-error"></div>
                             </div>
@@ -859,7 +965,7 @@
                         <div class="card-header">
                             <div class="card-info">
                                 <h3 style="font-family:-apple-system,sans-serif; font-size:16px; font-weight:600;">${p.slug}</h3>
-                                <p>${p.price}</p>
+                                <p>${TIPOS[p.tipoIdx] || ''} · ${COMUNAS[p.comunaIdx] || ''} · ${p.price}</p>
                             </div>
                             <button class="archive-btn" data-action="archive-prop" data-slug="${p.slug}">🗑️</button>
                         </div>
@@ -900,16 +1006,14 @@
                 const card = trigger.closest('.card');
                 const id = parseInt(card.dataset.id);
                 const lead = state.leads.find(l => l.id === id);
-                const brand = state.agencyName || state.brokerName;
 
                 if (trigger.dataset.action === 'archive-lead') {
                     lead.archived = true; save(); renderLeads();
                 } 
-                else if (trigger.dataset.action === 'archive-lead' === false) { /** Skip redundant checks */ }
                 
                 if (trigger.dataset.action === 'smart-contact' || trigger.dataset.action === 'share-link') {
-                    const adminPinSig = calcSig(`${lead.slug}|${state.brokerPhone}`, state.pin);
-                    const payload = `c|${lead.slug}|${state.brokerPhone}|${state.brokerName}|${state.agencyName}|${lead.name}|${lead.phone}|${adminPinSig}`;
+                    const linkedProp = state.properties.find(p => p.slug === lead.slug) || {};
+                    const payload = `c|${lead.slug}|${linkedProp.tipoIdx || 0}|${linkedProp.comunaIdx || 0}|${state.brokerPhone}|${state.brokerName}|${lead.id}|${lead.name}|${lead.phone}`;
                     const token = encodeToken(payload + "|" + calcSig(payload, "PSICO"));
                     const link = `${window.location.origin}${window.location.pathname}?a=${token}`;
 
@@ -964,6 +1068,23 @@
                 }
             });
 
+            document.getElementById('lead-search').addEventListener('input', renderLeads);
+            document.getElementById('lead-sort').addEventListener('change', renderLeads);
+
+            UI.leads.addEventListener('input', e => {
+                if (!e.target.classList.contains('key-input')) return;
+                const val = e.target.value.trim();
+                if (val.startsWith('REF-') && val.length > 20) {
+                    const row = e.target.closest('.key-input-row');
+                    const errorEl = row.querySelector('.key-error');
+                    errorEl.innerText = '';
+                    decodeKey(val, {
+                        errorTarget: errorEl,
+                        onSuccess: () => { e.target.value = ''; row.classList.add('hidden'); }
+                    });
+                }
+            });
+
             document.getElementById('view-inventory').addEventListener('click', e => {
                 const trigger = e.target.closest('[data-action], #btn-save-prop');
                 if (!trigger) return;
@@ -972,7 +1093,9 @@
                     const s = document.getElementById('p-slug').value.trim();
                     const p = document.getElementById('p-price').value.trim();
                     if (s && p) {
-                        state.properties.push({ slug: s, price: p, archived: false });
+                        const tipoIdx = parseInt(document.getElementById('p-tipo').value) || 0;
+                        const comunaIdx = parseInt(document.getElementById('p-comuna').value) || 0;
+                        state.properties.push({ slug: s, price: p, tipoIdx, comunaIdx, archived: false });
                         save(); renderInventory();
                         document.getElementById('p-slug').value = ''; document.getElementById('p-price').value = '';
                     }
@@ -982,8 +1105,8 @@
                     if (prop) prop.archived = true;
                     save(); renderInventory();
                 } else if (trigger.dataset.action === 'copy-raw-link') {
-                    const adminPinSig = calcSig(`${trigger.dataset.slug}|${state.brokerPhone}`, state.pin);
-                    const payload = `g|${trigger.dataset.slug}|${state.brokerPhone}|${state.brokerName}|${state.agencyName}|${adminPinSig}`;
+                   const genProp = state.properties.find(p => p.slug === trigger.dataset.slug) || {};
+                    const payload = `g|${trigger.dataset.slug}|${genProp.tipoIdx || 0}|${genProp.comunaIdx || 0}|${state.brokerPhone}|${state.brokerName}`;
                     const token = encodeToken(payload + "|" + calcSig(payload, "PSICO"));
                     const link = `${window.location.origin}${window.location.pathname}?a=${token}`;
                     
@@ -1016,7 +1139,7 @@
                     document.getElementById('view-trash').classList.add('hidden');
                     document.getElementById(view).classList.remove('hidden');
                     if (view === 'view-leads') renderLeads();
-                    if (view === 'view-inventory') renderInventory();
+                    if (view === 'view-inventory') { renderInventory(); populateTipoComunaSelects(); }
                     if (view === 'view-trash') renderTrash();
                 });
             });
@@ -1029,7 +1152,7 @@
                 document.getElementById('btn-mode-manual').classList.toggle('active', isManual);
             }
 
-            const openCapture = () => { populatePropertiesDropdown(); setCaptureMode('paste'); UI.capture.classList.remove('hidden'); UI.pastebox.focus(); };
+            const openCapture = () => { populatePropertiesDropdown(); setCaptureMode('manual'); UI.capture.classList.remove('hidden'); document.getElementById('m-name').focus(); };
             const closeCapture = () => { UI.capture.classList.add('hidden'); UI.pastebox.value = ''; document.getElementById('capture-error').innerText = ''; };
             document.getElementById('fab').addEventListener('click', openCapture);
             document.getElementById('btn-close-capture').addEventListener('click', closeCapture);
@@ -1039,7 +1162,8 @@
             document.getElementById('btn-action-save').addEventListener('click', () => {
                 if (!document.getElementById('manual-mode').classList.contains('hidden')) {
                     const n = document.getElementById('m-name').value;
-                    const p = document.getElementById('m-phone').value;
+                    const pRaw = document.getElementById('m-phone').value.trim();
+                    const p = pRaw ? `+569${pRaw}` : '';
                     const s = document.getElementById('m-slug').value;
                     if (n && p) processCapture(`Nombre: ${n}\nTeléfono: ${p}\nPropiedad: ${s}`);
                 } else {
@@ -1073,10 +1197,42 @@
             });
 
             document.getElementById('btn-lock-system').addEventListener('click', () => {
+                document.getElementById('settings-panel').classList.add('hidden');
                 UI.shell.classList.add('hidden');
                 document.getElementById('pin-input').value = '';
                 UI.lockOverlay.classList.remove('hidden');
                 document.getElementById('pin-input').focus();
+            });
+
+            document.getElementById('btn-open-settings').addEventListener('click', () => {
+                document.getElementById('settings-broker-name').value = state.brokerName;
+                document.querySelectorAll('[data-theme-choice]').forEach(b => {
+                    b.classList.toggle('active', b.dataset.themeChoice === (state.theme || 'oled'));
+                });
+                document.getElementById('settings-panel').classList.remove('hidden');
+            });
+
+            document.getElementById('btn-close-settings').addEventListener('click', () => {
+                document.getElementById('settings-panel').classList.add('hidden');
+            });
+
+            document.querySelectorAll('[data-theme-choice]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    state.theme = btn.dataset.themeChoice;
+                    document.documentElement.setAttribute('data-theme', state.theme);
+                    document.querySelectorAll('[data-theme-choice]').forEach(b => b.classList.toggle('active', b === btn));
+                    save();
+                });
+            });
+
+            document.getElementById('btn-save-broker-name').addEventListener('click', () => {
+                const val = document.getElementById('settings-broker-name').value.trim();
+                if (val) {
+                    state.brokerName = val;
+                    save();
+                    renderIdentityHeader();
+                    document.getElementById('settings-panel').classList.add('hidden');
+                }
             });
 
             document.getElementById('btn-export-backup').addEventListener('click', () => {
@@ -1122,7 +1278,6 @@
                 if(targetPin.length !== 4 || isNaN(targetPin)) { alert("El PIN debe tener exactamente 4 números."); return; }
                 
                 state.brokerName = document.getElementById('setup-broker-name').value || "Corredora";
-                state.agencyName = document.getElementById('setup-agency-name').value || "";
                 state.brokerPhone = `+569${rawDigits}`;
                 state.pin = targetPin;
                 
@@ -1144,14 +1299,13 @@
                 UI.shell.classList.add('hidden');
 
                 let integrityPassed = false;
-                let type, clientSlug, targetBrokerPhone, clientBroker, clientAgency, urlName, urlPhone, adminPinSig;
+                let type, clientSlug, clientTipoIdx, clientComunaIdx, targetBrokerPhone, clientBroker, clientLeadId, urlName, urlPhone;
 
                 try {
                     const raw = decodeToken(accessToken);
                     const parts = raw.split('|');
                     
-                    // CORRECCIÓN DE BALANCE ESTABLE: Paquetes legítimos iniciales de 7 y 9 elementos
-                    if (parts.length === 7 || parts.length === 9) {
+                    if (parts.length === 7 || parts.length === 10) {
                         const outerSig = parts.pop();
                         const rebuildPayload = parts.join('|');
                         
@@ -1159,16 +1313,15 @@
                             integrityPassed = true;
                             type = parts[0];
                             clientSlug = parts[1];
-                            targetBrokerPhone = parts[2];
-                            clientBroker = parts[3];
-                            clientAgency = parts[4];
+                            clientTipoIdx = parseInt(parts[2]) || 0;
+                            clientComunaIdx = parseInt(parts[3]) || 0;
+                            targetBrokerPhone = parts[4];
+                            clientBroker = parts[5];
                             
                             if (type === 'c') {
-                                urlName = parts[5];
-                                urlPhone = parts[6];
-                                adminPinSig = parts[7];
-                            } else {
-                                adminPinSig = parts[5];
+                                clientLeadId = parts[6];
+                                urlName = parts[7];
+                                urlPhone = parts[8];
                             }
                         }
                     }
@@ -1187,15 +1340,10 @@
                 const mainTitleEl = document.getElementById('client-header-main');
                 const subTitleEl = document.getElementById('client-header-sub');
 
-                document.getElementById('client-prop-title').innerText = clientSlug.toUpperCase();
+                document.getElementById('client-prop-title').innerText = `${TIPOS[clientTipoIdx] || ''} en ${COMUNAS[clientComunaIdx] || ''}`.toUpperCase();
 
-                if (clientAgency && clientAgency.trim() !== "") {
-                    mainTitleEl.innerText = clientAgency;
-                    subTitleEl.innerText = clientBroker;
-                } else {
-                    mainTitleEl.innerText = clientBroker || "Corretaje Premium";
-                    subTitleEl.style.display = 'none';
-                }
+                mainTitleEl.innerText = clientBroker || "Corretaje Premium";
+                subTitleEl.style.display = 'none';
 
                 if (urlName && urlPhone) {
                     document.getElementById('c-name').value = urlName;
@@ -1268,8 +1416,12 @@
                     const cName = document.getElementById('c-name').value.trim() || "Interesado";
                     const cPhone = getClientPhone();
 
-                    // El score se mantiene oculto para el cliente pero viaja en tu REF- [20, 21]
-                    const finalPayload = `${state.brokerName}|${state.agencyName}|${state.brokerPhone}|${calcSig(clientSlug + '|' + state.brokerPhone, state.pin)}|${cName}|${cPhone}|${clientSlug}|${score}|${tier}`;
+                    let finalPayload;
+                    if (type === 'c' && clientLeadId) {
+                        finalPayload = `c|${clientLeadId}|${clientSlug}|${score}|${tier}|${calcSig(`${clientLeadId}|${clientSlug}|${score}|${tier}`, "PSICO")}`;
+                    } else {
+                        finalPayload = `g|${cName}|${cPhone}|${clientSlug}|${score}|${tier}|${calcSig(`${cName}|${cPhone}|${clientSlug}|${score}|${tier}`, "PSICO")}`;
+                    }
                     const key = `REF-${encodeToken(finalPayload)}`;
                     
                     const copyBtn = document.getElementById('btn-copy-ref');
