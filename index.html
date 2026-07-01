@@ -46,6 +46,13 @@
 
         .hidden { display: none !important; }
 
+        #admin-app-shell {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            overflow: hidden;
+        }        
+
         /* HEADER */
         header {
             padding: 16px;
@@ -79,7 +86,7 @@
             inset: 0;
             background: rgba(0,0,0,0.95);
             z-index: 1000;
-            padding: 20px;
+            padding: 20px 20px 50vh 20px;
             display: flex;
             flex-direction: column;
             justify-content: flex-start;
@@ -252,6 +259,71 @@
             cursor: pointer;
         }
 
+        .icon-btn {
+            flex: 1;
+            height: var(--touch-target);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #18181b;
+            border-radius: 8px;
+            border: 1px solid var(--border-subtle);
+            color: var(--text-pure);
+            cursor: pointer;
+        }
+
+        .icon-btn:active { background: #232327; }
+        .icon-btn svg { width: 20px; height: 20px; }
+        .icon-btn.copied { background: var(--scale-a); border-color: var(--scale-a); }
+
+        .key-input-row { margin-top: 10px; }
+
+        .key-input {
+            flex: 1;
+            height: 40px;
+            background: var(--bg-pure);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-pure);
+            border-radius: 8px;
+            padding: 0 10px;
+            font-size: 16px;
+            outline: none;
+        }
+
+        .btn-sm { height: 40px; padding: 0 14px; font-size: 11px; flex: none; }
+
+        .key-error {
+            font-size: 11px;
+            color: #ef4444;
+            margin-top: 6px;
+            min-height: 14px;
+        }
+
+        .mode-switch {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 4px;
+        }
+
+        .mode-btn {
+            flex: 1;
+            height: 40px;
+            border-radius: 8px;
+            border: 1px solid var(--border-subtle);
+            background: transparent;
+            color: var(--text-muted);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            cursor: pointer;
+        }
+
+        .mode-btn.active {
+            background: var(--scale-a);
+            border-color: var(--scale-a);
+            color: #fff;
+        }
+
         /* FAB */
         .fab {
             position: fixed;
@@ -259,16 +331,27 @@
             right: 20px;
             width: 56px;
             height: 56px;
-            border-radius: 28px;
-            background: var(--scale-a);
+            border-radius: 50%;
+            background: radial-gradient(circle at 35% 30%, #2fa3b1, var(--scale-a) 75%);
+            border: 1px solid rgba(255,255,255,0.1);
             color: white;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 28px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+            box-shadow: 0 10px 28px rgba(0,0,0,0.55), 0 2px 8px rgba(0,0,0,0.4);
             z-index: 100;
             cursor: pointer;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .fab:active {
+            transform: scale(0.93);
+            box-shadow: 0 5px 16px rgba(0,0,0,0.5);
+        }
+
+        .fab svg {
+            width: 22px;
+            height: 22px;
         }
 
         /* NAV */
@@ -410,10 +493,20 @@
     <div id="admin-app-shell" class="hidden">
         <header>
             <h1 id="app-title">Cargando...</h1>
-            <button id="btn-lock-system" class="archive-btn" style="width:36px; height:36px; font-size:14px;">🔒</button>
+            <div style="display:flex; gap:8px;">
+                <button id="btn-export-backup" class="archive-btn" style="width:36px; height:36px; font-size:14px;" title="Exportar respaldo">⬇️</button>
+                <button id="btn-import-backup" class="archive-btn" style="width:36px; height:36px; font-size:14px;" title="Importar respaldo">⬆️</button>
+                <input type="file" id="import-file-input" accept="application/json" class="hidden">
+                <button id="btn-lock-system" class="archive-btn" style="width:36px; height:36px; font-size:14px;">🔒</button>
+            </div>
         </header>
 
         <section id="capture-panel" class="hidden">
+            <div class="mode-switch">
+                <button class="mode-btn active" id="btn-mode-paste" type="button">Pegar Texto / REF-</button>
+                <button class="mode-btn" id="btn-mode-manual" type="button">Agregar Manual</button>
+            </div>
+
             <div id="paste-mode">
                 <textarea id="pastebox" placeholder="Pegue texto del portal o REF-..."></textarea>
                 <div id="capture-error" class="error-toast"></div>
@@ -428,7 +521,6 @@
             </div>
 
             <div class="btn-row">
-                <button class="btn btn-secondary" id="btn-toggle-mode">Carga Manual</button>
                 <button class="btn btn-primary" id="btn-action-save">Procesar</button>
             </div>
             <button class="btn btn-danger" id="btn-close-capture">Cancelar</button>
@@ -452,7 +544,12 @@
             <div id="view-trash" class="stack hidden"></div>
         </main>
 
-        <div id="fab" class="fab">＋</div>
+        <div id="fab" class="fab">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+        </div>
 
         <nav>
             <div class="nav-item active" data-view="view-leads"><span>📋</span><span>Leads</span></div>
@@ -556,6 +653,21 @@
                 return Math.abs(hash).toString(36);
             }
 
+            function normalizePhone(raw) {
+                if (!raw) return '';
+                let clean = String(raw).replace(/[\s\-\(\)]/g, '');
+                if (clean.startsWith('+')) return clean;
+                if (clean.startsWith('56') && clean.length > 9) return '+' + clean;
+                if (clean.length === 8 && !isNaN(clean)) return '+569' + clean;
+                return clean;
+            }
+
+            const ICON_WHATSAPP = `<svg viewBox="0 0 24 24" width="20" height="20"><path fill="#25D366" d="M12 2a10 10 0 0 0-8.5 15.2L2 22l4.9-1.4A10 10 0 1 0 12 2z"/><path fill="#fff" d="M9.4 7.6c-.3-.6-.5-.6-.8-.6h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.3 0 1.4 1 2.7 1.1 2.9.1.2 2 3.1 4.9 4.2 2.4.9 2.9.7 3.4.7.5-.1 1.7-.7 1.9-1.4.2-.7.2-1.2.2-1.3-.1-.1-.3-.2-.6-.3-.3-.2-1.7-.8-2-.9-.3-.1-.5-.2-.7.2-.2.3-.8.9-1 1.1-.2.2-.3.2-.6.1-.3-.2-1.2-.5-2.3-1.5-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6.1-.1.3-.3.4-.5.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5-.1-.1-.6-1.5-.8-2z"/></svg>`;
+
+            const ICON_LINK = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.07 0l2.83-2.83a5 5 0 0 0-7.07-7.07l-1.5 1.5"/><path d="M14 11a5 5 0 0 0-7.07 0L4.1 13.83a5 5 0 0 0 7.07 7.07l1.5-1.5"/></svg>`;
+
+            const ICON_KEY = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="15.5" r="4.5"/><path d="M10.5 12.5L20 3"/><path d="M16 7l3 3"/><path d="M13 4l3 3"/></svg>`;
+
             let state = JSON.parse(localStorage.getItem('psicoandino_state')) || {
                 brokerName: "Corredora",
                 agencyName: "",
@@ -606,7 +718,7 @@
                 const slug = text.match(/(?:Propiedad|Ref|Slug|Código)\s*:\s*([^\n\r\s]+)/i);
 
                 if (name && phone) {
-                    const cleanPhone = phone[1].replace(/\s/g, '');
+                    const cleanPhone = normalizePhone(phone[1]);
                     const newLead = {
                         id: Date.now(),
                         name: name[1].trim(),
@@ -624,13 +736,15 @@
                 }
             }
 
-            function decodeKey(key) {
+            function decodeKey(key, options) {
+                const opts = options || {};
+                const errorTarget = opts.errorTarget || document.getElementById('capture-error');
                 try {
                     const raw = decodeToken(key.replace('REF-', ''));
                     const parts = raw.split('|');
                     
                     if (parts.length !== 9) {
-                        document.getElementById('capture-error').innerText = "Llave Corrupta o No Autorizada";
+                        errorTarget.innerText = "Llave Corrupta o No Autorizada";
                         return;
                     }
                     
@@ -638,11 +752,12 @@
                     const expectedSig = calcSig(`${slug}|${bPhone}`, state.pin);
                     
                     if (tokenSig !== expectedSig || bPhone !== state.brokerPhone) {
-                        document.getElementById('capture-error').innerText = "Firma Inválida: Enlace alterado o de otra corredora";
+                        errorTarget.innerText = "Firma Inválida: Enlace alterado o de otra corredora";
                         return;
                     }
 
-                    const existing = state.leads.find(l => l.phone === phone);
+                    const normalizedPhone = normalizePhone(phone);
+                    const existing = state.leads.find(l => normalizePhone(l.phone) === normalizedPhone);
                     const isVerified = '✅'; 
 
                     if (existing) {
@@ -650,16 +765,18 @@
                         existing.tier = `${tier} ${isVerified}`;
                         existing.slug = slug || 'General';
                         existing.score = score || 0;
+                        existing.phone = normalizedPhone;
                         existing.archived = false;
                     } else {
                         state.leads.unshift({
                             id: Date.now(),
-                            name, phone, slug: slug || 'General', status: 'qualified', tier: `${tier} ${isVerified}`, score: score || 0, archived: false
+                            name, phone: normalizedPhone, slug: slug || 'General', status: 'qualified', tier: `${tier} ${isVerified}`, score: score || 0, archived: false
                         });
                     }
-                    save(); renderLeads(); closeCapture();
+                    save(); renderLeads();
+                    if (opts.onSuccess) { opts.onSuccess(); } else { closeCapture(); }
                 } catch(e) {
-                    document.getElementById('capture-error').innerText = "Código REF- Inválido";
+                    errorTarget.innerText = "Código REF- Inválido";
                 }
             }
 
@@ -682,9 +799,17 @@
                                 <span class="tier-badge" style="background:${isQual ? 'var(--scale-a)' : 'var(--border-subtle)'}">${l.tier}</span>
                             </div>
                             <div class="btn-row">
-                                <button class="btn btn-primary" data-action="smart-contact">💬 Contactar</button>
-                                <button class="btn btn-secondary" data-action="share-link">🔗 Link Camuflado</button>
-                                <button class="archive-btn" data-action="archive-lead">🗑️</button>
+                                <button class="icon-btn" data-action="smart-contact" title="Contactar por WhatsApp">${ICON_WHATSAPP}</button>
+                                <button class="icon-btn" data-action="share-link" title="Copiar Link Camuflado">${ICON_LINK}</button>
+                                <button class="icon-btn" data-action="toggle-key-input" title="Ingresar Llave REF-">${ICON_KEY}</button>
+                                <button class="archive-btn" data-action="archive-lead" title="Archivar">🗑️</button>
+                            </div>
+                            <div class="key-input-row hidden">
+                                <div style="display:flex; gap:8px;">
+                                    <input type="text" class="key-input" placeholder="Pegar REF-...">
+                                    <button class="btn btn-primary btn-sm" data-action="submit-key" type="button">Validar</button>
+                                </div>
+                                <div class="key-error"></div>
                             </div>
                         </div>
                     `;
@@ -758,8 +883,8 @@
 
                     if (trigger.dataset.action === 'share-link') {
                         navigator.clipboard.writeText(link);
-                        trigger.innerText = "¡Copiado!";
-                        setTimeout(() => trigger.innerText = "🔗 Link Camuflado", 2000);
+                        trigger.classList.add('copied');
+                        setTimeout(() => trigger.classList.remove('copied'), 2000);
                     } else {
                         let msg = "";
                         if (lead.status === 'qualified') {
@@ -769,6 +894,30 @@
                         }
                         window.open(`https://wa.me/${lead.phone}?text=${encodeURIComponent(msg)}`);
                     }
+                }
+
+                if (trigger.dataset.action === 'toggle-key-input') {
+                    const row = card.querySelector('.key-input-row');
+                    row.classList.toggle('hidden');
+                    if (!row.classList.contains('hidden')) {
+                        row.querySelector('.key-input').focus();
+                    }
+                }
+
+                if (trigger.dataset.action === 'submit-key') {
+                    const row = card.querySelector('.key-input-row');
+                    const input = row.querySelector('.key-input');
+                    const errorEl = row.querySelector('.key-error');
+                    errorEl.innerText = '';
+                    const val = input.value.trim();
+                    if (!val.startsWith('REF-')) {
+                        errorEl.innerText = "Pegue una llave que empiece con REF-";
+                        return;
+                    }
+                    decodeKey(val, {
+                        errorTarget: errorEl,
+                        onSuccess: () => { input.value = ''; row.classList.add('hidden'); }
+                    });
                 }
             });
 
@@ -829,15 +978,20 @@
                 });
             });
 
-            const openCapture = () => { populatePropertiesDropdown(); UI.capture.classList.remove('hidden'); UI.pastebox.focus(); };
+            function setCaptureMode(mode) {
+                const isManual = mode === 'manual';
+                document.getElementById('paste-mode').classList.toggle('hidden', isManual);
+                document.getElementById('manual-mode').classList.toggle('hidden', !isManual);
+                document.getElementById('btn-mode-paste').classList.toggle('active', !isManual);
+                document.getElementById('btn-mode-manual').classList.toggle('active', isManual);
+            }
+
+            const openCapture = () => { populatePropertiesDropdown(); setCaptureMode('paste'); UI.capture.classList.remove('hidden'); UI.pastebox.focus(); };
             const closeCapture = () => { UI.capture.classList.add('hidden'); UI.pastebox.value = ''; document.getElementById('capture-error').innerText = ''; };
             document.getElementById('fab').addEventListener('click', openCapture);
             document.getElementById('btn-close-capture').addEventListener('click', closeCapture);
-            document.getElementById('btn-toggle-mode').addEventListener('click', e => {
-                const isManual = document.getElementById('paste-mode').classList.toggle('hidden');
-                document.getElementById('manual-mode').classList.toggle('hidden');
-                e.target.innerText = isManual ? "Modo Pegado" : "Carga Manual";
-            });
+            document.getElementById('btn-mode-paste').addEventListener('click', () => setCaptureMode('paste'));
+            document.getElementById('btn-mode-manual').addEventListener('click', () => setCaptureMode('manual'));
 
             document.getElementById('btn-action-save').addEventListener('click', () => {
                 if (!document.getElementById('manual-mode').classList.contains('hidden')) {
@@ -880,6 +1034,41 @@
                 document.getElementById('pin-input').value = '';
                 UI.lockOverlay.classList.remove('hidden');
                 document.getElementById('pin-input').focus();
+            });
+
+            document.getElementById('btn-export-backup').addEventListener('click', () => {
+                const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                const fecha = new Date().toISOString().slice(0,10);
+                a.href = url;
+                a.download = `psicoandino_respaldo_${fecha}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+            });
+
+            document.getElementById('btn-import-backup').addEventListener('click', () => {
+                document.getElementById('import-file-input').click();
+            });
+
+            document.getElementById('import-file-input').addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    try {
+                        const imported = JSON.parse(ev.target.result);
+                        if (!imported.leads || !imported.properties) throw new Error('Formato inválido');
+                        if (!confirm('Esto reemplazará todos los datos actuales por los del respaldo. ¿Continuar?')) return;
+                        state = imported;
+                        save();
+                        location.reload();
+                    } catch (err) {
+                        alert('Archivo de respaldo inválido o corrupto.');
+                    }
+                };
+                reader.readAsText(file);
+                e.target.value = '';
             });
 
             document.getElementById('btn-save-setup').addEventListener('click', () => {
@@ -977,10 +1166,7 @@
 
                 function getClientPhone() {
                     const inputVal = document.getElementById('c-phone').value.trim();
-                    if (inputVal.startsWith('+') || inputVal.length > 8) {
-                        return inputVal;
-                    }
-                    return `+569${inputVal}`;
+                    return normalizePhone(inputVal);
                 }
 
                 document.addEventListener('click', (e) => {
