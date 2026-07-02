@@ -15,6 +15,7 @@
             --scale-a: #248692;
             --scale-b1: #6d7c50;
             --scale-b2: #b78627;
+            --scale-d: #c73a4a;
             --touch-target: 56px;
         }
 
@@ -264,9 +265,6 @@
             position: relative;
         }
 
-        .card.pending { border-left: 4px solid var(--text-muted); }
-        .card.qualified { border-left: 4px solid var(--scale-a); }
-
         .card-header {
             display: flex;
             justify-content: space-between;
@@ -290,15 +288,16 @@
 
         .tier-badge {
             font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-            font-size: 10px;
-            padding: 2px 8px;
-            border-radius: 4px;
+            font-size: 13px;
+            padding: 5px 14px;
+            border-radius: 100px;
             background: var(--border-subtle);
-            height: 20px;
+            min-height: 28px;
             display: flex;
             align-items: center;
-            font-weight: bold;
-            letter-spacing: 0.02em;
+            justify-content: center;
+            font-weight: 800;
+            letter-spacing: 0.03em;
             white-space: nowrap;
             flex-shrink: 0;
         }
@@ -507,6 +506,16 @@
 </head>
 <body>
 
+    <div id="detail-modal" class="hidden" style="position:fixed; inset:0; background:rgba(0,0,0,0.75); z-index:9999; display:flex; align-items:flex-end; justify-content:center;">
+        <div style="background:var(--card-bg); width:100%; max-width:480px; border-radius:16px 16px 0 0; padding:20px; max-height:80vh; overflow-y:auto; border:1px solid var(--border-subtle); border-bottom:none;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+                <h3 id="detail-modal-title" style="font-size:15px; color:var(--text-pure); font-weight:600;"></h3>
+                <button type="button" id="detail-modal-close" class="icon-btn" title="Cerrar">✕</button>
+            </div>
+            <div id="detail-modal-body"></div>
+        </div>
+    </div>
+
     <div id="critical-error-overlay" class="hidden">
         <h2>Acceso Denegado</h2>
         <p>El enlace de este activo ha sido modificado, revocado o no pertenece a este corretaje.</p>
@@ -599,11 +608,11 @@
                                 <textarea id="tpl-a" style="width:100%; height:58px; background:var(--card-bg); color:var(--text-pure); border:1px solid var(--border-subtle); border-radius:8px; padding:8px; font-size:12px; resize:none; font-family:inherit; outline:none; margin-top:4px;"></textarea>
                             </div>
                             <div>
-                                <label style="font-size:10px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.04em;">Prioridad Media (Tier B1)</label>
+                                <label style="font-size:10px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.04em;">Prioridad Media (Tier B)</label>
                                 <textarea id="tpl-b1" style="width:100%; height:58px; background:var(--card-bg); color:var(--text-pure); border:1px solid var(--border-subtle); border-radius:8px; padding:8px; font-size:12px; resize:none; font-family:inherit; outline:none; margin-top:4px;"></textarea>
                             </div>
                             <div>
-                                <label style="font-size:10px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.04em;">Prioridad Baja (Tier B2)</label>
+                                <label style="font-size:10px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.04em;">Prioridad Baja (Tier C / D)</label>
                                 <textarea id="tpl-b2" style="width:100%; height:58px; background:var(--card-bg); color:var(--text-pure); border:1px solid var(--border-subtle); border-radius:8px; padding:8px; font-size:12px; resize:none; font-family:inherit; outline:none; margin-top:4px;"></textarea>
                             </div>
                         </div>
@@ -759,9 +768,11 @@
 
             <div class="q-slide hidden" id="final-slide" style="text-align: center;">
                 <h3 style="font-size:22px; margin-bottom:8px;">Requerimiento Listo</h3>
-                <p style="font-size:13px; color:var(--text-muted); margin-bottom:24px; font-family:-apple-system,sans-serif;">Se ha generado su Llave de Prioridad para asegurar este activo.</p>
-                <button type="button" id="btn-copy-ref" class="btn btn-secondary" style="margin-bottom:10px; width:100%;">Copiar Llave REF-</button>
-                <button type="submit" class="btn btn-primary" style="width:100%;">Enviar por WhatsApp</button>
+                <p style="font-size:13px; color:var(--text-muted); margin-bottom:24px; font-family:-apple-system,sans-serif;">Su llave de referencia fue generada. Reenvíela directamente por WhatsApp.</p>
+                <button type="submit" class="btn btn-primary" style="width:100%; background:#25D366; display:flex; align-items:center; justify-content:center; gap:8px;">
+                    <svg viewBox="0 0 24 24" width="20" height="20"><path fill="#25D366" d="M12 2a10 10 0 0 0-8.5 15.2L2 22l4.9-1.4A10 10 0 1 0 12 2z"/><path fill="#fff" d="M9.4 7.6c-.3-.6-.5-.6-.8-.6h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.3 0 1.4 1 2.7 1.1 2.9.1.2 2 3.1 4.9 4.2 2.4.9 2.9.7 3.4.7.5-.1 1.7-.7 1.9-1.4.2-.7.2-1.2.2-1.3-.1-.1-.3-.2-.6-.3-.3-.2-1.7-.8-2-.9-.3-.1-.5-.2-.7.2-.2.3-.8.9-1 1.1-.2.2-.3.2-.6.1-.3-.2-1.2-.5-2.3-1.5-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6.1-.1.3-.3.4-.5.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5-.1-.1-.6-1.5-.8-2z"/></svg>
+                    Enviar por WhatsApp
+                </button>
             </div>
 
             <div class="btn-row" id="q-nav-btns" style="margin-top:24px;">
@@ -798,6 +809,59 @@
                 return Math.abs(hash).toString(36);
             }
 
+            function buildAccessLink(type, f) {
+                const tSlug = slugify(TIPOS[f.tipoIdx] || '');
+                const cSlug = slugify(COMUNAS[f.comunaIdx] || '');
+                const nSlug = slugify(f.brokerName);
+                // Firma cubre TODOS los campos (visibles + ocultos): editar cualquiera en la URL quiebra el enlace
+                let payload, hidden;
+                if (type === 'c') {
+                    payload = `c|${f.slug}|${tSlug}|${cSlug}|${f.brokerPhone}|${nSlug}|${f.leadId}|${f.name}|${f.phone}`;
+                    hidden = `c|${f.slug}|${f.brokerPhone}|${f.leadId}|${f.name}|${f.phone}`;
+                } else {
+                    payload = `g|${f.slug}|${tSlug}|${cSlug}|${f.brokerPhone}|${nSlug}`;
+                    hidden = `g|${f.slug}|${f.brokerPhone}`;
+                }
+                const sig = calcSig(payload, "PS-REF");
+                const token = encodeToken(hidden + "|" + sig);
+                // Legibles primero, token opaco al final
+                return `${window.location.origin}${window.location.pathname}?n=${nSlug}&t=${tSlug}&c=${cSlug}&a=${token}`;
+            }
+
+            function parseAccessToken(token, urlParams) {
+                const raw = decodeToken(token);
+                const parts = raw.split('|');
+                const sig = parts.pop();
+                const type = parts[0];
+                const slug = parts[1];
+                const brokerPhone = parts[2];
+                const nSlug = urlParams.get('n') || '';
+                const tSlug = urlParams.get('t') || '';
+                const cSlug = urlParams.get('c') || '';
+                const tipoIdx = TIPOS.findIndex(v => slugify(v) === tSlug);
+                const comunaIdx = COMUNAS.findIndex(v => slugify(v) === cSlug);
+
+                let leadId, name, phone, payload;
+                if (type === 'c' && parts.length === 6) {
+                    leadId = parts[3]; name = parts[4]; phone = parts[5];
+                    payload = `c|${slug}|${tSlug}|${cSlug}|${brokerPhone}|${nSlug}|${leadId}|${name}|${phone}`;
+                } else if (type === 'g' && parts.length === 3) {
+                    payload = `g|${slug}|${tSlug}|${cSlug}|${brokerPhone}|${nSlug}`;
+                } else {
+                    return null;
+                }
+
+                if (sig !== calcSig(payload, "PS-REF")) return null;
+                return {
+                    type, slug,
+                    tipoIdx: tipoIdx >= 0 ? tipoIdx : 0,
+                    comunaIdx: comunaIdx >= 0 ? comunaIdx : 0,
+                    brokerPhone,
+                    brokerName: deslugify(nSlug),
+                    leadId, name, phone
+                };
+            }
+
             function normalizePhone(raw) {
                 if (!raw) return '';
                 let clean = String(raw).replace(/[\s\-\(\)]/g, '');
@@ -812,9 +876,24 @@
             const ICON_LINK = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.07 0l2.83-2.83a5 5 0 0 0-7.07-7.07l-1.5 1.5"/><path d="M14 11a5 5 0 0 0-7.07 0L4.1 13.83a5 5 0 0 0 7.07 7.07l1.5-1.5"/></svg>`;
 
             const ICON_KEY = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="17" r="3"/><path d="M9.5 14.5L21 3"/><path d="M17 7l3 3"/><path d="M14 10l3 3"/></svg>`;
+            const ICON_INFO = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v6"/><circle cx="12" cy="7.5" r="0.9" fill="currentColor" stroke="none"/></svg>`;
 
             const TIPOS = ["Departamento", "Casa", "Oficina", "Local Comercial", "Terreno"];
             const COMUNAS = ["Alhué", "Buin", "Calera de Tango", "Cerrillos", "Cerro Navia", "Colina", "Conchalí", "Curacaví", "El Bosque", "El Monte", "Estación Central", "Huechuraba", "Independencia", "Isla de Maipo", "La Cisterna", "La Florida", "La Granja", "La Pintana", "La Reina", "Lampa", "Las Condes", "Lo Barnechea", "Lo Espejo", "Lo Prado", "Macul", "Maipú", "María Pinto", "Melipilla", "Ñuñoa", "Padre Hurtado", "Paine", "Pedro Aguirre Cerda", "Peñaflor", "Peñalolén", "Pirque", "Providencia", "Pudahuel", "Puente Alto", "Quilicura", "Quinta Normal", "Recoleta", "Renca", "San Bernardo", "San Joaquín", "San José de Maipo", "San Miguel", "San Pedro", "San Ramón", "Santiago Centro", "Talagante", "Tiltil", "Vitacura", "Otra"];
+
+            function slugify(str) {
+                return (str || '').toString()
+                    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+                    .toLowerCase().trim()
+                    .replace(/[^a-z0-9]+/g, '_')
+                    .replace(/^_+|_+$/g, '');
+            }
+
+            function deslugify(slug) {
+                return (slug || '').split('_').filter(Boolean)
+                    .map(w => w.charAt(0).toUpperCase() + w.slice(1))
+                    .join(' ');
+            }
 
             let state = JSON.parse(localStorage.getItem('ps-ref_state')) || {
                 brokerName: "Corredora",
@@ -895,6 +974,13 @@
                 }
             }
 
+            const QUESTIONS = [
+                { title: "Capacidad de pie", options: { 25: "20% o más disponible ahora", 15: "10% disponible, ahorrando el resto", 5: "Evaluando opciones de financiamiento", 0: "Prefiere no responder / en definición" } },
+                { title: "Situación crediticia", options: { 25: "Crédito aprobado o compra al contado", 15: "En proceso de evaluación bancaria", 5: "Aún no ha consultado con instituciones", 0: "Prefiere no responder / solo explorando" } },
+                { title: "Búsqueda activa", options: { 25: "Ha visitado propiedades físicamente", 15: "Vio tours virtuales, pidió fichas", 5: "Recién comenzando su búsqueda", 0: "Prefiere no responder / búsqueda pasiva" } },
+                { title: "Urgencia / plazo", options: { 25: "Menos de 60 días", 15: "3 a 6 meses", 5: "Sin prisa, busca la oportunidad ideal", 0: "Prefiere no responder / sin plazo fijo" } }
+            ];
+
             function decodeKey(key, options) {
                 const opts = options || {};
                 const errorTarget = opts.errorTarget || document.getElementById('capture-error');
@@ -902,11 +988,10 @@
                     const raw = decodeToken(key.replace('REF-', ''));
                     const parts = raw.split('|');
                     const kind = parts[0];
-                    const isVerified = '✅';
 
-                    if (kind === 'c' && parts.length === 6) {
-                        const [, leadId, slug, score, tier, sig] = parts;
-                        const expected = calcSig(`${leadId}|${slug}|${score}|${tier}`, "PS-REF");
+                    if (kind === 'c' && parts.length === 9) {
+                        const [, leadId, score, tier, q1, q2, q3, q4, sig] = parts;
+                        const expected = calcSig(`${leadId}|${score}|${tier}|${q1}|${q2}|${q3}|${q4}`, "PS-REF");
                         if (sig !== expected) {
                             errorTarget.innerText = "Firma Inválida: llave alterada";
                             return;
@@ -917,18 +1002,18 @@
                             return;
                         }
                         existing.status = 'qualified';
-                        existing.tier = `${tier} ${isVerified}`;
-                        existing.slug = slug || existing.slug;
+                        existing.tier = tier;
                         existing.score = score || 0;
+                        existing.answers = [q1, q2, q3, q4];
                         existing.archived = false;
                         save(); renderLeads();
                         if (opts.onSuccess) { opts.onSuccess(); } else { closeCapture(); }
                         return;
                     }
 
-                    if (kind === 'g' && parts.length === 7) {
-                        const [, name, phone, slug, score, tier, sig] = parts;
-                        const expected = calcSig(`${name}|${phone}|${slug}|${score}|${tier}`, "PS-REF");
+                    if (kind === 'g' && parts.length === 11) {
+                        const [, name, phone, slug, score, tier, q1, q2, q3, q4, sig] = parts;
+                        const expected = calcSig(`${name}|${phone}|${slug}|${score}|${tier}|${q1}|${q2}|${q3}|${q4}`, "PS-REF");
                         if (sig !== expected) {
                             errorTarget.innerText = "Firma Inválida: llave alterada";
                             return;
@@ -937,15 +1022,16 @@
                         const existing = state.leads.find(l => normalizePhone(l.phone) === normalizedPhone);
                         if (existing) {
                             existing.status = 'qualified';
-                            existing.tier = `${tier} ${isVerified}`;
+                            existing.tier = tier;
                             existing.slug = slug || 'General';
                             existing.score = score || 0;
                             existing.phone = normalizedPhone;
+                            existing.answers = [q1, q2, q3, q4];
                             existing.archived = false;
                         } else {
                             state.leads.unshift({
                                 id: Date.now(),
-                                name, phone: normalizedPhone, slug: slug || 'General', status: 'qualified', tier: `${tier} ${isVerified}`, score: score || 0, archived: false
+                                name, phone: normalizedPhone, slug: slug || 'General', status: 'qualified', tier: tier, score: score || 0, answers: [q1, q2, q3, q4], archived: false
                             });
                         }
                         save(); renderLeads();
@@ -957,6 +1043,47 @@
                 } catch(e) {
                     errorTarget.innerText = "Código REF- Inválido";
                 }
+            }
+
+            function tierColor(tier) {
+                if (!tier) return 'var(--border-subtle)';
+                if (tier.startsWith('A')) return 'var(--scale-a)';
+                if (tier.startsWith('B')) return 'var(--scale-b1)';
+                if (tier.startsWith('C')) return 'var(--scale-b2)';
+                if (tier.startsWith('D')) return 'var(--scale-d)';
+                return 'var(--border-subtle)';
+            }
+
+            function tierTextColor(tier) {
+                if (!tier) return 'var(--text-muted)';
+                if (tier.startsWith('D')) return '#fff';
+                if (tier.startsWith('A') || tier.startsWith('B') || tier.startsWith('C')) return '#000';
+                return 'var(--text-muted)';
+            }
+
+            function openDetailModal(lead) {
+                const modal = document.getElementById('detail-modal');
+                const body = document.getElementById('detail-modal-body');
+                document.getElementById('detail-modal-title').innerText = `${lead.name} — Detalle de respuestas`;
+
+                if (!lead.answers) {
+                    body.innerHTML = `<p style="color:var(--text-muted); font-size:13px;">Este lead fue calificado antes de habilitar el detalle de respuestas.</p>`;
+                } else {
+                    body.innerHTML = QUESTIONS.map((q, i) => {
+                        const label = q.options[lead.answers[i]] || 'Respuesta no reconocida';
+                        return `
+                            <div style="padding:10px 0; border-bottom:1px solid var(--border-subtle);">
+                                <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.03em; color:var(--text-muted); margin-bottom:4px;">${q.title}</div>
+                                <div style="font-size:13px; color:var(--text-pure);">${label}</div>
+                            </div>
+                        `;
+                    }).join('');
+                }
+                modal.classList.remove('hidden');
+            }
+
+            function closeDetailModal() {
+                document.getElementById('detail-modal').classList.add('hidden');
             }
 
             function renderLeads() {
@@ -993,12 +1120,13 @@
                                     <p>${l.phone} • <strong>Propiedad:</strong> ${l.slug}</p>
                                     ${isQual ? `<div class="survey-summary">Perfil Calificado: Prioridad ${l.tier} (${l.score} pts)</div>` : ''}
                                 </div>
-                                <span class="tier-badge" style="background:${isQual ? 'var(--scale-a)' : 'var(--border-subtle)'}">${l.tier}</span>
+                                <span class="tier-badge" style="background:${tierColor(l.tier)}; color:${tierTextColor(l.tier)};">${l.tier}</span>
                             </div>
                             <div class="btn-row">
                                 <button class="icon-btn" data-action="smart-contact" title="Contactar por WhatsApp">${ICON_WHATSAPP}</button>
                                 <button class="icon-btn" data-action="share-link" title="Copiar Link Camuflado">${ICON_LINK}</button>
                                 <button class="icon-btn" data-action="toggle-key-input" title="Ingresar Llave REF-">${ICON_KEY}</button>
+                                ${isQual ? `<button class="icon-btn" data-action="show-detail" title="Ver detalle de respuestas">${ICON_INFO}</button>` : ''}
                                 <button class="archive-btn" data-action="archive-lead" title="Archivar">🗑️</button>
                             </div>
                             <div class="key-input-row hidden">
@@ -1068,12 +1196,23 @@
                 if (trigger.dataset.action === 'archive-lead') {
                     lead.archived = true; save(); renderLeads();
                 } 
+
+                if (trigger.dataset.action === 'show-detail') {
+                    openDetailModal(lead);
+                }
                 
                 if (trigger.dataset.action === 'smart-contact' || trigger.dataset.action === 'share-link') {
                     const linkedProp = state.properties.find(p => p.slug === lead.slug) || {};
-                    const payload = `c|${lead.slug}|${linkedProp.tipoIdx || 0}|${linkedProp.comunaIdx || 0}|${state.brokerPhone}|${state.brokerName}|${lead.id}|${lead.name}|${lead.phone}`;
-                    const token = encodeToken(payload + "|" + calcSig(payload, "PS-REF"));
-                    const link = `${window.location.origin}${window.location.pathname}?a=${token}`;
+                    const link = buildAccessLink('c', {
+                        slug: lead.slug,
+                        tipoIdx: linkedProp.tipoIdx || 0,
+                        comunaIdx: linkedProp.comunaIdx || 0,
+                        brokerPhone: state.brokerPhone,
+                        brokerName: state.brokerName,
+                        leadId: lead.id,
+                        name: lead.name,
+                        phone: lead.phone
+                    });
 
                     if (trigger.dataset.action === 'share-link') {
                         navigator.clipboard.writeText(link);
@@ -1093,9 +1232,10 @@
                         if (lead.status === 'qualified') {
                             if (lead.tier.includes('A')) {
                                 msg = parseTemplate(state.msgTemplateA, lead, link);
-                            } else if (lead.tier.includes('B1')) {
+                            } else if (lead.tier.includes('B')) {
                                 msg = parseTemplate(state.msgTemplateB1, lead, link);
                             } else {
+                                // C y D comparten plantilla de baja prioridad hasta definir copy propio para D
                                 msg = parseTemplate(state.msgTemplateB2, lead, link);
                             }
                         } else {
@@ -1133,6 +1273,11 @@
             document.getElementById('lead-search').addEventListener('input', renderLeads);
             document.getElementById('lead-sort').addEventListener('change', renderLeads);
 
+            document.getElementById('detail-modal-close').addEventListener('click', closeDetailModal);
+            document.getElementById('detail-modal').addEventListener('click', (e) => {
+                if (e.target.id === 'detail-modal') closeDetailModal();
+            });
+
             UI.leads.addEventListener('input', e => {
                 if (!e.target.classList.contains('key-input')) return;
                 const val = e.target.value.trim();
@@ -1168,9 +1313,13 @@
                     save(); renderInventory();
                 } else if (trigger.dataset.action === 'copy-raw-link') {
                    const genProp = state.properties.find(p => p.slug === trigger.dataset.slug) || {};
-                    const payload = `g|${trigger.dataset.slug}|${genProp.tipoIdx || 0}|${genProp.comunaIdx || 0}|${state.brokerPhone}|${state.brokerName}`;
-                    const token = encodeToken(payload + "|" + calcSig(payload, "PS-REF"));
-                    const link = `${window.location.origin}${window.location.pathname}?a=${token}`;
+                    const link = buildAccessLink('g', {
+                        slug: trigger.dataset.slug,
+                        tipoIdx: genProp.tipoIdx || 0,
+                        comunaIdx: genProp.comunaIdx || 0,
+                        brokerPhone: state.brokerPhone,
+                        brokerName: state.brokerName
+                    });
                     
                     navigator.clipboard.writeText(link);
                     trigger.innerText = "¡Copiado!";
@@ -1430,27 +1579,20 @@
                 let type, clientSlug, clientTipoIdx, clientComunaIdx, targetBrokerPhone, clientBroker, clientLeadId, urlName, urlPhone;
 
                 try {
-                    const raw = decodeToken(accessToken);
-                    const parts = raw.split('|');
-                    
-                    if (parts.length === 7 || parts.length === 10) {
-                        const outerSig = parts.pop();
-                        const rebuildPayload = parts.join('|');
-                        
-                        if (outerSig === calcSig(rebuildPayload, "PS-REF")) {
-                            integrityPassed = true;
-                            type = parts[0];
-                            clientSlug = parts[1];
-                            clientTipoIdx = parseInt(parts[2]) || 0;
-                            clientComunaIdx = parseInt(parts[3]) || 0;
-                            targetBrokerPhone = parts[4];
-                            clientBroker = parts[5];
-                            
-                            if (type === 'c') {
-                                clientLeadId = parts[6];
-                                urlName = parts[7];
-                                urlPhone = parts[8];
-                            }
+                    const parsed = parseAccessToken(accessToken, params);
+                    if (parsed) {
+                        integrityPassed = true;
+                        type = parsed.type;
+                        clientSlug = parsed.slug;
+                        clientTipoIdx = parsed.tipoIdx;
+                        clientComunaIdx = parsed.comunaIdx;
+                        targetBrokerPhone = parsed.brokerPhone;
+                        clientBroker = parsed.brokerName;
+
+                        if (type === 'c') {
+                            clientLeadId = parsed.leadId;
+                            urlName = parsed.name;
+                            urlPhone = parsed.phone;
                         }
                     }
                 } catch (e) {
@@ -1538,28 +1680,25 @@
                     let score = 0;
                     fd.forEach(v => score += parseInt(v));
 
-                    let tier = 'B2';
-                    // TIERS BASADOS EN BENCHMARK DE INTENCIÓN REAL
+                    let tier = 'D';
+                    // ESCALA 4 NIVELES — A conserva umbral validado; B/C/D subdividen el rango anterior
                     if (score >= 75) tier = 'A';        // ALTA INTENCIÓN: Pie + Crédito + Acción
-                    else if (score >= 40) tier = 'B1';  // CALIFICADO: Tiene interés pero falta maduración
-                    else tier = 'B2';                   // OPACO/CURIOSO: Baja transparencia o solo explorando
+                    else if (score >= 50) tier = 'B';   // CALIFICADO: interés real, madurando
+                    else if (score >= 25) tier = 'C';   // TIBIO: interés inicial, baja concreción
+                    else tier = 'D';                    // OPACO/CURIOSO: baja transparencia o solo explorando
 
+                    const q1 = fd.get('q1'), q2 = fd.get('q2'), q3 = fd.get('q3'), q4 = fd.get('q4');
                     const cName = document.getElementById('c-name').value.trim() || "Interesado";
                     const cPhone = getClientPhone();
 
                     let finalPayload;
                     if (type === 'c' && clientLeadId) {
-                        finalPayload = `c|${clientLeadId}|${clientSlug}|${score}|${tier}|${calcSig(`${clientLeadId}|${clientSlug}|${score}|${tier}`, "PS-REF")}`;
+                        // Slug omitido: en flujo 'c' la propiedad ya está asociada al lead antes de generar el link — reenviarla es redundante
+                        finalPayload = `c|${clientLeadId}|${score}|${tier}|${q1}|${q2}|${q3}|${q4}|${calcSig(`${clientLeadId}|${score}|${tier}|${q1}|${q2}|${q3}|${q4}`, "PS-REF")}`;
                     } else {
-                        finalPayload = `g|${cName}|${cPhone}|${clientSlug}|${score}|${tier}|${calcSig(`${cName}|${cPhone}|${clientSlug}|${score}|${tier}`, "PS-REF")}`;
+                        finalPayload = `g|${cName}|${cPhone}|${clientSlug}|${score}|${tier}|${q1}|${q2}|${q3}|${q4}|${calcSig(`${cName}|${cPhone}|${clientSlug}|${score}|${tier}|${q1}|${q2}|${q3}|${q4}`, "PS-REF")}`;
                     }
                     const key = `REF-${encodeToken(finalPayload)}`;
-                    
-                    const copyBtn = document.getElementById('btn-copy-ref');
-                    if (copyBtn) {
-                        copyBtn.style.display = 'block';
-                        copyBtn.dataset.key = key;
-                    }
 
                     document.getElementById('q-form').onsubmit = (e) => {
                         e.preventDefault();
@@ -1573,14 +1712,6 @@
 
             UI.pastebox.addEventListener('input', (e) => {
                 if (e.target.value.includes('REF-')) processCapture(e.target.value);
-            });
-
-            document.addEventListener('click', (e) => {
-                if (e.target.id === 'btn-copy-ref') {
-                    navigator.clipboard.writeText(e.target.dataset.key);
-                    e.target.innerText = "¡Copiado!";
-                    setTimeout(() => e.target.innerText = "Copiar Llave REF-", 2000);
-                }
             });
         })();
     </script>
